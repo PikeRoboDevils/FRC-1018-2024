@@ -4,19 +4,22 @@
 
 package frc.robot.subsystems;
 
+import com.revrobotics.CANSparkLowLevel;
+import com.revrobotics.CANSparkMax;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel;
 
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
   private final CANSparkMax intakeMotor = new CANSparkMax(9,CANSparkLowLevel.MotorType.kBrushless);
+  private final DigitalInput irDetector = new DigitalInput(9);
 
   public Intake() {
     intakeMotor.restoreFactoryDefaults();
-    intakeMotor.setInverted(false);
+    intakeMotor.setInverted(true);
     //intakeMotor.setSmartCurrentLimit(CURRENT_LIMIT);
     intakeMotor.burnFlash();
   }
@@ -25,15 +28,38 @@ public class Intake extends SubsystemBase {
   public void setSpeed(double speed){
     intakeMotor.set(speed);
   } 
+  //gets value of intake ir sensor
+  public boolean hasNote(){
+    return !irDetector.get();
+  }
 
   public Command runIntake(){
     return run(
       ()->{
         setSpeed(.25);
-      }
-    ).finallyDo(()->{
+      })
+      .until(()->hasNote())      
+      .finallyDo(()->{
       setSpeed(0);
     });
+  }
+
+  public Command runOuttake(){
+    return run(
+      ()->{
+        setSpeed(-.25);
+      })
+      .finallyDo(()->{setSpeed(0);
+      });
+  }
+
+  public Command shoot(){
+    return run(
+      ()->{
+        setSpeed(.5);
+      })
+      .finallyDo(()->{setSpeed(0);
+      });
   }
   @Override
   public void periodic() {
