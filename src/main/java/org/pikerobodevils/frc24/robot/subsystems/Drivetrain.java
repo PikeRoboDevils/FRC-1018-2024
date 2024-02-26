@@ -3,10 +3,8 @@
  * license that can be found in the LICENSE.md file or
  * at https://opensource.org/licenses/MIT. */
 
-package frc.robot.subsystems;
+package org.pikerobodevils.frc24.robot.subsystems;
 
-
-import static frc.robot.Constants.DrivetrainConstants.*;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
@@ -15,10 +13,14 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.*;
+
 // import io.github.oblarg.oblog.Loggable;
 // import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
-import frc.lib.vendor.SparkMax;
+
+import org.pikerobodevils.frc24.lib.vendor.SparkMax;
 
 public class Drivetrain extends SubsystemBase{
 

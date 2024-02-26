@@ -2,9 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
-import static frc.robot.Constants.ArmConstants.*;
-
+package org.pikerobodevils.frc24.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel;
@@ -19,11 +17,15 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+
+import static org.pikerobodevils.frc24.robot.Constants.ArmConstants.*;
+
 // import io.github.oblarg.oblog.Loggable;
 // import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
-import frc.lib.vendor.SparkMax;
-import frc.lib.vendor.SparkMaxUtils;
+
+import org.pikerobodevils.frc24.lib.vendor.SparkMax;
+import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils;
 
 public class Arm extends SubsystemBase {
 

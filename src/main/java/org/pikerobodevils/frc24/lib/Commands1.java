@@ -3,7 +3,7 @@
  * license that can be found in the LICENSE.md file or
  * at https://opensource.org/licenses/MIT. */
 
-package frc.lib;
+package org.pikerobodevils.frc24.lib;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;

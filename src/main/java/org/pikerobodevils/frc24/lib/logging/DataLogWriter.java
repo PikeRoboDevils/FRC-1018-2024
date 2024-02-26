@@ -3,7 +3,7 @@
  * license that can be found in the LICENSE.md file or
  * at https://opensource.org/licenses/MIT. */
 
-package frc.lib.logging;
+package org.pikerobodevils.frc24.lib.logging;
 
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;

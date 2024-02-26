@@ -3,7 +3,7 @@
  * license that can be found in the LICENSE.md file or
  * at https://opensource.org/licenses/MIT. */
 
-package frc.lib.vendor;
+package org.pikerobodevils.frc24.lib.vendor;
 
 /*
  * Adapted from 3005's 2022 Code
@@ -16,8 +16,8 @@ import edu.wpi.first.wpilibj.Timer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-import frc.lib.HealthMonitor;
-//import org.tinylog.Logger;
+
+import org.pikerobodevils.frc24.lib.HealthMonitor;
 
 public class SparkMax extends CANSparkMax {
 
