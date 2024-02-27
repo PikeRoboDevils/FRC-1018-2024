@@ -104,5 +104,6 @@ public final class Constants {
     public static final IdleMode IDLE_MODE = IdleMode.kCoast;
 
     public static final int CURRENT_LIMIT = 50;
+    public static final double GEAR_RATIO=1;
   }
 }
