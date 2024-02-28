@@ -10,6 +10,10 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
@@ -24,11 +28,21 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.units.Distance;
+import edu.wpi.first.units.Measure;
+import edu.wpi.first.units.MutableMeasure;
+import edu.wpi.first.units.Velocity;
+import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
 import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.*;
 
@@ -43,16 +57,16 @@ import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils;
 import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils.UnitConversions;
 
 public class Drivetrain extends SubsystemBase{
-
+  private final ShuffleboardTab dashboard = Shuffleboard.getTab("Driver");
   private final SparkMax leftLeader = new SparkMax(LEFT_LEADER_ID, MotorType.kBrushless);
   private final SparkMax leftFollowerOne = new SparkMax(LEFT_FOLLOWER_ONE_ID, MotorType.kBrushless);
-  private final SparkMax leftFollowerTwo = new SparkMax(LEFT_FOLLOWER_TWO_ID, MotorType.kBrushless);
+  //private final SparkMax leftFollowerTwo = new SparkMax(LEFT_FOLLOWER_TWO_ID, MotorType.kBrushless);
 
   private final SparkMax rightLeader = new SparkMax(RIGHT_LEADER_ID, MotorType.kBrushless);
   private final SparkMax rightFollowerOne =
       new SparkMax(RIGHT_FOLLOWER_ONE_ID, MotorType.kBrushless);
-  private final SparkMax rightFollowerTwo =
-      new SparkMax(RIGHT_FOLLOWER_TWO_ID, MotorType.kBrushless);
+  // private final SparkMax rightFollowerTwo =
+  //     new SparkMax(RIGHT_FOLLOWER_TWO_ID, MotorType.kBrushless);
 
   private final RelativeEncoder leftEncoder = leftLeader.getEncoder();
   private final RelativeEncoder rightEncoder = rightLeader.getEncoder();
@@ -63,8 +77,15 @@ public class Drivetrain extends SubsystemBase{
   double currentPitchRate = 0;
   private Pose2d m_Pose;
   private final DifferentialDrive m_drive =
-
   new DifferentialDrive(leftLeader::set, rightLeader::set);
+ 
+    // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
+  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
+  // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
+  private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
+  // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
+  private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
+
   /** Creates a new Drivetrain. */
   public Drivetrain() {
 
@@ -76,12 +97,12 @@ public class Drivetrain extends SubsystemBase{
     leftFollowerOne.restoreFactoryDefaults();
     leftFollowerOne.setIdleMode(IDLE_MODE);
     leftFollowerOne.follow(leftLeader);
-    leftFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
+    // leftFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
 
-    leftFollowerTwo.restoreFactoryDefaults();
-    leftFollowerTwo.setIdleMode(IDLE_MODE);
-    leftFollowerTwo.follow(leftLeader);
-    leftFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
+    // leftFollowerTwo.restoreFactoryDefaults();
+    // leftFollowerTwo.setIdleMode(IDLE_MODE);
+    // leftFollowerTwo.follow(leftLeader);
+    // leftFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
 
     rightLeader.restoreFactoryDefaults();
     rightLeader.setIdleMode(IDLE_MODE);
@@ -91,21 +112,60 @@ public class Drivetrain extends SubsystemBase{
     rightFollowerOne.restoreFactoryDefaults();
     rightFollowerOne.setIdleMode(IDLE_MODE);
     rightFollowerOne.follow(rightLeader);
-    rightFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
+    // rightFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
 
-    rightFollowerTwo.restoreFactoryDefaults();
-    rightFollowerTwo.setIdleMode(IDLE_MODE);
-    rightFollowerTwo.follow(rightLeader);
-    rightFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
-        UnitConversions.setDegreesFromGearRatio(leftEncoder, GEAR_RATIO);
-    UnitConversions.setDegreesFromGearRatio(rightEncoder, GEAR_RATIO);
-    leftEncoder.setPositionConversionFactor(Math.PI*6/GEAR_RATIO);
-    rightEncoder.setPositionConversionFactor(Math.PI*6/GEAR_RATIO);
+    // rightFollowerTwo.restoreFactoryDefaults();
+    // rightFollowerTwo.setIdleMode(IDLE_MODE);
+    // rightFollowerTwo.follow(rightLeader);
+    // rightFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
+    // UnitConversions.setDegreesFromGearRatio(leftEncoder, GEAR_RATIO);
+    // UnitConversions.setDegreesFromGearRatio(rightEncoder, GEAR_RATIO);
+    // leftEncoder.setPositionConversionFactor(Math.PI*6);
+    // rightEncoder.setPositionConversionFactor(Math.PI*6);
+
+    // leftEncoder.setVelocityConversionFactor(1/GEAR_RATIO);
+    // rightEncoder.setVelocityConversionFactor(1/GEAR_RATIO);
 
     m_Odometry = new DifferentialDriveOdometry(navX.getRotation2d(), leftEncoder.getPosition(), rightEncoder.getPosition(),
     m_Pose);
   }
 
+
+ private final SysIdRoutine m_sysIdRoutine =
+      new SysIdRoutine(
+          // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
+          new SysIdRoutine.Config(),
+          new SysIdRoutine.Mechanism(
+              // Tell SysId how to plumb the driving voltage to the motors.
+              (Measure<Voltage> volts) -> {
+                leftLeader.setVoltage(volts.in(Volts));
+                rightLeader.setVoltage(volts.in(Volts));
+              },
+              // Tell SysId how to record a frame of data for each motor on the mechanism being
+              // characterized.
+              log -> {
+                // Record a frame for the left motors.  Since these share an encoder, we consider
+                // the entire group to be one motor.
+                log.motor("drive-left")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(
+                            leftLeader.get() * RobotController.getBatteryVoltage(), Volts))
+                    .linearPosition(m_distance.mut_replace(leftEncoder.getPosition(), Meters))
+                    .linearVelocity(
+                        m_velocity.mut_replace(leftEncoder.getVelocity(), MetersPerSecond));
+                // Record a frame for the right motors.  Since these share an encoder, we consider
+                // the entire group to be one motor.
+                log.motor("drive-right")
+                    .voltage(
+                        m_appliedVoltage.mut_replace(
+                            rightLeader.get() * RobotController.getBatteryVoltage(), Volts))
+                    .linearPosition(m_distance.mut_replace(rightEncoder.getPosition(), Meters))
+                    .linearVelocity(
+                        m_velocity.mut_replace(rightEncoder.getVelocity(), MetersPerSecond));
+              },
+              // Tell SysId to make generated commands require this subsystem, suffix test state in
+              // WPILog with this subsystem's name ("drive")
+              this));    
 
   public void resetOdometry(Pose2d pose) {
 
@@ -132,11 +192,25 @@ public class Drivetrain extends SubsystemBase{
   public void setIdleMode(CANSparkMax.IdleMode mode) {
     leftLeader.setIdleMode(mode);
     leftFollowerOne.setIdleMode(mode);
-    leftFollowerTwo.setIdleMode(mode);
+    //leftFollowerTwo.setIdleMode(mode);
 
     rightLeader.setIdleMode(mode);
     rightFollowerOne.setIdleMode(mode);
-    rightFollowerTwo.setIdleMode(mode);
+    // rightFollowerTwo.setIdleMode(mode);
+  }
+  public double getLeftVelocity(){
+    return (leftEncoder.getVelocity()/GEAR_RATIO*(.1524*Math.PI))/60;
+  }
+  public double getRightVelocity(){
+    return (rightEncoder.getVelocity()/GEAR_RATIO*(.1524*Math.PI))/60;
+  }
+
+  public double getLeftDistance(){
+    return (leftEncoder.getPosition()/GEAR_RATIO)*(.1524*Math.PI);
+  }
+
+  public double getRightDistance(){
+    return (rightEncoder.getPosition()/GEAR_RATIO)*(.1524*Math.PI);
   }
 
 //   @Log(name = "Yaw")
@@ -210,92 +284,94 @@ public class Drivetrain extends SubsystemBase{
       leftEncoder.getPosition(),
       rightEncoder.getPosition()
     );
+
+   
   }
 
-   public Command getAutonomousCommand(Supplier<Trajectory> trajectory) {
+  //  public Command getAutonomousCommand(Supplier<Trajectory> trajectory) {
 
-    // Create a voltage constraint to ensure we don't accelerate too fast
+  //   // Create a voltage constraint to ensure we don't accelerate too fast
 
-    var autoVoltageConstraint =
+  //   var autoVoltageConstraint =
 
-        new DifferentialDriveVoltageConstraint(
+  //       new DifferentialDriveVoltageConstraint(
 
-            new SimpleMotorFeedforward(
+  //           new SimpleMotorFeedforward(
 
-                DriveConstants.ksVolts,
+  //               DriveConstants.ksVolts,
 
-                DriveConstants.kvVoltSecondsPerMeter,
+  //               DriveConstants.kvVoltSecondsPerMeter,
 
-                DriveConstants.kaVoltSecondsSquaredPerMeter),
+  //               DriveConstants.kaVoltSecondsSquaredPerMeter),
 
-            DriveConstants.kDriveKinematics,
+  //           DriveConstants.kDriveKinematics,
 
-            10);
-
-
-    // Create config for trajectory
-
-    TrajectoryConfig config =
-
-        new TrajectoryConfig(
-
-                AutoConstants.kMaxSpeedMetersPerSecond,
-
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-
-            // Add kinematics to ensure max speed is actually obeyed
-
-            .setKinematics(DriveConstants.kDriveKinematics)
-
-            // Apply the voltage constraint
-
-            .addConstraint(autoVoltageConstraint);
+  //           10);
 
 
-    RamseteCommand ramseteCommand =
+  //   // Create config for trajectory
 
-        new RamseteCommand(
+  //   TrajectoryConfig config =
 
-            trajectory,
+  //       new TrajectoryConfig(
 
-            m_Pose,
+  //               AutoConstants.kMaxSpeedMetersPerSecond,
 
-            new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
+  //               AutoConstants.kMaxAccelerationMetersPerSecondSquared)
 
-            new SimpleMotorFeedforward(
+  //           // Add kinematics to ensure max speed is actually obeyed
 
-                DriveConstants.ksVolts,
+  //           .setKinematics(DriveConstants.kDriveKinematics)
 
-                DriveConstants.kvVoltSecondsPerMeter,
+  //           // Apply the voltage constraint
 
-                DriveConstants.kaVoltSecondsSquaredPerMeter),
-
-            DriveConstants.kDriveKinematics,
-
-           this.getWheelSpeeds(),
-
-            new PIDController(kPDriveVel, 0, 0),
-
-            new PIDController(DriveConstants.kPDriveVel, 0, 0),
-
-            // RamseteCommand passes volts to the callback
-
-            this::setLeftRightVoltage,
-
-            this);
+  //           .addConstraint(autoVoltageConstraint);
 
 
-    // Reset odometry to the initial pose of the trajectory, run path following
+  //   RamseteCommand ramseteCommand =
 
-    // command, then stop at the end.
+  //       new RamseteCommand(
 
-    return Commands.runOnce(() -> this.resetOdometry(trajectory.get().getInitialPose()))
+  //           trajectory,
 
-        .andThen(ramseteCommand)
+  //           m_Pose,
 
-        .andThen(Commands.runOnce(() -> this.setLeftRightVoltage(0, 0)));
+  //           new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
 
-  }
+  //           new SimpleMotorFeedforward(
+
+  //               DriveConstants.ksVolts,
+
+  //               DriveConstants.kvVoltSecondsPerMeter,
+
+  //               DriveConstants.kaVoltSecondsSquaredPerMeter),
+
+  //           DriveConstants.kDriveKinematics,
+
+  //          this.getWheelSpeeds(),
+
+  //           new PIDController(kPDriveVel, 0, 0),
+
+  //           new PIDController(DriveConstants.kPDriveVel, 0, 0),
+
+  //           // RamseteCommand passes volts to the callback
+
+  //           this::setLeftRightVoltage,
+
+  //           this);
+
+
+  //   // Reset odometry to the initial pose of the trajectory, run path following
+
+  //   // command, then stop at the end.
+
+  //   return Commands.runOnce(() -> this.resetOdometry(trajectory.get().getInitialPose()))
+
+  //       .andThen(ramseteCommand)
+
+  //       .andThen(Commands.runOnce(() -> this.setLeftRightVoltage(0, 0)));
+
+  // }
 
 }
 

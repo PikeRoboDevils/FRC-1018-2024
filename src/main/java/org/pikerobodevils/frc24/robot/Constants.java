@@ -96,14 +96,14 @@ public final class Constants {
   public static class DrivetrainConstants {
     public static final int LEFT_LEADER_ID = 1;
     public static final int LEFT_FOLLOWER_ONE_ID = 3;
-    public static final int LEFT_FOLLOWER_TWO_ID = 5;
+    
     public static final int RIGHT_LEADER_ID = 2;
     public static final int RIGHT_FOLLOWER_ONE_ID = 4;
-    public static final int RIGHT_FOLLOWER_TWO_ID = 6;
+   
 
     public static final IdleMode IDLE_MODE = IdleMode.kCoast;
 
     public static final int CURRENT_LIMIT = 50;
-    public static final double GEAR_RATIO=1;
+    public static final double GEAR_RATIO = 10.86;
   }
 }

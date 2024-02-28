@@ -6,6 +6,7 @@ package org.pikerobodevils.frc24.robot;
 
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
 import org.pikerobodevils.frc24.robot.commands.Autos;
+import org.pikerobodevils.frc24.robot.subsystems.Drivetrain;
 import org.pikerobodevils.frc24.robot.subsystems.ExampleSubsystem;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
 import org.pikerobodevils.frc24.robot.subsystems.Shooter;
@@ -26,16 +27,25 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final Intake intakeSubsystem = new Intake();
+  private final Drivetrain drivetrain = new Drivetrain();
   private final Shooter shooterSubsystem = new Shooter();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
-
+  private final ControlBoard controlboard = new ControlBoard();
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    drivetrain.setDefaultCommand(
+        drivetrain
+            .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
+            .withName("Default Drive Command"));
     shuffleboard.addBoolean("Has Note",()->intakeSubsystem.hasNote());
+    shuffleboard.addDouble("right velocity", ()->drivetrain.getRightVelocity());
+    shuffleboard.addDouble("left velocity", ()->drivetrain.getLeftVelocity());
+    shuffleboard.addDouble("left distance", ()->drivetrain.getLeftDistance() );
+    shuffleboard.addDouble("right distance", ()->drivetrain.getRightDistance());
     // Configure the trigger bindings
     configureBindings();
   }
