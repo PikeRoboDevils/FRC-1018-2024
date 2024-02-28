@@ -43,6 +43,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.*;
 
@@ -131,7 +132,7 @@ public class Drivetrain extends SubsystemBase{
   }
 
 
- private final SysIdRoutine m_sysIdRoutine =
+ private final SysIdRoutine sysId =
       new SysIdRoutine(
           // Empty config defaults to 1 volt/second ramp rate and 7 volt step voltage.
           new SysIdRoutine.Config(),
@@ -150,18 +151,18 @@ public class Drivetrain extends SubsystemBase{
                     .voltage(
                         m_appliedVoltage.mut_replace(
                             leftLeader.get() * RobotController.getBatteryVoltage(), Volts))
-                    .linearPosition(m_distance.mut_replace(leftEncoder.getPosition(), Meters))
+                    .linearPosition(m_distance.mut_replace(this.getLeftDistance(), Meters))
                     .linearVelocity(
-                        m_velocity.mut_replace(leftEncoder.getVelocity(), MetersPerSecond));
+                        m_velocity.mut_replace(this.getLeftVelocity(), MetersPerSecond));
                 // Record a frame for the right motors.  Since these share an encoder, we consider
                 // the entire group to be one motor.
                 log.motor("drive-right")
                     .voltage(
                         m_appliedVoltage.mut_replace(
                             rightLeader.get() * RobotController.getBatteryVoltage(), Volts))
-                    .linearPosition(m_distance.mut_replace(rightEncoder.getPosition(), Meters))
+                    .linearPosition(m_distance.mut_replace(this.getRightDistance(), Meters))
                     .linearVelocity(
-                        m_velocity.mut_replace(rightEncoder.getVelocity(), MetersPerSecond));
+                        m_velocity.mut_replace(this.getRightVelocity(), MetersPerSecond));
               },
               // Tell SysId to make generated commands require this subsystem, suffix test state in
               // WPILog with this subsystem's name ("drive")
@@ -252,6 +253,12 @@ public class Drivetrain extends SubsystemBase{
     return run(() -> arcadeDrive(speed.getAsDouble(), rotation.getAsDouble()));
   }
 
+  public Command runQuasiSysId(SysIdRoutine.Direction direction){
+    return sysId.quasistatic(direction);
+  }
+  public Command runDynamicSysId(SysIdRoutine.Direction direction){
+    return sysId.dynamic(direction);
+  }
   // public Command driveTrajectoryCommand(Trajectory trajectory) {
   //   return driveTrajectoryCommand(() -> trajectory);
   // }
