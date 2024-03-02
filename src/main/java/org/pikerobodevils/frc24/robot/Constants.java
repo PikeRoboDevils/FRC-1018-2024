@@ -123,4 +123,18 @@ public final class Constants {
         kTrackwidthMeters);
 
   }
+public static class ClimbConstants{
+  // Setup by Cannon "heyyyy"
+  //Sets contants for variables such as motor ID, dictance and speedin the the robot. 
+    public static final int MOTOR_ID = 21;
+    public static final double CLIMB_SPEED = 0.5;
+    public static final int CLIMB_DISTANCE = 18; // cms 
+}
+
+
+
+
+
+
+
 }
