@@ -129,6 +129,7 @@ public static class ClimbConstants{
     public static final int MOTOR_ID = 21;
     public static final double CLIMB_SPEED = 0.5;
     public static final int CLIMB_DISTANCE = 18; // cms 
+    public static final double KP = 0.01;
 }
 
 

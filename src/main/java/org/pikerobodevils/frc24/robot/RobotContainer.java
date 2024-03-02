@@ -6,6 +6,7 @@ package org.pikerobodevils.frc24.robot;
 
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
 import org.pikerobodevils.frc24.robot.commands.Autos;
+import org.pikerobodevils.frc24.robot.subsystems.BotGoClimb;
 import org.pikerobodevils.frc24.robot.subsystems.Drivetrain;
 import org.pikerobodevils.frc24.robot.subsystems.ExampleSubsystem;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
@@ -30,6 +31,8 @@ public class RobotContainer {
   private final Intake intakeSubsystem = new Intake();
   private final Drivetrain drivetrain = new Drivetrain();
   private final Shooter shooterSubsystem = new Shooter();
+  private final BotGoClimb climber= new BotGoClimb(); 
+
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
   private final ControlBoard controlboard = new ControlBoard();
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -69,8 +72,8 @@ public class RobotContainer {
     controlboard.driver.y().whileTrue((drivetrain.runDynamicSysId(Direction.kReverse)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
 
 
-    controlboard.operator.a().whileTrue(intakeSubsystem.runIntake());
-    controlboard.operator.b().whileTrue(intakeSubsystem.runOuttake());
+    controlboard.operator.a().onTrue(climber.climberDown());
+    controlboard.operator.b().onTrue(climber.climberUp());
     controlboard.operator.x().whileTrue(intakeSubsystem.shoot());
     controlboard.operator.leftBumper().whileTrue(shooterSubsystem.spinUp());
   }
