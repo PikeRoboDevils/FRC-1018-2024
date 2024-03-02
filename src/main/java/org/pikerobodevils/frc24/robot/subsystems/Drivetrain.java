@@ -77,8 +77,7 @@ public class Drivetrain extends SubsystemBase{
 
   double currentPitchRate = 0;
   private Pose2d m_Pose;
-  private final DifferentialDrive m_drive =
-  new DifferentialDrive(leftLeader::set, rightLeader::set);
+
  
     // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -90,7 +89,7 @@ public class Drivetrain extends SubsystemBase{
   /** Creates a new Drivetrain. */
   public Drivetrain() {
 
-    m_Pose = new Pose2d(5.0, 13.5, new Rotation2d());
+    m_Pose = new Pose2d(0, 0, new Rotation2d());
     leftLeader.restoreFactoryDefaults();
     leftLeader.setIdleMode(IDLE_MODE);
     leftLeader.setSmartCurrentLimit(CURRENT_LIMIT);
@@ -150,7 +149,7 @@ public class Drivetrain extends SubsystemBase{
                 log.motor("drive-left")
                     .voltage(
                         m_appliedVoltage.mut_replace(
-                            leftLeader.get() * RobotController.getBatteryVoltage(), Volts))
+                            leftLeader.getAppliedOutput() * RobotController.getBatteryVoltage(), Volts))
                     .linearPosition(m_distance.mut_replace(this.getLeftDistance(), Meters))
                     .linearVelocity(
                         m_velocity.mut_replace(this.getLeftVelocity(), MetersPerSecond));
@@ -159,7 +158,7 @@ public class Drivetrain extends SubsystemBase{
                 log.motor("drive-right")
                     .voltage(
                         m_appliedVoltage.mut_replace(
-                            rightLeader.get() * RobotController.getBatteryVoltage(), Volts))
+                            rightLeader.getAppliedOutput() * RobotController.getBatteryVoltage(), Volts))
                     .linearPosition(m_distance.mut_replace(this.getRightDistance(), Meters))
                     .linearVelocity(
                         m_velocity.mut_replace(this.getRightVelocity(), MetersPerSecond));
@@ -172,8 +171,12 @@ public class Drivetrain extends SubsystemBase{
 
     m_Odometry.resetPosition(
 
-        navX.getRotation2d(), leftEncoder.getPosition(), rightEncoder.getPosition(), pose);
+        navX.getRotation2d(), getLeftDistance(), getRightDistance(), pose);
 
+  }
+  public void resetEncoders(){
+    leftEncoder.setPosition(0);
+    rightEncoder.setPosition(0);
   }
   public void setLeftRight(double left, double right) {
     leftLeader.set(left);
@@ -186,7 +189,7 @@ public class Drivetrain extends SubsystemBase{
   }
     public DifferentialDriveWheelSpeeds getWheelSpeeds() {
 
-    return new DifferentialDriveWheelSpeeds(leftEncoder.getVelocity(), rightEncoder.getVelocity());
+    return new DifferentialDriveWheelSpeeds(getLeftVelocity(), getRightVelocity());
 
   }
 
@@ -244,6 +247,10 @@ public class Drivetrain extends SubsystemBase{
     return leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
   }
 
+  public Pose2d getPose() {
+    return m_Pose;
+  }
+
   public void arcadeDrive(double speed, double rotation) {
     DifferentialDrive.WheelSpeeds speeds = DifferentialDrive.arcadeDriveIK(speed, rotation, false);
     setLeftRight(speeds.left, speeds.right);
@@ -288,9 +295,9 @@ public class Drivetrain extends SubsystemBase{
     currentPitchRate = pitchRate.calculate(getPitch());
     m_Pose = m_Odometry.update(
       navX.getRotation2d(),
-      leftEncoder.getPosition(),
-      rightEncoder.getPosition()
-    );
+      getLeftDistance(),
+      getRightDistance()
+        );
 
    
   }
