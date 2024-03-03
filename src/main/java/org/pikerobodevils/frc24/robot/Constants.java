@@ -23,6 +23,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
@@ -81,6 +82,7 @@ public final class Constants {
     public static final double MOI_KG_M_SQUARED = MASS * (Math.pow(COM_DISTANCE, 2));
   }
 
+
   public static class IntakeConstants {
 
     public static final int MOTOR_ID = 9;
@@ -92,6 +94,8 @@ public final class Constants {
     public static final double SHOOT_SPEED = .75;
 
     public static final double DEFAULT_OUTTAKE = -.5;
+
+    public static final int IR_PORT = 5;
   }
 
   public static class ShooterConstants {
@@ -103,13 +107,20 @@ public final class Constants {
   }
 
   public static class DrivetrainConstants {
-    public static final int LEFT_LEADER_ID = 1;
-    public static final int LEFT_FOLLOWER_ONE_ID = 3;
+    public static final int LEFT_LEADER_ID = 3;
+    public static final int LEFT_FOLLOWER_ONE_ID = 4;
 
-    public static final int RIGHT_LEADER_ID = 2;
-    public static final int RIGHT_FOLLOWER_ONE_ID = 4;
+    public static final int RIGHT_LEADER_ID = 5;
+    public static final int RIGHT_FOLLOWER_ONE_ID = 6;
 
     public static final IdleMode IDLE_MODE = IdleMode.kBrake;
+
+    public static final int LEFT_ENCODER_A = 0;
+    public static final int LEFT_ENCODER_B = 1;
+
+    public static final int RIGHT_ENCODER_A = 2;
+    public static final int RIGHT_ENCODER_B = 3;
+
 
     public static final int CURRENT_LIMIT = 50;
     public static final double GEAR_RATIO = 10.86;
@@ -123,19 +134,15 @@ public final class Constants {
         kTrackwidthMeters);
 
   }
-public static class ClimbConstants{
-  // Setup by Cannon "heyyyy"
-  //Sets contants for variables such as motor ID, dictance and speedin the the robot. 
-    public static final int MOTOR_ID = 21;
+
+  public static class ClimbConstants {
+    // Setup by Cannon "heyyyy"
+    // Sets contants for variables such as motor ID, dictance and speedin the the
+    // robot.
+    public static final int MOTOR_ID = 11;
     public static final double CLIMB_SPEED = 0.5;
-    public static final int CLIMB_DISTANCE = 18; // cms 
+    public static final int CLIMB_DISTANCE = 18; // cms
     public static final double KP = 0.01;
-}
-
-
-
-
-
-
+  }
 
 }

@@ -7,6 +7,8 @@ package org.pikerobodevils.frc24.robot.subsystems;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 
+import static org.pikerobodevils.frc24.robot.Constants.IntakeConstants.*;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -14,13 +16,13 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
-  private final CANSparkMax intakeMotor = new CANSparkMax(9,CANSparkLowLevel.MotorType.kBrushless);
-  private final DigitalInput irDetector = new DigitalInput(9);
+  private final CANSparkMax intakeMotor = new CANSparkMax(MOTOR_ID,CANSparkLowLevel.MotorType.kBrushless);
+  private final DigitalInput irDetector = new DigitalInput(IR_PORT);
 
   public Intake() {
     intakeMotor.restoreFactoryDefaults();
     intakeMotor.setInverted(true);
-    //intakeMotor.setSmartCurrentLimit(CURRENT_LIMIT);
+    intakeMotor.setSmartCurrentLimit(CURRENT_LIMIT);
     intakeMotor.burnFlash();
   }
 
@@ -36,7 +38,7 @@ public class Intake extends SubsystemBase {
   public Command runIntake(){
     return run(
       ()->{
-        setSpeed(.25);
+        setSpeed(INTAKE_SPEED);
       })
       .until(()->hasNote())      
       .finallyDo(()->{
@@ -47,7 +49,7 @@ public class Intake extends SubsystemBase {
   public Command runOuttake(){
     return run(
       ()->{
-        setSpeed(-.25);
+        setSpeed(DEFAULT_OUTTAKE);
       })
       .finallyDo(()->{setSpeed(0);
       });
@@ -56,7 +58,7 @@ public class Intake extends SubsystemBase {
   public Command shoot(){
     return run(
       ()->{
-        setSpeed(.5);
+        setSpeed(SHOOT_SPEED);
       })
       .finallyDo(()->{setSpeed(0);
       });

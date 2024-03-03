@@ -33,6 +33,8 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.CounterBase;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -69,8 +71,9 @@ public class Drivetrain extends SubsystemBase{
   // private final SparkMax rightFollowerTwo =
   //     new SparkMax(RIGHT_FOLLOWER_TWO_ID, MotorType.kBrushless);
 
-  private final RelativeEncoder leftEncoder = leftLeader.getEncoder();
-  private final RelativeEncoder rightEncoder = rightLeader.getEncoder();
+  private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_A,LEFT_ENCODER_B,true, CounterBase.EncodingType.k4X);
+  private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_A,RIGHT_ENCODER_A,true, CounterBase.EncodingType.k4X);
+
   private final AHRS navX = new AHRS();
   private DifferentialDriveOdometry m_Odometry;
   LinearFilter pitchRate = LinearFilter.backwardFiniteDifference(1, 2, 0.02);
@@ -126,7 +129,7 @@ public class Drivetrain extends SubsystemBase{
     // leftEncoder.setVelocityConversionFactor(1/GEAR_RATIO);
     // rightEncoder.setVelocityConversionFactor(1/GEAR_RATIO);
 
-    m_Odometry = new DifferentialDriveOdometry(navX.getRotation2d(), leftEncoder.getPosition(), rightEncoder.getPosition(),
+    m_Odometry = new DifferentialDriveOdometry(navX.getRotation2d(), getLeftDistance(), getRightDistance(),
     m_Pose);
   }
 
@@ -175,8 +178,8 @@ public class Drivetrain extends SubsystemBase{
 
   }
   public void resetEncoders(){
-    leftEncoder.setPosition(0);
-    rightEncoder.setPosition(0);
+    leftEncoder.reset();
+    rightEncoder.reset();;
   }
   public void setLeftRight(double left, double right) {
     leftLeader.set(left);
@@ -203,18 +206,18 @@ public class Drivetrain extends SubsystemBase{
     // rightFollowerTwo.setIdleMode(mode);
   }
   public double getLeftVelocity(){
-    return (leftEncoder.getVelocity()/GEAR_RATIO*(.1524*Math.PI))/60;
+    return (leftEncoder.getRate()/GEAR_RATIO*(.1524*Math.PI))/60;
   }
   public double getRightVelocity(){
-    return (rightEncoder.getVelocity()/GEAR_RATIO*(.1524*Math.PI))/60;
+    return (rightEncoder.getRate()/GEAR_RATIO*(.1524*Math.PI))/60;
   }
 
   public double getLeftDistance(){
-    return (leftEncoder.getPosition()/GEAR_RATIO)*(.1524*Math.PI);
+    return (leftEncoder.getDistance()/GEAR_RATIO)*(.1524*Math.PI);
   }
 
   public double getRightDistance(){
-    return (rightEncoder.getPosition()/GEAR_RATIO)*(.1524*Math.PI);
+    return (rightEncoder.getDistance()/GEAR_RATIO)*(.1524*Math.PI);
   }
 
 //   @Log(name = "Yaw")
