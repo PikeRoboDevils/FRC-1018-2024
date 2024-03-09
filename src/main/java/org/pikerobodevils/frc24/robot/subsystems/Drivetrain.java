@@ -263,6 +263,13 @@ public class Drivetrain extends SubsystemBase{
     return run(() -> arcadeDrive(speed.getAsDouble(), rotation.getAsDouble()));
   }
 
+  public Command turnToTx(double tx)
+  {
+    double error = 0 - tx;
+    double output  = KP*error;
+    return run(()-> arcadeDriveCommand(()->0, ()->output));
+  }
+
   public Command runQuasiSysId(SysIdRoutine.Direction direction){
     return sysId.quasistatic(direction);
   }

@@ -17,4 +17,9 @@ public class ControlBoard {
     double rightX = -driver.getRightX();
     return Math.signum(rightX) * Math.pow(MathUtil.applyDeadband(rightX, .04), 2);
   }
+
+  public double getIntake()
+  {
+    return -driver.getLeftTriggerAxis() + driver.getRightTriggerAxis();
+  }
 }

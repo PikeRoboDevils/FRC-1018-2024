@@ -35,10 +35,10 @@ public class Intake extends SubsystemBase {
     return !irDetector.get();
   }
 
-  public Command runIntake(){
+  public Command runIntake(double speed){
     return run(
       ()->{
-        setSpeed(INTAKE_SPEED);
+        setSpeed(speed);
       })
       .until(()->hasNote())      
       .finallyDo(()->{

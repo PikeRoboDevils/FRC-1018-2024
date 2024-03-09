@@ -107,11 +107,11 @@ public final class Constants {
   }
 
   public static class DrivetrainConstants {
-    public static final int LEFT_LEADER_ID = 3;
-    public static final int LEFT_FOLLOWER_ONE_ID = 4;
+    public static final int LEFT_LEADER_ID = 2;
+    public static final int LEFT_FOLLOWER_ONE_ID = 3;
 
-    public static final int RIGHT_LEADER_ID = 5;
-    public static final int RIGHT_FOLLOWER_ONE_ID = 6;
+    public static final int RIGHT_LEADER_ID = 4;
+    public static final int RIGHT_FOLLOWER_ONE_ID = 5;
 
     public static final IdleMode IDLE_MODE = IdleMode.kBrake;
 
@@ -139,7 +139,7 @@ public final class Constants {
     // Setup by Cannon "heyyyy"
     // Sets contants for variables such as motor ID, dictance and speedin the the
     // robot.
-    public static final int MOTOR_ID = 11;
+    public static final int MOTOR_ID = 8;
     public static final double CLIMB_SPEED = 0.5;
     public static final int CLIMB_DISTANCE = 18; // cms
     public static final double KP = 0.01;

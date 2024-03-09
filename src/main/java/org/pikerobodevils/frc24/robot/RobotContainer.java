@@ -6,11 +6,13 @@ package org.pikerobodevils.frc24.robot;
 
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
 import org.pikerobodevils.frc24.robot.commands.Autos;
+import org.pikerobodevils.frc24.robot.subsystems.Arm;
 import org.pikerobodevils.frc24.robot.subsystems.BotGoClimb;
 import org.pikerobodevils.frc24.robot.subsystems.Drivetrain;
 import org.pikerobodevils.frc24.robot.subsystems.ExampleSubsystem;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
 import org.pikerobodevils.frc24.robot.subsystems.Shooter;
+import org.pikerobodevils.frc24.robot.subsystems.Vision;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -32,6 +34,8 @@ public class RobotContainer {
   private final Drivetrain drivetrain = new Drivetrain();
   private final Shooter shooterSubsystem = new Shooter();
   private final BotGoClimb climber= new BotGoClimb(); 
+  private final Arm arm = new Arm();
+  private final Vision vision = new Vision();
 
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
   private final ControlBoard controlboard = new ControlBoard();
@@ -45,6 +49,12 @@ public class RobotContainer {
         drivetrain
             .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
             .withName("Default Drive Command"));
+    intakeSubsystem.setDefaultCommand(
+      intakeSubsystem.runIntake(controlboard.getIntake()));
+
+    climber.setDefaultCommand(climber.climbOverride(controlboard.operator.getLeftY()));
+
+    
     shuffleboard.addBoolean("Has Note",()->intakeSubsystem.hasNote());
     shuffleboard.addDouble("right velocity", ()->drivetrain.getRightVelocity());
     shuffleboard.addDouble("left velocity", ()->drivetrain.getLeftVelocity());
@@ -66,16 +76,23 @@ public class RobotContainer {
   private void configureBindings() {
 
     //Sys ID buttons:
-    controlboard.driver.a().whileTrue((drivetrain.runQuasiSysId(Direction.kForward)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
-    controlboard.driver.b().whileTrue((drivetrain.runQuasiSysId(Direction.kReverse)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
-    controlboard.driver.x().whileTrue((drivetrain.runDynamicSysId(Direction.kForward)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
-    controlboard.driver.y().whileTrue((drivetrain.runDynamicSysId(Direction.kReverse)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
+    // controlboard.driver.a().whileTrue((drivetrain.runQuasiSysId(Direction.kForward)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
+    // controlboard.driver.b().whileTrue((drivetrain.runQuasiSysId(Direction.kReverse)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
+    // controlboard.driver.x().whileTrue((drivetrain.runDynamicSysId(Direction.kForward)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
+    // controlboard.driver.y().whileTrue((drivetrain.runDynamicSysId(Direction.kReverse)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
 
-
-    controlboard.operator.a().onTrue(climber.climberDown());
-    controlboard.operator.b().onTrue(climber.climberUp());
-    controlboard.operator.x().whileTrue(intakeSubsystem.shoot());
-    controlboard.operator.leftBumper().whileTrue(shooterSubsystem.spinUp());
+    controlboard.driver.leftBumper().whileTrue(shooterSubsystem.spinUp());
+    controlboard.driver.a().whileTrue(drivetrain.turnToTx(vision.getTx()));
+    controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
+    
+    
+    controlboard.operator.a().whileTrue(arm.setGoalCommand(0));
+    controlboard.operator.b().whileTrue(arm.setGoalCommand(90));
+    controlboard.operator.y().whileTrue(arm.setGoalCommand(25));
+    controlboard.operator.x().whileTrue(arm.setGoalCommand(45));
+    controlboard.operator.povUp().onTrue(climber.climberDown());
+    controlboard.operator.povDown().onTrue(climber.climberUp());
+    
   }
 
   /**
