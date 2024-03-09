@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Shooter extends SubsystemBase {
-  private final CANSparkMax shooterLead = new CANSparkMax(13,CANSparkLowLevel.MotorType.kBrushless);
-  private final CANSparkMax shooterFollow = new CANSparkMax(14,CANSparkLowLevel.MotorType.kBrushless);
+  private final CANSparkMax shooterLead = new CANSparkMax(10,CANSparkLowLevel.MotorType.kBrushless);
+  private final CANSparkMax shooterFollow = new CANSparkMax(11,CANSparkLowLevel.MotorType.kBrushless);
 
   
   /** Creates a new Shooter. */

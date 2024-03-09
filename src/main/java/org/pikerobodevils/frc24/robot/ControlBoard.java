@@ -9,7 +9,7 @@ public class ControlBoard {
   public final CommandXboxController operator = new CommandXboxController(1);
 
   public double getSpeed() {
-    double leftY = -driver.getLeftY();
+    double leftY = driver.getLeftY();
     return Math.signum(leftY) * Math.pow(MathUtil.applyDeadband(leftY, .04), 2);
   }
 

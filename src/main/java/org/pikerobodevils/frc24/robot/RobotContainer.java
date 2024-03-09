@@ -49,17 +49,19 @@ public class RobotContainer {
         drivetrain
             .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
             .withName("Default Drive Command"));
-    intakeSubsystem.setDefaultCommand(
-      intakeSubsystem.runIntake(controlboard.getIntake()));
+    // intakeSubsystem.setDefaultCommand(
+    //   intakeSubsystem.runIntake(controlboard.getIntake()));
 
-    climber.setDefaultCommand(climber.climbOverride(controlboard.operator.getLeftY()));
+    //climber.setDefaultCommand(climber.climbOverride((controlboard.operator::getLeftY)));
 
-    
+    arm.setDefaultCommand(arm.armOverride(controlboard.operator::getLeftY));
+
     shuffleboard.addBoolean("Has Note",()->intakeSubsystem.hasNote());
     shuffleboard.addDouble("right velocity", ()->drivetrain.getRightVelocity());
     shuffleboard.addDouble("left velocity", ()->drivetrain.getLeftVelocity());
     shuffleboard.addDouble("left distance", ()->drivetrain.getLeftDistance() );
     shuffleboard.addDouble("right distance", ()->drivetrain.getRightDistance());
+    shuffleboard.addDouble("Arm Position", ()->arm.getPositionDeg());
     // Configure the trigger bindings
     configureBindings();
   }
@@ -84,14 +86,18 @@ public class RobotContainer {
     controlboard.driver.leftBumper().whileTrue(shooterSubsystem.spinUp());
     controlboard.driver.a().whileTrue(drivetrain.turnToTx(vision.getTx()));
     controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
-    
-    
-    controlboard.operator.a().whileTrue(arm.setGoalCommand(0));
-    controlboard.operator.b().whileTrue(arm.setGoalCommand(90));
-    controlboard.operator.y().whileTrue(arm.setGoalCommand(25));
-    controlboard.operator.x().whileTrue(arm.setGoalCommand(45));
-    controlboard.operator.povUp().onTrue(climber.climberDown());
-    controlboard.operator.povDown().onTrue(climber.climberUp());
+    controlboard.driver.leftTrigger().whileTrue(intakeSubsystem.runOuttake());
+    controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntake(.75));
+
+    //controlboard.operator.rightBumper().whileTrue(arm.armOverride(controlboard.operator.getLeftY()));
+    //controlboard.operator.leftBumper().whileTrue(climber.climbOverride(()->controlboard.operator.getRawAxis(1)));
+
+    // controlboard.operator.a().whileTrue(arm.setGoalCommand(0));
+    // controlboard.operator.b().whileTrue(arm.setGoalCommand(90));
+    // controlboard.operator.y().whileTrue(arm.setGoalCommand(25));
+    // controlboard.operator.x().whileTrue(arm.setGoalCommand(45));
+    // controlboard.operator.povUp().onTrue(climber.climberDown());
+    // controlboard.operator.povDown().onTrue(climber.climberUp());
     
   }
 

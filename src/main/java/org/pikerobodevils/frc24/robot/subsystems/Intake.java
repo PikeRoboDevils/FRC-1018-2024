@@ -22,7 +22,7 @@ public class Intake extends SubsystemBase {
   public Intake() {
     intakeMotor.restoreFactoryDefaults();
     intakeMotor.setInverted(true);
-    intakeMotor.setSmartCurrentLimit(CURRENT_LIMIT);
+    intakeMotor.setSmartCurrentLimit(40);
     intakeMotor.burnFlash();
   }
 

@@ -72,7 +72,7 @@ public class Drivetrain extends SubsystemBase{
   //     new SparkMax(RIGHT_FOLLOWER_TWO_ID, MotorType.kBrushless);
 
   private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_A,LEFT_ENCODER_B,true, CounterBase.EncodingType.k4X);
-  private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_A,RIGHT_ENCODER_A,true, CounterBase.EncodingType.k4X);
+  private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_A,RIGHT_ENCODER_B,true, CounterBase.EncodingType.k4X);
 
   private final AHRS navX = new AHRS();
   private DifferentialDriveOdometry m_Odometry;

@@ -30,15 +30,10 @@ import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils;
 public class Arm extends SubsystemBase {
 
   public enum ArmPosition {
-    STOW(-80),
-    SUBSTATION_PICKUP(-8),
-    SCORE_CONE_LOW(-36),
-    SCORE_CONE_MID(-6),
-    SCORE_CUBE_LOW(-60),
-    SCORE_CUBE_MID(-26),
-    SCORE_CUBE_HIGH(-8),
-    FLOOR_PICKUP(-52),
-    SHOOT_CUBE(5);
+    STOW(90),
+    AMP(110),
+    SUBWOOFER(15),
+    INTAKE(0);
 
     ArmPosition(double angleDegrees) {
       this.valueRadians = Units.degreesToRadians(angleDegrees);
@@ -80,15 +75,18 @@ public class Arm extends SubsystemBase {
           errors += SparkMaxUtils.check(spark.setIdleMode(CANSparkMax.IdleMode.kBrake));
           return errors == 0;
         });
+        
+    leftController.setSmartCurrentLimit(40);
+    rightController.setSmartCurrentLimit(40);
 
     encoder.setDistancePerPulse(RAD_PER_QUAD_TICK);
     absoluteEncoder.setDistancePerRotation(RAD_PER_ENCODER_ROTATION);
     absoluteEncoder.setPositionOffset(ENCODER_OFFSET);
 
-    setDefaultCommand(holdPositionCommand().withName("Default Hold Position"));
+    //setDefaultCommand(holdPositionCommand().withName("Default Hold Position"));
 
     controller.reset(getPosition());
-    setGoal(ArmPosition.STOW.valueRadians);
+   // setGoal(ArmPosition.STOW.valueRadians);
 
     m_armTower.setColor(new Color8Bit(Color.kBlue));
   }
@@ -101,6 +99,11 @@ public class Arm extends SubsystemBase {
   public void setVoltage(double volts) {
     leftController.setVoltage(volts);
     rightController.setVoltage(volts);
+  }
+
+    public void setSpeed(double speed) {
+    leftController.set(speed/2);
+    rightController.set(speed/2);
   }
 
   // @Log(name = "Voltage")
@@ -198,6 +201,11 @@ public class Arm extends SubsystemBase {
     var totalOutputVolts = feedbackOutput + feedforwardOutput;
     setVoltage(totalOutputVolts);
   }
+
+  public Command armOverride(DoubleSupplier speed){
+    return run(()->setSpeed(speed.getAsDouble())).finallyDo(()->setSpeed(0));
+  }
+
 
   public Command holdPositionCommand() {
     return run(this::updatePositionController);

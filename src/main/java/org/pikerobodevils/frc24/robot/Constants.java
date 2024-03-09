@@ -29,12 +29,12 @@ public final class Constants {
   }
 
   public static class ArmConstants {
-    public static final int LEFT_CONTROLLER_ID = 7;
-    public static final int RIGHT_CONTROLLER_ID = 8;
+    public static final int LEFT_CONTROLLER_ID = 6;
+    public static final int RIGHT_CONTROLLER_ID = 7;
 
-    public static final int ENCODER_ABS_DIO = 4;
-    public static final int ENCODER_QUAD_A = 5;
-    public static final int ENCODER_QUAD_B = 6;
+    public static final int ENCODER_ABS_DIO = 7;
+    public static final int ENCODER_QUAD_A = 4;
+    public static final int ENCODER_QUAD_B = 5;
 
     public static final double QUAD_COUNTS_PER_REV = 2048;
 
@@ -44,11 +44,11 @@ public final class Constants {
     public static final double RAD_PER_ENCODER_ROTATION = 2 * Math.PI * ARM_TO_ENCODER_RATIO;
     public static final double RAD_PER_QUAD_TICK = RAD_PER_ENCODER_ROTATION / QUAD_COUNTS_PER_REV;
 
-    public static final double OFFSET_DEGREES = 74;
+    public static final double OFFSET_DEGREES = -57;
     public static final double ENCODER_OFFSET = MathUtil.inputModulus(
         Units.degreesToRadians(OFFSET_DEGREES) / RAD_PER_ENCODER_ROTATION, 0, 1);
 
-    public static final double KP = 5.3731; // 5.2103;
+    public static final double KP =.5; //5.3731; // 5.2103;
     public static final double KI = 0;
     public static final double KD = 0; // 1.6179;
 
@@ -95,12 +95,12 @@ public final class Constants {
 
     public static final double DEFAULT_OUTTAKE = -.5;
 
-    public static final int IR_PORT = 5;
+    public static final int IR_PORT = 9;
   }
 
   public static class ShooterConstants {
-    public static final int MAIN_MOTOR_ID = 13;
-    public static final int FOLLOWER_MOTOR_ID = 14;
+    public static final int MAIN_MOTOR_ID = 10;
+    public static final int FOLLOWER_MOTOR_ID = 11;
 
     public static final double SHOOT_SPEED = .75;
     public static final double CONSTANT_VELOCITY = .15;
@@ -123,12 +123,12 @@ public final class Constants {
 
 
     public static final int CURRENT_LIMIT = 50;
-    public static final double GEAR_RATIO = 10.86;
+    public static final double GEAR_RATIO = 1;
 
     public static final double KS = 0.21709;
     public static final double KA = 0.69281;
     public static final double KV = 2.8975;
-    public static final double KP = 0.65671;
+    public static final double KP = 0.065671;
     public static final double kTrackwidthMeters = 0.6;
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
         kTrackwidthMeters);

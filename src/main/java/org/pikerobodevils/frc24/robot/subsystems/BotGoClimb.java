@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static org.pikerobodevils.frc24.robot.Constants.ClimbConstants.*;
 
+import java.util.function.DoubleSupplier;
+
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -44,8 +46,8 @@ public void setDistance(double distance){
     .until(()-> pid.atSetpoint())
     .finallyDo(() -> setSpeed(0));
   }
-  public Command climbOverride(double speed) {
-    return run(() -> setSpeed(speed)).finallyDo(() -> setSpeed(0));
+  public Command climbOverride(DoubleSupplier speed) {
+    return run(() -> setSpeed(speed.getAsDouble())).finallyDo(() -> setSpeed(0));
   }
   
   public Command climberDown() {
