@@ -86,7 +86,7 @@ public class Arm extends SubsystemBase {
     setDefaultCommand(holdPositionCommand().withName("Default Hold Position"));
 
     controller.reset(getPosition());
-    setGoal(ArmPosition.INTAKE.valueRadians);
+    setGoal(ArmPosition.SUBWOOFER.valueRadians);
 
     m_armTower.setColor(new Color8Bit(Color.kBlue));
   }
