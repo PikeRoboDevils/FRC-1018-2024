@@ -32,7 +32,7 @@ public class Arm extends SubsystemBase {
   public enum ArmPosition {
     STOW(90),
     AMP(110),
-    SUBWOOFER(15),
+    SUBWOOFER(30),
     INTAKE(0);
 
     ArmPosition(double angleDegrees) {
@@ -83,10 +83,10 @@ public class Arm extends SubsystemBase {
     absoluteEncoder.setDistancePerRotation(RAD_PER_ENCODER_ROTATION);
     absoluteEncoder.setPositionOffset(ENCODER_OFFSET);
 
-    //setDefaultCommand(holdPositionCommand().withName("Default Hold Position"));
+    setDefaultCommand(holdPositionCommand().withName("Default Hold Position"));
 
     controller.reset(getPosition());
-   // setGoal(ArmPosition.STOW.valueRadians);
+    setGoal(ArmPosition.INTAKE.valueRadians);
 
     m_armTower.setColor(new Color8Bit(Color.kBlue));
   }
@@ -199,7 +199,7 @@ public class Arm extends SubsystemBase {
     var setpoint = controller.getSetpoint();
     var feedforwardOutput = feedforward.calculate(getPosition(), setpoint.velocity);
     var totalOutputVolts = feedbackOutput + feedforwardOutput;
-    setVoltage(totalOutputVolts);
+    setVoltage(-totalOutputVolts);
   }
 
   public Command armOverride(DoubleSupplier speed){

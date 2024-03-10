@@ -13,6 +13,7 @@ import org.pikerobodevils.frc24.robot.subsystems.ExampleSubsystem;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
 import org.pikerobodevils.frc24.robot.subsystems.Shooter;
 import org.pikerobodevils.frc24.robot.subsystems.Vision;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -54,14 +55,16 @@ public class RobotContainer {
 
     //climber.setDefaultCommand(climber.climbOverride((controlboard.operator::getLeftY)));
 
-    arm.setDefaultCommand(arm.armOverride(controlboard.operator::getLeftY));
+    //arm.setDefaultCommand(arm.armOverride(controlboard.operator::getLeftY));
 
     shuffleboard.addBoolean("Has Note",()->intakeSubsystem.hasNote());
     shuffleboard.addDouble("right velocity", ()->drivetrain.getRightVelocity());
     shuffleboard.addDouble("left velocity", ()->drivetrain.getLeftVelocity());
     shuffleboard.addDouble("left distance", ()->drivetrain.getLeftDistance() );
     shuffleboard.addDouble("right distance", ()->drivetrain.getRightDistance());
-    shuffleboard.addDouble("Arm Position", ()->arm.getPositionDeg());
+    shuffleboard.addDouble("Arm Deg", ()->arm.getPositionDeg());
+    shuffleboard.addBoolean("At Arm Goal", ()->arm.atGoal());
+    shuffleboard.addDouble("Climb Position", ()->climber.getPosition());
     // Configure the trigger bindings
     configureBindings();
   }
@@ -89,15 +92,15 @@ public class RobotContainer {
     controlboard.driver.leftTrigger().whileTrue(intakeSubsystem.runOuttake());
     controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntake(.75));
 
-    //controlboard.operator.rightBumper().whileTrue(arm.armOverride(controlboard.operator.getLeftY()));
-    //controlboard.operator.leftBumper().whileTrue(climber.climbOverride(()->controlboard.operator.getRawAxis(1)));
+    controlboard.operator.rightBumper().whileTrue(arm.armOverride(controlboard.operator::getLeftY));
+    controlboard.operator.leftBumper().whileTrue(climber.climbOverride(()->controlboard.operator.getRawAxis(1)));
 
-    // controlboard.operator.a().whileTrue(arm.setGoalCommand(0));
-    // controlboard.operator.b().whileTrue(arm.setGoalCommand(90));
-    // controlboard.operator.y().whileTrue(arm.setGoalCommand(25));
-    // controlboard.operator.x().whileTrue(arm.setGoalCommand(45));
-    // controlboard.operator.povUp().onTrue(climber.climberDown());
-    // controlboard.operator.povDown().onTrue(climber.climberUp());
+    controlboard.operator.a().whileTrue(arm.setGoalCommand(ArmPosition.INTAKE));
+    controlboard.operator.y().whileTrue(arm.setGoalCommand(ArmPosition.STOW));
+    controlboard.operator.b().whileTrue(arm.setGoalCommand(ArmPosition.AMP));
+    controlboard.operator.x().whileTrue(arm.setGoalCommand(ArmPosition.SUBWOOFER));
+    controlboard.operator.povUp().onTrue(climber.climberDown());
+    controlboard.operator.povDown().onTrue(climber.climberUp());
     
   }
 
@@ -108,6 +111,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.getAutonomousCommand(drivetrain);
+    return null;//Autos.getAutonomousCommand(drivetrain);
   }
 }

@@ -29,10 +29,14 @@ public class BotGoClimb extends SubsystemBase {
   // Creates a new Climb.
   public BotGoClimb() {
     ClimbLead.restoreFactoryDefaults();
+    ClimbLead.setSmartCurrentLimit(80);
     ClimbLead.burnFlash();
 
   }
+  public double getPosition(){
+    return encoder.getPosition();
 
+  }
   // this sets the speed of the motor
   public void setSpeed(double speed) {
     ClimbLead.set(speed);

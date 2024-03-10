@@ -48,14 +48,14 @@ public final class Constants {
     public static final double ENCODER_OFFSET = MathUtil.inputModulus(
         Units.degreesToRadians(OFFSET_DEGREES) / RAD_PER_ENCODER_ROTATION, 0, 1);
 
-    public static final double KP =.5; //5.3731; // 5.2103;
+    public static final double KP = 4.5; // 5.2103;
     public static final double KI = 0;
     public static final double KD = 0; // 1.6179;
 
-    public static final double KS = 0.19677;
-    public static final double KG = .5;
-    public static final double KV = 2.114;
-    public static final double KA = 0.12894;
+    public static final double KS =0.19677;
+    public static final double KG = 0.5;//.5;
+    public static final double KV = 1.8;
+    public static final double KA = 1;
 
     /**
      * SIM GAINS public static final double KP = 5; public static final double KI =
@@ -113,7 +113,7 @@ public final class Constants {
     public static final int RIGHT_LEADER_ID = 4;
     public static final int RIGHT_FOLLOWER_ONE_ID = 5;
 
-    public static final IdleMode IDLE_MODE = IdleMode.kBrake;
+    public static final IdleMode IDLE_MODE = IdleMode.kCoast;
 
     public static final int LEFT_ENCODER_A = 0;
     public static final int LEFT_ENCODER_B = 1;
@@ -141,8 +141,8 @@ public final class Constants {
     // robot.
     public static final int MOTOR_ID = 8;
     public static final double CLIMB_SPEED = 0.5;
-    public static final int CLIMB_DISTANCE = 18; // cms
-    public static final double KP = 0.01;
+    public static final int CLIMB_DISTANCE = -80; 
+    public static final double KP = 0.1;
   }
 
 }
