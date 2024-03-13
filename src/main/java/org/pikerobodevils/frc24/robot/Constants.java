@@ -102,8 +102,12 @@ public final class Constants {
     public static final int MAIN_MOTOR_ID = 10;
     public static final int FOLLOWER_MOTOR_ID = 11;
 
-    public static final double SHOOT_SPEED = .75;
-    public static final double CONSTANT_VELOCITY = .15;
+    public static final double SHOOT_SPEED = 3500;
+    public static final double CONSTANT_VELOCITY = 500;
+
+    public static final double KS = 0.018177;
+    public static final double KV = 0.00021708;
+    public static final double KA = 0.00023846;
   }
 
   public static class DrivetrainConstants {
@@ -115,11 +119,11 @@ public final class Constants {
 
     public static final IdleMode IDLE_MODE = IdleMode.kCoast;
 
-    public static final int LEFT_ENCODER_A = 0;
-    public static final int LEFT_ENCODER_B = 1;
+    public static final int LEFT_ENCODER_A = 2;
+    public static final int LEFT_ENCODER_B = 3;
 
-    public static final int RIGHT_ENCODER_A = 2;
-    public static final int RIGHT_ENCODER_B = 3;
+    public static final int RIGHT_ENCODER_A = 0;
+    public static final int RIGHT_ENCODER_B = 1;
 
 
     public static final int CURRENT_LIMIT = 50;

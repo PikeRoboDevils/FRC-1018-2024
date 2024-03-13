@@ -62,9 +62,9 @@ public final class Autos {
             // Start at the origin facing the +X direction
             new Pose2d(0, 0, new Rotation2d(0)),
             // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(1, 1), new Translation2d(2, -1)),
+            List.of(new Translation2d(1, 0)),
             // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(1, 0, new Rotation2d(0)),
+            new Pose2d(2, 0, new Rotation2d(0)),
             // Pass config
             config);
 
@@ -87,8 +87,7 @@ public final class Autos {
 
     // Reset odometry to the initial pose of the trajectory, run path following
     // command, then stop at the end.
-    return Commands.runOnce(()->m_robotDrive.resetEncoders()).andThen(Commands.runOnce(() -> m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose())))
-        .andThen(ramseteCommand)
-        .andThen(Commands.runOnce(() -> m_robotDrive.setLeftRight(0, 0)));
+    return Commands.runOnce(()->m_robotDrive.resetEncoders())
+    .andThen(Commands.runOnce(() -> m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose())));
   }
 }

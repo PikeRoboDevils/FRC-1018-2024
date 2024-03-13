@@ -1,6 +1,5 @@
 {
   "download": {
-    "deleteAfter": false,
     "localDir": "C:\\Dev\\FRC-1018-2024\\logs",
     "serverTeam": "1018"
   }

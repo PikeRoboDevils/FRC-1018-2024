@@ -18,6 +18,7 @@ import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
@@ -65,6 +66,7 @@ public class RobotContainer {
     shuffleboard.addDouble("Arm Deg", ()->arm.getPositionDeg());
     shuffleboard.addBoolean("At Arm Goal", ()->arm.atGoal());
     shuffleboard.addDouble("Climb Position", ()->climber.getPosition());
+    shuffleboard.addDouble("Shooter Velocity", ()->shooterSubsystem.getVelocity());
     // Configure the trigger bindings
     configureBindings();
   }
@@ -80,15 +82,15 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    //Sys ID buttons:
-    // controlboard.driver.a().whileTrue((drivetrain.runQuasiSysId(Direction.kForward)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
-    // controlboard.driver.b().whileTrue((drivetrain.runQuasiSysId(Direction.kReverse)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
-    // controlboard.driver.x().whileTrue((drivetrain.runDynamicSysId(Direction.kForward)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
-    // controlboard.driver.y().whileTrue((drivetrain.runDynamicSysId(Direction.kReverse)).finallyDo(()->drivetrain.setLeftRightVoltageCommand(0, 0)));
+   // Sys ID buttons:
+    // controlboard.driver.a().whileTrue((shooterSubsystem.sysIdQuasistatic(Direction.kForward)).finallyDo(()->shooterSubsystem.setSpeed(0)));
+    // controlboard.driver.b().whileTrue((shooterSubsystem.sysIdQuasistatic(Direction.kReverse)).finallyDo(()->shooterSubsystem.setSpeed(0)));
+    // controlboard.driver.x().whileTrue((shooterSubsystem.sysIdDynamic(Direction.kForward)).finallyDo(()->shooterSubsystem.setSpeed(0)));
+    // controlboard.driver.y().whileTrue((shooterSubsystem.sysIdDynamic(Direction.kReverse)).finallyDo(()->shooterSubsystem.setSpeed(0)));
 
     controlboard.driver.leftBumper().whileTrue(shooterSubsystem.spinUp());
-    controlboard.driver.a().whileTrue(drivetrain.turnToTx(vision.getTx()));
-    controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
+   controlboard.driver.a().whileTrue(drivetrain.turnToTx(vision.getTx()));
+   controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
     controlboard.driver.leftTrigger().whileTrue(intakeSubsystem.runOuttake());
     controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntake(.75));
 
@@ -111,6 +113,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return null;//Autos.getAutonomousCommand(drivetrain);
+    boolean readyToShoot = arm.atGoal();
+    return Autos.getAutonomousCommand(drivetrain)
+    .andThen(shooterSubsystem.spinUp()).alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))
+    .until(()->arm.atGoal()).alongWith(new WaitCommand(2)).alongWith(intakeSubsystem.shoot());
   }
 }
