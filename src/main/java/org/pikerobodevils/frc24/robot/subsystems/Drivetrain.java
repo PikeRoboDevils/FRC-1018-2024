@@ -7,6 +7,8 @@ package org.pikerobodevils.frc24.robot.subsystems;
 
 
 import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -22,18 +24,23 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.kinematics.proto.ChassisSpeedsProto;
+import edu.wpi.first.math.proto.Kinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.Distance;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
 import edu.wpi.first.wpilibj.CounterBase;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -49,6 +56,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.*;
 
+import java.nio.channels.Pipe;
 import java.util.List;
 // import io.github.oblarg.oblog.Loggable;
 // import io.github.oblarg.oblog.annotations.Log;
@@ -81,6 +89,8 @@ public class Drivetrain extends SubsystemBase{
   double currentPitchRate = 0;
   private Pose2d m_Pose;
 
+  private final PIDController leftDrivePid = new PIDController(KP, 0, 0);
+  private final PIDController rightDrivePid = new PIDController(KP, 0, 0);
  
     // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
@@ -91,7 +101,8 @@ public class Drivetrain extends SubsystemBase{
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
-
+    leftEncoder.setDistancePerPulse(.1524/2056);
+    rightEncoder.setDistancePerPulse(.1524/2056);
     m_Pose = new Pose2d(0, 0, new Rotation2d());
     leftLeader.restoreFactoryDefaults();
     leftLeader.setIdleMode(IDLE_MODE);
@@ -131,6 +142,26 @@ public class Drivetrain extends SubsystemBase{
 
     m_Odometry = new DifferentialDriveOdometry(navX.getRotation2d(), getLeftDistance(), getRightDistance(),
     m_Pose);
+
+        AutoBuilder.configureRamsete(
+            this::getPose, // Robot pose supplier
+            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::getWheelSpeeds, // Current ChassisSpeeds supplier
+            this::drive, // Method that will drive the robot given ChassisSpeeds
+            new ReplanningConfig(), // Default path replanning config. See the API for the options here
+            () -> {
+              // Boolean supplier that controls when the path will be mirrored for the red alliance
+              // This will flip the path being followed to the red side of the field.
+              // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+
+              var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              }
+              return true;
+            },
+            this // Reference to this subsystem to set requirements
+    );
   }
 
 
@@ -177,9 +208,20 @@ public class Drivetrain extends SubsystemBase{
         navX.getRotation2d(), getLeftDistance(), getRightDistance(), pose);
 
   }
+  public void drive(ChassisSpeeds speeds)
+  {
+    DifferentialDriveWheelSpeeds wheelSpeeds = kDriveKinematics.toWheelSpeeds(speeds);
+    
+    leftLeader.set(-leftDrivePid.calculate(getLeftVelocity(),wheelSpeeds.leftMetersPerSecond));
+    rightLeader.set(-rightDrivePid.calculate(getRightVelocity(),wheelSpeeds.rightMetersPerSecond));
+  }
   public void resetEncoders(){
     leftEncoder.reset();
-    rightEncoder.reset();;
+    rightEncoder.reset();
+
+  }
+  public void resetGyro(){
+    navX.reset();
   }
   public void setLeftRight(double left, double right) {
     leftLeader.set(left);
@@ -187,12 +229,12 @@ public class Drivetrain extends SubsystemBase{
   }
 
   public void setLeftRightVoltage(double left, double right) {
-    leftLeader.setVoltage(left);
-    rightLeader.setVoltage(right);
+    leftLeader.setVoltage(-left);
+    rightLeader.setVoltage(-right);
   }
-    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+    public ChassisSpeeds getWheelSpeeds() {
 
-    return new DifferentialDriveWheelSpeeds(getLeftVelocity(), getRightVelocity());
+    return new ChassisSpeeds(getLeftVelocity(), getRightVelocity(), Units.degreesToRadians(navX.getRate()));
 
   }
 
@@ -206,18 +248,18 @@ public class Drivetrain extends SubsystemBase{
     // rightFollowerTwo.setIdleMode(mode);
   }
   public double getLeftVelocity(){
-    return (leftEncoder.getRate()/GEAR_RATIO*(.1524*Math.PI))/60;
+    return leftEncoder.getRate();
   }
   public double getRightVelocity(){
-    return (rightEncoder.getRate()/GEAR_RATIO*(.1524*Math.PI))/60;
+    return rightEncoder.getRate();
   }
 
   public double getLeftDistance(){
-    return (leftEncoder.getDistance()/GEAR_RATIO)*(.1524*Math.PI);
+    return leftEncoder.getDistance();
   }
 
   public double getRightDistance(){
-    return (rightEncoder.getDistance()/GEAR_RATIO)*(.1524*Math.PI);
+    return rightEncoder.getDistance();
   }
 
 //   @Log(name = "Yaw")
@@ -311,6 +353,8 @@ public class Drivetrain extends SubsystemBase{
 
    
   }
+
+  
 
   //  public Command getAutonomousCommand(Supplier<Trajectory> trajectory) {
 

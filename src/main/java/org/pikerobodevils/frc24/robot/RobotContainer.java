@@ -13,11 +13,19 @@ import org.pikerobodevils.frc24.robot.subsystems.ExampleSubsystem;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
 import org.pikerobodevils.frc24.robot.subsystems.Shooter;
 import org.pikerobodevils.frc24.robot.subsystems.Vision;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
 
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -31,7 +39,6 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
   private final Intake intakeSubsystem = new Intake();
   private final Drivetrain drivetrain = new Drivetrain();
   private final Shooter shooterSubsystem = new Shooter();
@@ -40,6 +47,7 @@ public class RobotContainer {
   private final Vision vision = new Vision();
 
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
+  SendableChooser<Command> autoChooser = new SendableChooser<>();
   private final ControlBoard controlboard = new ControlBoard();
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -67,6 +75,13 @@ public class RobotContainer {
     shuffleboard.addBoolean("At Arm Goal", ()->arm.atGoal());
     shuffleboard.addDouble("Climb Position", ()->climber.getPosition());
     shuffleboard.addDouble("Shooter Velocity", ()->shooterSubsystem.getVelocity());
+    shuffleboard.addDouble("Rotation", ()->drivetrain.getYaw());
+
+    // Another option that allows you to specify the default auto by its name
+    autoChooser = AutoBuilder.buildAutoChooser("Amp Side");
+    autoChooser.addOption("Middle", AutoBuilder.buildAuto("Middle"));
+    autoChooser.addOption("Source", AutoBuilder.buildAuto("SourceSide"));
+    shuffleboard.add("Auto Chooser", autoChooser);
     // Configure the trigger bindings
     configureBindings();
   }
@@ -113,9 +128,16 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    boolean readyToShoot = arm.atGoal();
-    return Autos.getAutonomousCommand(drivetrain)
-    .andThen(shooterSubsystem.spinUp()).alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))
-    .until(()->arm.atGoal()).alongWith(new WaitCommand(2)).alongWith(intakeSubsystem.shoot());
+ 
+      return new InstantCommand().andThen(shooterSubsystem.spinUp()).alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))
+      .alongWith(intakeSubsystem.shoot())
+      .onlyWhile(()->shooterSubsystem.shootReady())
+      .until(()->!intakeSubsystem.hasNote())
+      .andThen(arm.setGoalCommand(ArmPosition.INTAKE))
+      .andThen(()->autoChooser.getSelected())
+      .andThen(shooterSubsystem.spinUp())
+      .alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))
+      .alongWith(intakeSubsystem.shoot())
+      .onlyWhile(()->shooterSubsystem.shootReady());
   }
 }

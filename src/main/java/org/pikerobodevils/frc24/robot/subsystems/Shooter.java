@@ -90,6 +90,9 @@ public class Shooter extends SubsystemBase {
     return encoder.getVelocity();
   }
 
+  public boolean shootReady(){
+    return encoder.getVelocity()>=SHOOT_SPEED;
+  }
 
 
   public Command spin()

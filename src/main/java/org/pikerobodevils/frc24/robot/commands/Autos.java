@@ -21,6 +21,7 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
@@ -34,60 +35,97 @@ public final class Autos {
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
   }
+//   public static RamseteCommand followPath(Trajectory path, Drivetrain m_robotDrive)
+//   {
+      
+//       return new RamseteCommand(
+//             path,
+//             m_robotDrive::getPose,
+//             new RamseteController(2.7, .7),
+//             new SimpleMotorFeedforward(
+//                 KS,
+//                 KV,
+//                 KA),
+//             kDriveKinematics,
+//             m_robotDrive::getWheelSpeeds,
+//             new PIDController(KP, 0, 0),
+//             new PIDController(KP, 0, 0),
+//             // RamseteCommand passes volts to the callback
+//             m_robotDrive::setLeftRightVoltage,
+//             m_robotDrive);
+//   }
 
-  public static Command getAutonomousCommand(Drivetrain m_robotDrive) {
-    // Create a voltage constraint to ensure we don't accelerate too fast
-    var autoVoltageConstraint =
-        new DifferentialDriveVoltageConstraint(
-            new SimpleMotorFeedforward(
-                KS,
-                KV,
-                KA),
-                kDriveKinematics,
-            10);
+//   public static Command getAutonomousCommand(Drivetrain m_robotDrive) {
+//     // Create a voltage constraint to ensure we don't accelerate too fast
+//     var autoVoltageConstraint =
+//         new DifferentialDriveVoltageConstraint(
+//             new SimpleMotorFeedforward(
+//                 KS,
+//                 KV,
+//                 KA),
+//                 kDriveKinematics,
+//             10);
 
-    // Create config for trajectory
-    TrajectoryConfig config =
-        new TrajectoryConfig(
-                3,
-                1)
-            // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(kDriveKinematics)
-            // Apply the voltage constraint
-            .addConstraint(autoVoltageConstraint);
+//     // Create config for trajectory
+//     TrajectoryConfig config =
+//         new TrajectoryConfig(
+//                 3,
+//                 1)
+//             // Add kinematics to ensure max speed is actually obeyed
+//             .setKinematics(kDriveKinematics)
+//             // Apply the voltage constraint
+//             .addConstraint(autoVoltageConstraint);
 
-    // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory =
-        TrajectoryGenerator.generateTrajectory(
-            // Start at the origin facing the +X direction
-            new Pose2d(0, 0, new Rotation2d(0)),
-            // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(1, 0)),
-            // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(2, 0, new Rotation2d(0)),
-            // Pass config
-            config);
+//     // An example trajectory to follow. All units in meters.
+//     Trajectory exampleTrajectory =
+//         TrajectoryGenerator.generateTrajectory(
+//             // Start at the origin facing the +X direction
+//             new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(-75))),
+//             // Pass through these two interior waypoints, making an 's' curve path
+//             List.of(new Translation2d(.25, -.25)),
+//             // End 3 meters straight ahead of where we started, facing forw/ard
+//             new Pose2d(5, -.5, new Rotation2d(0)),
+//             // Pass config
+//             config);
 
-    RamseteCommand ramseteCommand =
-        new RamseteCommand(
-            exampleTrajectory,
-            m_robotDrive::getPose,
-            new RamseteController(2.7, .7),
-            new SimpleMotorFeedforward(
-                KS,
-                KV,
-                KA),
-            kDriveKinematics,
-            m_robotDrive::getWheelSpeeds,
-            new PIDController(KP, 0, 0),
-            new PIDController(KP, 0, 0),
-            // RamseteCommand passes volts to the callback
-            m_robotDrive::setLeftRightVoltage,
-            m_robotDrive);
+//                 // An example trajectory to follow. All units in meters.
+//     Trajectory driveBack =
+//         TrajectoryGenerator.generateTrajectory(
+//             // Start at the origin facing the +X direction
+//             new Pose2d(1, 0, new Rotation2d(Units.degreesToRadians(0))),
+//             // Pass through these two interior waypoints, making an 's' curve path
+//             List.of(new Translation2d(.25, 0)),
+//             // End 3 meters straight ahead of where we started, facing forward
+//             new Pose2d(0, 0, new Rotation2d(0)),
+//             // Pass config
+//             config);
+        
 
-    // Reset odometry to the initial pose of the trajectory, run path following
-    // command, then stop at the end.
-    return Commands.runOnce(()->m_robotDrive.resetEncoders())
-    .andThen(Commands.runOnce(() -> m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose())));
-  }
+//     RamseteCommand ramseteCommand =
+//         new RamseteCommand(
+//             exampleTrajectory,
+//             m_robotDrive::getPose,
+//             new RamseteController(2.7, .7),
+//             new SimpleMotorFeedforward(
+//                 KS,
+//                 KV,
+//                 KA),
+//             kDriveKinematics,
+//             m_robotDrive::getWheelSpeeds,
+//             new PIDController(KP, 0, 0),
+//             new PIDController(KP, 0, 0),
+//             // RamseteCommand passes volts to the callback
+//             m_robotDrive::setLeftRightVoltage,
+//             m_robotDrive);
+
+//     // Reset odometry to the initial pose of the trajectory, run path following
+//     // command, then stop at the end.
+//     return Commands.runOnce(()->m_robotDrive.resetEncoders())
+//     .andThen(Commands.runOnce(()->m_robotDrive.resetGyro()))
+//     .andThen(Commands.runOnce(() -> m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose())))
+//         .andThen(followPath(exampleTrajectory, m_robotDrive))
+//         .andThen(Commands.runOnce(() -> m_robotDrive.setLeftRight(0, 0)))
+//         .andThen(Commands.runOnce(() -> m_robotDrive.resetOdometry(driveBack.getInitialPose())))
+//         .andThen(followPath(driveBack, m_robotDrive));
+//   }
 }
