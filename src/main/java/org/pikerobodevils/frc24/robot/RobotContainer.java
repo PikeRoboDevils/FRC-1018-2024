@@ -4,6 +4,8 @@
 
 package org.pikerobodevils.frc24.robot;
 
+import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.SHOOT_SPEED;
+
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
 import org.pikerobodevils.frc24.robot.commands.Autos;
 import org.pikerobodevils.frc24.robot.subsystems.Arm;
@@ -55,6 +57,7 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    
     drivetrain.setDefaultCommand(
         drivetrain
             .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
@@ -79,8 +82,6 @@ public class RobotContainer {
 
     // Another option that allows you to specify the default auto by its name
     autoChooser = AutoBuilder.buildAutoChooser("Amp Side");
-    autoChooser.addOption("Middle", AutoBuilder.buildAuto("Middle"));
-    autoChooser.addOption("Source", AutoBuilder.buildAuto("SourceSide"));
     shuffleboard.add("Auto Chooser", autoChooser);
     // Configure the trigger bindings
     configureBindings();
@@ -103,7 +104,7 @@ public class RobotContainer {
     // controlboard.driver.x().whileTrue((shooterSubsystem.sysIdDynamic(Direction.kForward)).finallyDo(()->shooterSubsystem.setSpeed(0)));
     // controlboard.driver.y().whileTrue((shooterSubsystem.sysIdDynamic(Direction.kReverse)).finallyDo(()->shooterSubsystem.setSpeed(0)));
 
-    controlboard.driver.leftBumper().whileTrue(shooterSubsystem.spinUp());
+    controlboard.driver.leftBumper().whileTrue(shooterSubsystem.spinUp(SHOOT_SPEED));
    controlboard.driver.a().whileTrue(drivetrain.turnToTx(vision.getTx()));
    controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
     controlboard.driver.leftTrigger().whileTrue(intakeSubsystem.runOuttake());
@@ -116,10 +117,13 @@ public class RobotContainer {
     controlboard.operator.y().whileTrue(arm.setGoalCommand(ArmPosition.STOW));
     controlboard.operator.b().whileTrue(arm.setGoalCommand(ArmPosition.AMP));
     controlboard.operator.x().whileTrue(arm.setGoalCommand(ArmPosition.SUBWOOFER));
-    controlboard.operator.povUp().onTrue(climber.climberDown());
-    controlboard.operator.povDown().onTrue(climber.climberUp());
+    controlboard.operator.povUp().onTrue(climber.climberUp());
+    controlboard.operator.povDown().onTrue(climber.climberDown());
+    controlboard.operator.povLeft().onTrue(arm.setGoalCommand(ArmPosition.AMP));
+    controlboard.operator.povRight().onTrue(arm.setGoalCommand(ArmPosition.STOW));
     
   }
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -129,15 +133,11 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
  
-      return new InstantCommand().andThen(shooterSubsystem.spinUp()).alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))
-      .alongWith(intakeSubsystem.shoot())
-      .onlyWhile(()->shooterSubsystem.shootReady())
-      .until(()->!intakeSubsystem.hasNote())
-      .andThen(arm.setGoalCommand(ArmPosition.INTAKE))
-      .andThen(()->autoChooser.getSelected())
-      .andThen(shooterSubsystem.spinUp())
-      .alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))
-      .alongWith(intakeSubsystem.shoot())
-      .onlyWhile(()->shooterSubsystem.shootReady());
+      return Autos.ShootSubwooferAuto(shooterSubsystem,arm,intakeSubsystem)
+      .andThen(drivetrain.arcadeDriveCommand(()->-.2, ()->0.0)).withTimeout(1);
+      // .andThen(shooterSubsystem.spinUp())
+      // .alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))
+      // .alongWith(intakeSubsystem.shoot())
+      // .onlyWhile(()->shooterSubsystem.shootReady());
   }
 }

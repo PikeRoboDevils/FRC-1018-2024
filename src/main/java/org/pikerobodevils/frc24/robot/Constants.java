@@ -117,7 +117,7 @@ public final class Constants {
     public static final int RIGHT_LEADER_ID = 4;
     public static final int RIGHT_FOLLOWER_ONE_ID = 5;
 
-    public static final IdleMode IDLE_MODE = IdleMode.kCoast;
+    public static final IdleMode IDLE_MODE = IdleMode.kBrake;
 
     public static final int LEFT_ENCODER_A = 2;
     public static final int LEFT_ENCODER_B = 3;

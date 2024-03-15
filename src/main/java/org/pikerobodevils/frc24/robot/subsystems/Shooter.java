@@ -122,8 +122,6 @@ public class Shooter extends SubsystemBase {
     return run(
       ()->{
         setSpeed(feedforward.calculate(SHOOT_SPEED));
-      })
-      .finallyDo(()->{setSpeed(feedforward.calculate(CONSTANT_VELOCITY));
       });
   }
 

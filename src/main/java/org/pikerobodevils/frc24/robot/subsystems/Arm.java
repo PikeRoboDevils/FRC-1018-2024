@@ -228,6 +228,13 @@ public class Arm extends SubsystemBase {
         .andThen(holdPositionCommand())
         .until(this::atGoal);
   }
+    public Command setGoalCommand(ArmPosition goalPosition, boolean hold) {
+    return runOnce(
+            () -> {
+              setGoal(goalPosition.valueRadians);
+            })
+        .andThen(holdPositionCommand());
+  }
 
   public Command continuousGoalCommand(DoubleSupplier goalSupplier) {
     return run(
