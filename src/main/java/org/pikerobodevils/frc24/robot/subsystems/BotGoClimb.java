@@ -31,6 +31,7 @@ public class BotGoClimb extends SubsystemBase {
     ClimbLead.restoreFactoryDefaults();
     ClimbLead.setSmartCurrentLimit(80);
     ClimbLead.burnFlash();
+    encoder.setPosition(0);
 
   }
   public double getPosition(){

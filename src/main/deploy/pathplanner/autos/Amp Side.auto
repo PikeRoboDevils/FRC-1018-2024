@@ -20,12 +20,6 @@
                 "data": {
                   "pathName": "Amp Pickup"
                 }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Amp Drive Back"
-                }
               }
             ]
           }

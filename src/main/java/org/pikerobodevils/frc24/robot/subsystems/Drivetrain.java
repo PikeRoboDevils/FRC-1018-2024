@@ -163,6 +163,12 @@ public class Drivetrain extends SubsystemBase{
             this // Reference to this subsystem to set requirements
     );
   }
+  public boolean isRed() {
+                  var alliance = DriverStation.getAlliance();
+              if (alliance.isPresent()) {
+                return alliance.get() == DriverStation.Alliance.Red;
+              } return false;
+  }
 
 
  private final SysIdRoutine sysId =
@@ -354,6 +360,18 @@ public class Drivetrain extends SubsystemBase{
    
   }
 
+  public Command turntoAngle(double angle) {
+    double error = (isRed()? angle:-angle) - navX.getAngle();
+    double output = KP * error;
+     return run(() -> arcadeDriveCommand(()->0, ()->output));
+  }
+
+  
+  public Command DriveDist(double distance) {
+    double error = distance - getLeftDistance();
+    double output = KP * error;
+     return run(() -> arcadeDriveCommand(()->output, ()->0));
+  }
   
 
   //  public Command getAutonomousCommand(Supplier<Trajectory> trajectory) {

@@ -32,7 +32,7 @@ public final class Constants {
     public static final int LEFT_CONTROLLER_ID = 6;
     public static final int RIGHT_CONTROLLER_ID = 7;
 
-    public static final int ENCODER_ABS_DIO = 7;
+    public static final int ENCODER_ABS_DIO = 6;
     public static final int ENCODER_QUAD_A = 4;
     public static final int ENCODER_QUAD_B = 5;
 
@@ -44,7 +44,7 @@ public final class Constants {
     public static final double RAD_PER_ENCODER_ROTATION = 2 * Math.PI * ARM_TO_ENCODER_RATIO;
     public static final double RAD_PER_QUAD_TICK = RAD_PER_ENCODER_ROTATION / QUAD_COUNTS_PER_REV;
 
-    public static final double OFFSET_DEGREES = -57;
+    public static final double OFFSET_DEGREES = -167;
     public static final double ENCODER_OFFSET = MathUtil.inputModulus(
         Units.degreesToRadians(OFFSET_DEGREES) / RAD_PER_ENCODER_ROTATION, 0, 1);
 
@@ -103,7 +103,7 @@ public final class Constants {
     public static final int FOLLOWER_MOTOR_ID = 11;
 
     public static final double SHOOT_SPEED = 3500;
-    public static final double CONSTANT_VELOCITY = 500;
+    public static final double CONSTANT_VELOCITY = 250;
 
     public static final double KS = 0.018177;
     public static final double KV = 0.00021708;
@@ -146,7 +146,7 @@ public final class Constants {
     public static final int MOTOR_ID = 8;
     public static final double CLIMB_SPEED = 0.5;
     public static final int CLIMB_DISTANCE = -80; 
-    public static final double KP = 0.1;
+    public static final double KP = 0.2;
   }
 
 }

@@ -10,12 +10,6 @@
           "data": {
             "pathName": "Source Pickup"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Source Back"
-          }
         }
       ]
     }

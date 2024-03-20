@@ -10,6 +10,9 @@ import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.*;
 import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.SHOOT_SPEED;
 
 import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
+
+import com.fasterxml.jackson.databind.introspect.AnnotatedMethodCollector;
+
 import org.pikerobodevils.frc24.robot.subsystems.Arm;
 import org.pikerobodevils.frc24.robot.subsystems.Drivetrain;
 import org.pikerobodevils.frc24.robot.subsystems.ExampleSubsystem;
@@ -30,6 +33,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public final class Autos {
@@ -41,67 +45,52 @@ public final class Autos {
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
   }
+public static Command DriveBack(Drivetrain drivetrain, Double speed, Double time ){
+  return Commands.runOnce(()->drivetrain.resetEncoders()).andThen(new RunCommand(()->drivetrain.arcadeDriveCommand(()->-.2, ()->0.0))).withTimeout(time);
+}
+
+public static Command DriveBack(Drivetrain drivetrain, Double speed ){
+  return Commands.runOnce(()->drivetrain.resetEncoders()).andThen(new RunCommand(()->drivetrain.arcadeDriveCommand(()->-.2, ()->0.0))).withTimeout(4);
+}
 
     public static Command ShootSubwooferAuto(Shooter shooterSubsystem, Arm arm, Intake intakeSubsystem){
     return Commands.runOnce(()->intakeSubsystem.runIntake(.25))
-    .andThen(arm.setGoalCommand(ArmPosition.INTAKE))
-      .andThen(shooterSubsystem.spinUp().raceWith(arm.setGoalCommand(ArmPosition.SUBWOOFER)))
+    .andThen(arm.setGoalCommand(ArmPosition.SUBWOOFER)).withTimeout(.25)
+      .andThen(arm.setGoalCommand(ArmPosition.INTAKE).raceWith(shooterSubsystem.spinUp())) 
+      .andThen(arm.setGoalCommand(ArmPosition.SUBWOOFER))
       .withTimeout(2)
-      .andThen(intakeSubsystem.shoot());
+      .andThen(intakeSubsystem.shoot())
+      .andThen(arm.setGoalCommand(ArmPosition.INTAKE));
   }
 
-  public static Command getAutonomousCommand(Drivetrain m_robotDrive) {
-    // Create a voltage constraint to ensure we don't accelerate too fast
-    var autoVoltageConstraint =
-        new DifferentialDriveVoltageConstraint(
-            new SimpleMotorFeedforward(
-                KS,
-                KV,
-                KA),
-                kDriveKinematics,
-            10);
+  public static Command getAutonomousCommand(Drivetrain drivetrain, Shooter shooter, Arm arm, Intake intake) {
+    return ShootSubwooferAuto(shooter, arm, intake).withTimeout(5)
+      .andThen(DriveBack(drivetrain, -.2));
+}
 
-    // Create config for trajectory
-    TrajectoryConfig config =
-        new TrajectoryConfig(
-                3,
-                1)
-            // Add kinematics to ensure max speed is actually obeyed
-            .setKinematics(kDriveKinematics)
-            // Apply the voltage constraint
-            .addConstraint(autoVoltageConstraint);
+public static Command twoNoteDrive(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake){
+  return ShootSubwooferAuto(shooter, arm, intake)
+   .andThen(DriveBack(drivetrain, -.2).raceWith(arm.setGoalCommand(ArmPosition.INTAKE))
+   .raceWith(intake.runIntake(.75)))
+   .andThen(DriveBack(drivetrain, .2));
+   
+}
 
-    // An example trajectory to follow. All units in meters.
-    Trajectory exampleTrajectory =
-        TrajectoryGenerator.generateTrajectory(
-            // Start at the origin facing the +X direction
-            new Pose2d(0, 0, new Rotation2d(Units.degreesToRadians(-75))),
-            // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(.25, -.25)),
-            // End 3 meters straight ahead of where we started, facing forw/ard
-            new Pose2d(5, -.5, new Rotation2d(0)),
-            // Pass config
-            config);
+public static Command ampSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
+ 
+  return Commands.runOnce(()->drivetrain.resetGyro()) .andThen(ShootSubwooferAuto(shooter, arm, intake))
+  .andThen(DriveBack(drivetrain, -.2, 1.0))
+  .andThen(drivetrain.turntoAngle(-45))
+   .andThen(intake.runIntake(.75).raceWith(DriveBack(drivetrain, -.2))).withTimeout(4.)
+   .raceWith(intake.runIntake(.75))
+   .andThen(DriveBack(drivetrain, .2));
+}
 
-                // An example trajectory to follow. All units in meters.
-    Trajectory driveBack =
-        TrajectoryGenerator.generateTrajectory(
-            // Start at the origin facing the +X direction
-            new Pose2d(1, 0, new Rotation2d(Units.degreesToRadians(0))),
-            // Pass through these two interior waypoints, making an 's' curve path
-            List.of(new Translation2d(.25, 0)),
-            // End 3 meters straight ahead of where we started, facing forward
-            new Pose2d(0, 0, new Rotation2d(0)),
-            // Pass config
-            config);
-        
-
-    
-
-    // Reset odometry to the initial pose of the trajectory, run path following
-    // command, then stop at the end.
-    return Commands.runOnce(()->m_robotDrive.resetEncoders())
-    .andThen(Commands.runOnce(()->m_robotDrive.resetGyro()))
-    .andThen(Commands.runOnce(() -> m_robotDrive.resetOdometry(exampleTrajectory.getInitialPose())));
-  }
+public static Command sourceSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
+  return Commands.runOnce(()->drivetrain.resetGyro()) .andThen(ShootSubwooferAuto(shooter, arm, intake))  
+  .andThen(DriveBack(drivetrain, -.2, 1.0))
+  .andThen(drivetrain.turntoAngle(45))
+  .andThen(intake.runIntake(.75).raceWith(DriveBack(drivetrain, -.2)))
+   .andThen(DriveBack(drivetrain, .2));
+}
 }

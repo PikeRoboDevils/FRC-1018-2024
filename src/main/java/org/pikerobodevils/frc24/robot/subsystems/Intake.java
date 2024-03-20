@@ -9,7 +9,10 @@ import com.revrobotics.CANSparkMax;
 
 import static org.pikerobodevils.frc24.robot.Constants.IntakeConstants.*;
 
+import org.pikerobodevils.frc24.robot.ControlBoard;
+
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -18,12 +21,13 @@ public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
   private final CANSparkMax intakeMotor = new CANSparkMax(MOTOR_ID,CANSparkLowLevel.MotorType.kBrushless);
   private final DigitalInput irDetector = new DigitalInput(IR_PORT);
-
-  public Intake() {
+  private final ControlBoard controlboard;
+  public Intake(ControlBoard controlboard) {
     intakeMotor.restoreFactoryDefaults();
     intakeMotor.setInverted(true);
     intakeMotor.setSmartCurrentLimit(40);
     intakeMotor.burnFlash();
+    this.controlboard = controlboard;
   }
 
   //Set Speed of intake motor
@@ -34,6 +38,11 @@ public class Intake extends SubsystemBase {
   public boolean hasNote(){
     return !irDetector.get();
   }
+  public Command stopInake(){
+    
+  return startEnd(()->controlboard.driver.getHID().setRumble(RumbleType.kBothRumble, .5),
+    ()->controlboard.driver.getHID().setRumble(RumbleType.kBothRumble, 0)).withTimeout(.5);
+}
 
   public Command runIntake(double speed){
     return run(

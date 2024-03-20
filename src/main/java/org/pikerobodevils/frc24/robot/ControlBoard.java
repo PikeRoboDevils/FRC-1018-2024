@@ -1,6 +1,7 @@
 package org.pikerobodevils.frc24.robot;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
 public class ControlBoard {
@@ -22,4 +23,10 @@ public class ControlBoard {
   {
     return -driver.getLeftTriggerAxis() + driver.getRightTriggerAxis();
   }
+
+  public void rumble(CommandXboxController controller){
+    controller.getHID().setRumble(RumbleType.kBothRumble, .5);
+  }
+
+  
 }
