@@ -132,7 +132,7 @@ public final class Constants {
     public static final double KS = 0.21709;
     public static final double KA = 0.69281;
     public static final double KV = 2.8975;
-    public static final double KP = 0.065671;
+    public static final double KP = 0.1;
     public static final double kTrackwidthMeters = 0.6;
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
         kTrackwidthMeters);

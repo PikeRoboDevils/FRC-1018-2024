@@ -46,11 +46,11 @@ public final class Autos {
     throw new UnsupportedOperationException("This is a utility class!");
   }
 public static Command DriveBack(Drivetrain drivetrain, Double speed, Double time ){
-  return Commands.runOnce(()->drivetrain.resetEncoders()).andThen(new RunCommand(()->drivetrain.arcadeDriveCommand(()->-.2, ()->0.0))).withTimeout(time);
+  return Commands.runOnce(()->drivetrain.resetEncoders()).andThen(new RunCommand(()->drivetrain.arcadeDriveCommand(()->-.2, ()->0.0)));
 }
 
 public static Command DriveBack(Drivetrain drivetrain, Double speed ){
-  return Commands.runOnce(()->drivetrain.resetEncoders()).andThen(new RunCommand(()->drivetrain.arcadeDriveCommand(()->-.2, ()->0.0))).withTimeout(4);
+  return new RunCommand(()->drivetrain.arcadeDrive(-.2, 0.0));
 }
 
     public static Command ShootSubwooferAuto(Shooter shooterSubsystem, Arm arm, Intake intakeSubsystem){
@@ -60,6 +60,7 @@ public static Command DriveBack(Drivetrain drivetrain, Double speed ){
       .andThen(arm.setGoalCommand(ArmPosition.SUBWOOFER))
       .withTimeout(2)
       .andThen(intakeSubsystem.shoot())
+      .withTimeout(4)
       .andThen(arm.setGoalCommand(ArmPosition.INTAKE));
   }
 
@@ -82,15 +83,30 @@ public static Command ampSide(Shooter shooter,Drivetrain drivetrain, Arm arm, In
   .andThen(DriveBack(drivetrain, -.2, 1.0))
   .andThen(drivetrain.turntoAngle(-45))
    .andThen(intake.runIntake(.75).raceWith(DriveBack(drivetrain, -.2))).withTimeout(4.)
-   .raceWith(intake.runIntake(.75))
    .andThen(DriveBack(drivetrain, .2));
 }
 
 public static Command sourceSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
   return Commands.runOnce(()->drivetrain.resetGyro()) .andThen(ShootSubwooferAuto(shooter, arm, intake))  
-  .andThen(DriveBack(drivetrain, -.2, 1.0))
+  .withTimeout(5)
+  .andThen(DriveBack(drivetrain, -.2, 6.0))
   .andThen(drivetrain.turntoAngle(45))
   .andThen(intake.runIntake(.75).raceWith(DriveBack(drivetrain, -.2)))
    .andThen(DriveBack(drivetrain, .2));
+}
+
+public static Command justDrive(Drivetrain drivetrain){
+  Trajectory exampleTrajectory =
+  TrajectoryGenerator.generateTrajectory(
+      // Start at the origin facing the +X direction
+      new Pose2d(0, 0, new Rotation2d(-45)),
+      // Pass through these two interior waypoints, making an 's' curve path
+      List.of( new Translation2d(.25, .5)),
+      // End 3 meters straight ahead of where we started, facing forward
+      new Pose2d(1, 1, new Rotation2d(0)),
+      // Pass config
+      drivetrain.config);
+  return Commands.runOnce(()->drivetrain.resetGyro()) 
+  .andThen(drivetrain.getAutonomousCommand(()->exampleTrajectory)); 
 }
 }

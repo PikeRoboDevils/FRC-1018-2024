@@ -88,6 +88,7 @@ public class Drivetrain extends SubsystemBase{
 
   double currentPitchRate = 0;
   private Pose2d m_Pose;
+  public TrajectoryConfig config;
 
   private final PIDController leftDrivePid = new PIDController(KP, 0, 0);
   private final PIDController rightDrivePid = new PIDController(KP, 0, 0);
@@ -101,8 +102,8 @@ public class Drivetrain extends SubsystemBase{
 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
-    leftEncoder.setDistancePerPulse(.1524/2056);
-    rightEncoder.setDistancePerPulse(.1524/2056);
+    leftEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
+    rightEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
     m_Pose = new Pose2d(0, 0, new Rotation2d());
     leftLeader.restoreFactoryDefaults();
     leftLeader.setIdleMode(IDLE_MODE);
@@ -139,6 +140,40 @@ public class Drivetrain extends SubsystemBase{
 
     // leftEncoder.setVelocityConversionFactor(1/GEAR_RATIO);
     // rightEncoder.setVelocityConversionFactor(1/GEAR_RATIO);
+    var autoVoltageConstraint =
+
+        new DifferentialDriveVoltageConstraint(
+
+            new SimpleMotorFeedforward(
+
+                KS,
+
+                KV,
+
+                KA),
+
+           kDriveKinematics,
+
+            10);
+
+    config =
+
+        new TrajectoryConfig(
+
+                1,
+
+                1)
+
+            // Add kinematics to ensure max speed is actually obeyed
+
+            .setKinematics(kDriveKinematics)
+
+            // Apply the voltage constraint
+
+            .addConstraint(autoVoltageConstraint);
+
+
+            
 
     m_Odometry = new DifferentialDriveOdometry(navX.getRotation2d(), getLeftDistance(), getRightDistance(),
     m_Pose);
@@ -240,8 +275,13 @@ public class Drivetrain extends SubsystemBase{
   }
     public ChassisSpeeds getWheelSpeeds() {
 
+
     return new ChassisSpeeds(getLeftVelocity(), getRightVelocity(), Units.degreesToRadians(navX.getRate()));
 
+  }
+
+  public DifferentialDriveWheelSpeeds getDiffWheelSpeeds(){
+    return new DifferentialDriveWheelSpeeds(getLeftVelocity(),getRightVelocity());
   }
 
   public void setIdleMode(CANSparkMax.IdleMode mode) {
@@ -328,14 +368,14 @@ public class Drivetrain extends SubsystemBase{
   //   return driveTrajectoryCommand(() -> trajectory);
   // }
 
-  /*public Command driveTrajectoryCommand(Supplier<Trajectory> trajectory) {
-    RamseteController ramsete = new RamseteController();
-    PIDController leftController = new PIDController(0,0,0);
-    PIDController rightController = new PIDController(0,0,0);
-    return run(() -> {
+  // public Command driveTrajectoryCommand(Supplier<Trajectory> trajectory) {
+  //   RamseteController ramsete = new RamseteController();
+  //   PIDController leftController = new PIDController(0,0,0);
+  //   PIDController rightController = new PIDController(0,0,0);
+  //   return run(() -> {
 
-    })
-  }*/
+  //   })
+  
   public Command setLeftRightVoltageCommand(double leftVoltage, double rightVoltage) {
     return run(() -> {
           setLeftRightVoltage(leftVoltage, rightVoltage);
@@ -374,90 +414,44 @@ public class Drivetrain extends SubsystemBase{
   }
   
 
-  //  public Command getAutonomousCommand(Supplier<Trajectory> trajectory) {
+   public Command getAutonomousCommand(Supplier<Trajectory> trajectory) {
 
-  //   // Create a voltage constraint to ensure we don't accelerate too fast
-
-  //   var autoVoltageConstraint =
-
-  //       new DifferentialDriveVoltageConstraint(
-
-  //           new SimpleMotorFeedforward(
-
-  //               DriveConstants.ksVolts,
-
-  //               DriveConstants.kvVoltSecondsPerMeter,
-
-  //               DriveConstants.kaVoltSecondsSquaredPerMeter),
-
-  //           DriveConstants.kDriveKinematics,
-
-  //           10);
+    // Create a voltage constraint to ensure we don't accelerate too fast
 
 
-  //   // Create config for trajectory
 
-  //   TrajectoryConfig config =
+    // Create config for trajectory
 
-  //       new TrajectoryConfig(
-
-  //               AutoConstants.kMaxSpeedMetersPerSecond,
-
-  //               AutoConstants.kMaxAccelerationMetersPerSecondSquared)
-
-  //           // Add kinematics to ensure max speed is actually obeyed
-
-  //           .setKinematics(DriveConstants.kDriveKinematics)
-
-  //           // Apply the voltage constraint
-
-  //           .addConstraint(autoVoltageConstraint);
-
-
-  //   RamseteCommand ramseteCommand =
-
-  //       new RamseteCommand(
-
-  //           trajectory,
-
-  //           m_Pose,
-
-  //           new RamseteController(AutoConstants.kRamseteB, AutoConstants.kRamseteZeta),
-
-  //           new SimpleMotorFeedforward(
-
-  //               DriveConstants.ksVolts,
-
-  //               DriveConstants.kvVoltSecondsPerMeter,
-
-  //               DriveConstants.kaVoltSecondsSquaredPerMeter),
-
-  //           DriveConstants.kDriveKinematics,
-
-  //          this.getWheelSpeeds(),
-
-  //           new PIDController(kPDriveVel, 0, 0),
-
-  //           new PIDController(DriveConstants.kPDriveVel, 0, 0),
-
-  //           // RamseteCommand passes volts to the callback
-
-  //           this::setLeftRightVoltage,
-
-  //           this);
+    
+            RamseteCommand ramseteCommand =
+            new RamseteCommand(
+                trajectory.get(),
+                this::getPose,
+                new RamseteController(2, .7),
+                new SimpleMotorFeedforward(
+                    KS,
+                    KV,
+                    KA),
+                kDriveKinematics,
+                this::getDiffWheelSpeeds,
+                new PIDController(KP, 0, 0),
+                new PIDController(KP, 0, 0),
+                // RamseteCommand passes volts to the callback
+                this::setLeftRightVoltage,
+                this);
 
 
-  //   // Reset odometry to the initial pose of the trajectory, run path following
+    // Reset odometry to the initial pose of the trajectory, run path following
 
-  //   // command, then stop at the end.
+    // command, then stop at the end.
 
-  //   return Commands.runOnce(() -> this.resetOdometry(trajectory.get().getInitialPose()))
+    return Commands.runOnce(() -> this.resetOdometry(trajectory.get().getInitialPose()))
 
-  //       .andThen(ramseteCommand)
+        .andThen(ramseteCommand)
 
-  //       .andThen(Commands.runOnce(() -> this.setLeftRightVoltage(0, 0)));
+        .andThen(Commands.runOnce(() -> this.setLeftRightVoltage(0, 0)));
 
-  // }
+  }
 
 }
 

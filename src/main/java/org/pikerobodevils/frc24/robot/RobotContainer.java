@@ -80,13 +80,19 @@ public class RobotContainer {
     shuffleboard.addDouble("Climb Position", ()->climber.getPosition());
     shuffleboard.addDouble("Shooter Velocity", ()->shooterSubsystem.getVelocity());
     shuffleboard.addDouble("Rotation", ()->drivetrain.getYaw());
+    shuffleboard.addDouble("PoseX", ()->drivetrain.getPose().getX());
+   shuffleboard.addDouble("PoseY", ()->drivetrain.getPose().getY());
+shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getDegrees());
+
 
     // Another option that allows you to specify the default auto by its name
     autoChooser.addOption("shoot move", Autos.getAutonomousCommand(drivetrain, shooterSubsystem, arm, intakeSubsystem));
      autoChooser.addOption("shoot no move", Autos.ShootSubwooferAuto(shooterSubsystem, arm, intakeSubsystem));
       autoChooser.addOption("move", Autos.DriveBack(drivetrain, .2));
           autoChooser.addOption("two note", Autos.twoNoteDrive(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-
+    autoChooser.addOption("Source Side", Autos.sourceSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+    autoChooser.addOption("Amp Side", Autos.ampSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+    autoChooser.addOption("DRIVE", Autos.justDrive(drivetrain));
     shuffleboard.add("Auto Chooser", autoChooser);
     // Configure the trigger bindings
     configureBindings();
