@@ -60,8 +60,19 @@ public static Command DriveBack(Drivetrain drivetrain, Double speed ){
       .andThen(arm.setGoalCommand(ArmPosition.SUBWOOFER))
       .withTimeout(2)
       .andThen(intakeSubsystem.shoot())
-      .withTimeout(4)
+      .withTimeout(3)
       .andThen(arm.setGoalCommand(ArmPosition.INTAKE));
+  }
+
+      public static Command ShootStageAuto(Shooter shooterSubsystem, Arm arm, Intake intakeSubsystem){
+    return Commands.runOnce(()->intakeSubsystem.runIntake(.25))
+      .andThen(arm.setGoalCommand(ArmPosition.PODIUM).raceWith(shooterSubsystem.spinUp())) 
+      .withTimeout(2)
+      .andThen(intakeSubsystem.shoot())
+      .withTimeout(3)
+      .andThen(arm.setGoalCommand(ArmPosition.INTAKE))
+      //to stop shooter
+     .andThen(shooterSubsystem.spin());
   }
 
   public static Command getAutonomousCommand(Drivetrain drivetrain, Shooter shooter, Arm arm, Intake intake) {
@@ -70,11 +81,18 @@ public static Command DriveBack(Drivetrain drivetrain, Double speed ){
 }
 
 public static Command twoNoteDrive(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake){
-  return ShootSubwooferAuto(shooter, arm, intake)
-   .andThen(DriveBack(drivetrain, -.2).raceWith(arm.setGoalCommand(ArmPosition.INTAKE))
-   .raceWith(intake.runIntake(.75)))
-   .andThen(DriveBack(drivetrain, .2));
-   
+    Trajectory exampleTrajectory =
+  TrajectoryGenerator.generateTrajectory(
+      // Start at the origin facing the +X direction
+      new Pose2d(0, 0, new Rotation2d(0)),
+      // Pass through these two interior waypoints, making an 's' curve path
+      List.of( new Translation2d(.25, 0)),
+      // End 3 meters straight ahead of where we started, facing forward
+      new Pose2d(.75, 0, new Rotation2d(0)),
+      // Pass config
+      drivetrain.config);
+   return ShootSubwooferAuto(shooter, arm, intake).andThen(intake.runIntake(.75).raceWith(drivetrain.getAutonomousCommand(()->exampleTrajectory)))
+  .andThen(ShootStageAuto(shooter, arm, intake));
 }
 
 public static Command ampSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
@@ -99,14 +117,13 @@ public static Command justDrive(Drivetrain drivetrain){
   Trajectory exampleTrajectory =
   TrajectoryGenerator.generateTrajectory(
       // Start at the origin facing the +X direction
-      new Pose2d(0, 0, new Rotation2d(-45)),
+      new Pose2d(0, 0, new Rotation2d(0)),
       // Pass through these two interior waypoints, making an 's' curve path
-      List.of( new Translation2d(.25, .5)),
+      List.of( new Translation2d(.25, 0)),
       // End 3 meters straight ahead of where we started, facing forward
-      new Pose2d(1, 1, new Rotation2d(0)),
+      new Pose2d(.5, 0, new Rotation2d(-45)),
       // Pass config
       drivetrain.config);
-  return Commands.runOnce(()->drivetrain.resetGyro()) 
-  .andThen(drivetrain.getAutonomousCommand(()->exampleTrajectory)); 
+  return (drivetrain.getAutonomousCommand(()->exampleTrajectory)); 
 }
 }

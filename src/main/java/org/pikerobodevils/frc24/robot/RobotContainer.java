@@ -84,7 +84,6 @@ public class RobotContainer {
    shuffleboard.addDouble("PoseY", ()->drivetrain.getPose().getY());
 shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getDegrees());
 
-
     // Another option that allows you to specify the default auto by its name
     autoChooser.addOption("shoot move", Autos.getAutonomousCommand(drivetrain, shooterSubsystem, arm, intakeSubsystem));
      autoChooser.addOption("shoot no move", Autos.ShootSubwooferAuto(shooterSubsystem, arm, intakeSubsystem));

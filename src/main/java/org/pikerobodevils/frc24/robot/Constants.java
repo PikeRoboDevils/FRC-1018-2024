@@ -102,7 +102,7 @@ public final class Constants {
     public static final int MAIN_MOTOR_ID = 10;
     public static final int FOLLOWER_MOTOR_ID = 11;
 
-    public static final double SHOOT_SPEED = 3500;
+    public static final double SHOOT_SPEED = 4000;
     public static final double CONSTANT_VELOCITY = 250;
 
     public static final double KS = 0.018177;
@@ -132,7 +132,7 @@ public final class Constants {
     public static final double KS = 0.21709;
     public static final double KA = 0.69281;
     public static final double KV = 2.8975;
-    public static final double KP = 0.1;
+    public static final double KP = 0.01;
     public static final double kTrackwidthMeters = 0.6;
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
         kTrackwidthMeters);
