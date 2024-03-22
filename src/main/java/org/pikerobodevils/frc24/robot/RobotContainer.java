@@ -88,10 +88,10 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
     autoChooser.addOption("shoot move", Autos.getAutonomousCommand(drivetrain, shooterSubsystem, arm, intakeSubsystem));
      autoChooser.addOption("shoot no move", Autos.ShootSubwooferAuto(shooterSubsystem, arm, intakeSubsystem));
       autoChooser.addOption("move", Autos.DriveBack(drivetrain, .2));
-          autoChooser.addOption("two note", Autos.twoNoteDrive(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+          autoChooser.addOption("Middle High", Autos.twoNoteDrive(shooterSubsystem, drivetrain, arm, intakeSubsystem));
     autoChooser.addOption("Source Side", Autos.sourceSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
     autoChooser.addOption("Amp Side", Autos.ampSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-    autoChooser.addOption("DRIVE", Autos.justDrive(drivetrain));
+    autoChooser.addOption("DRIVE", Autos.justDrive(drivetrain, 1.0));
     shuffleboard.add("Auto Chooser", autoChooser);
     // Configure the trigger bindings
     configureBindings();

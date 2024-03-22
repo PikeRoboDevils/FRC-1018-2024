@@ -92,14 +92,14 @@ public class Drivetrain extends SubsystemBase{
 
   private final PIDController leftDrivePid = new PIDController(KP, 0, 0);
   private final PIDController rightDrivePid = new PIDController(KP, 0, 0);
- 
+ private final PIDController turnDrivePid = new PIDController(KP, 0, 0);
     // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
   // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
   private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
   // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
   private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
-
+ 
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     leftEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
@@ -401,9 +401,8 @@ public class Drivetrain extends SubsystemBase{
   }
 
   public Command turntoAngle(double angle) {
-    double error = (isRed()? angle:-angle) - navX.getAngle();
-    double output = KP * error;
-     return run(() -> arcadeDriveCommand(()->0, ()->output));
+   
+     return arcadeDriveCommand(()->0, ()->-turnDrivePid.calculate(navX.getAngle(),angle)).withTimeout(1);
   }
 
   

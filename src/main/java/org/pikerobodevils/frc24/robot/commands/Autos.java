@@ -81,17 +81,9 @@ public static Command DriveBack(Drivetrain drivetrain, Double speed ){
 }
 
 public static Command twoNoteDrive(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake){
-    Trajectory exampleTrajectory =
-  TrajectoryGenerator.generateTrajectory(
-      // Start at the origin facing the +X direction
-      new Pose2d(0, 0, new Rotation2d(0)),
-      // Pass through these two interior waypoints, making an 's' curve path
-      List.of( new Translation2d(.25, 0)),
-      // End 3 meters straight ahead of where we started, facing forward
-      new Pose2d(.75, 0, new Rotation2d(0)),
-      // Pass config
-      drivetrain.config);
-   return ShootSubwooferAuto(shooter, arm, intake).andThen(intake.runIntake(.75).raceWith(drivetrain.getAutonomousCommand(()->exampleTrajectory)))
+
+   return ShootSubwooferAuto(shooter, arm, intake).andThen(intake.runIntake(.75)
+   .raceWith(justDrive(drivetrain, 1.0)))
   .andThen(ShootStageAuto(shooter, arm, intake));
 }
 
@@ -107,23 +99,21 @@ public static Command ampSide(Shooter shooter,Drivetrain drivetrain, Arm arm, In
 public static Command sourceSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
   return Commands.runOnce(()->drivetrain.resetGyro()) .andThen(ShootSubwooferAuto(shooter, arm, intake))  
   .withTimeout(5)
-  .andThen(DriveBack(drivetrain, -.2, 6.0))
-  .andThen(drivetrain.turntoAngle(45))
-  .andThen(intake.runIntake(.75).raceWith(DriveBack(drivetrain, -.2)))
-   .andThen(DriveBack(drivetrain, .2));
+ .andThen(justDrive(drivetrain, 1.0)).andThen(drivetrain.turntoAngle(25)).andThen(justDrive(drivetrain, 1.0));
 }
 
-public static Command justDrive(Drivetrain drivetrain){
+public static Command justDrive(Drivetrain drivetrain, Double distance){
   Trajectory exampleTrajectory =
   TrajectoryGenerator.generateTrajectory(
       // Start at the origin facing the +X direction
       new Pose2d(0, 0, new Rotation2d(0)),
       // Pass through these two interior waypoints, making an 's' curve path
-      List.of( new Translation2d(.25, 0)),
+      List.of( new Translation2d(distance/2, 0)),
       // End 3 meters straight ahead of where we started, facing forward
-      new Pose2d(.5, 0, new Rotation2d(-45)),
+      new Pose2d(distance, 0, new Rotation2d(0)),
       // Pass config
       drivetrain.config);
-  return (drivetrain.getAutonomousCommand(()->exampleTrajectory)); 
+      
+  return Commands.runOnce(()->drivetrain.resetGyro(), drivetrain).andThen(drivetrain.getAutonomousCommand(()->exampleTrajectory));
 }
 }
