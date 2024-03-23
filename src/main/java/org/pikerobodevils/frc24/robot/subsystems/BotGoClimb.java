@@ -46,6 +46,9 @@ public void setDistance(double distance){
   ClimbLead.set(pid.calculate(encoder.getPosition(),distance));
 }
 
+public void resetEncoders(){
+  encoder.setPosition(0);
+}
   public Command climberUp() {
     return run(() -> setDistance(CLIMB_DISTANCE))
     .until(()-> pid.atSetpoint())

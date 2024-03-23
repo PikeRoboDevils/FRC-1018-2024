@@ -30,11 +30,12 @@ import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils;
 public class Arm extends SubsystemBase {
 
   public enum ArmPosition {
-    STOW(90),
+    STOW(87),
     AMP(110),
     SUBWOOFER(30),
     INTAKE(0),
-    PODIUM(45);
+    PODIUM(45),
+    SAFE(56);
     ArmPosition(double angleDegrees) {
       this.valueRadians = Units.degreesToRadians(angleDegrees);
     }

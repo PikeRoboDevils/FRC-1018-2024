@@ -66,6 +66,7 @@ import java.util.function.Supplier;
 import org.pikerobodevils.frc24.lib.vendor.SparkMax;
 import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils;
 import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils.UnitConversions;
+import org.pikerobodevils.frc24.robot.RobotContainer;
 
 public class Drivetrain extends SubsystemBase{
   private final ShuffleboardTab dashboard = Shuffleboard.getTab("Driver");
@@ -93,6 +94,7 @@ public class Drivetrain extends SubsystemBase{
   private final PIDController leftDrivePid = new PIDController(KP, 0, 0);
   private final PIDController rightDrivePid = new PIDController(KP, 0, 0);
  private final PIDController turnDrivePid = new PIDController(KP, 0, 0);
+ private final PIDController drivePID = new PIDController(.75, 0, 0);
     // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
   // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
@@ -197,6 +199,7 @@ public class Drivetrain extends SubsystemBase{
             },
             this // Reference to this subsystem to set requirements
     );
+   drivePID.setTolerance(.1);  
   }
   public boolean isRed() {
                   var alliance = DriverStation.getAlliance();
@@ -401,21 +404,23 @@ public class Drivetrain extends SubsystemBase{
   }
 
   public Command turntoAngle(double angle) {
-   
-     return arcadeDriveCommand(()->0, ()->-turnDrivePid.calculate(navX.getAngle(),angle)).withTimeout(1);
+   double setpoint = (isRed()? angle:-angle);
+     return arcadeDriveCommand(()->0, ()->-turnDrivePid.calculate(navX.getAngle(),setpoint)).withTimeout(1);
   }
 
   
   public Command DriveDist(double distance) {
-    double error = distance - getLeftDistance();
-    double output = KP * error;
-     return run(() -> arcadeDriveCommand(()->output, ()->0));
+
+     return arcadeDriveCommand(()->drivePID.calculate(getRightDistance(),-distance), ()->0).until(()->drivePID.atSetpoint())
+     .finallyDo(()->arcadeDriveCommand(()->0, ()->0));
+
   }
   
 
    public Command getAutonomousCommand(Supplier<Trajectory> trajectory) {
 
     // Create a voltage constraint to ensure we don't accelerate too fast
+
 
 
 

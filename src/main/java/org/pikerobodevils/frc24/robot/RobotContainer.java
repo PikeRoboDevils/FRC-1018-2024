@@ -87,7 +87,7 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
     // Another option that allows you to specify the default auto by its name
     autoChooser.addOption("shoot move", Autos.getAutonomousCommand(drivetrain, shooterSubsystem, arm, intakeSubsystem));
      autoChooser.addOption("shoot no move", Autos.ShootSubwooferAuto(shooterSubsystem, arm, intakeSubsystem));
-      autoChooser.addOption("move", Autos.DriveBack(drivetrain, .2));
+   //   autoChooser.addOption("move", Autos.DriveBack(drivetrain, .2));
           autoChooser.addOption("Middle High", Autos.twoNoteDrive(shooterSubsystem, drivetrain, arm, intakeSubsystem));
     autoChooser.addOption("Source Side", Autos.sourceSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
     autoChooser.addOption("Amp Side", Autos.ampSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
@@ -115,11 +115,12 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
     // controlboard.driver.y().whileTrue((shooterSubsystem.sysIdDynamic(Direction.kReverse)).finallyDo(()->shooterSubsystem.setSpeed(0)));
 
     controlboard.driver.leftBumper().whileTrue(shooterSubsystem.spinUp(SHOOT_SPEED));
-   controlboard.driver.a().whileTrue(drivetrain.turnToTx(vision.getTx()));
-   controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
+    controlboard.driver.rightBumper().whileTrue(arm.setGoalCommand(ArmPosition.SAFE));
+    controlboard.driver.a().whileTrue(drivetrain.turnToTx(vision.getTx()));
+    controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
     controlboard.driver.leftTrigger().whileTrue(intakeSubsystem.runOuttake());
-    controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntake(.75).andThen(intakeSubsystem.stopInake())
-    );
+    controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntake(.75).andThen(intakeSubsystem.stopInake()));
+    
 
     controlboard.operator.rightBumper().whileTrue(arm.armOverride(controlboard.operator::getLeftY));
     controlboard.operator.leftBumper().whileTrue(climber.climbOverride(()->controlboard.operator.getRawAxis(1)));
@@ -130,9 +131,9 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
     controlboard.operator.x().whileTrue(arm.setGoalCommand(ArmPosition.SUBWOOFER));
     controlboard.operator.povUp().onTrue(climber.climberUp());
     controlboard.operator.povDown().onTrue(climber.climberDown());
-    controlboard.operator.povLeft().onTrue(arm.setGoalCommand(ArmPosition.AMP));
+    controlboard.operator.povLeft().onTrue(arm.setGoalCommand(ArmPosition.AMP).andThen(()->climber.resetEncoders()));
     controlboard.operator.povRight().onTrue(arm.setGoalCommand(ArmPosition.STOW));
-    
+    controlboard.operator.start().onTrue(Commands.runOnce(()->climber.resetEncoders()));
   }
 
 

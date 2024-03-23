@@ -66,7 +66,7 @@ public static Command DriveBack(Drivetrain drivetrain, Double speed ){
 
       public static Command ShootStageAuto(Shooter shooterSubsystem, Arm arm, Intake intakeSubsystem){
     return Commands.runOnce(()->intakeSubsystem.runIntake(.25))
-      .andThen(arm.setGoalCommand(ArmPosition.PODIUM).raceWith(shooterSubsystem.spinUp())) 
+      .andThen(arm.setGoalCommand(ArmPosition.PODIUM).alongWith(shooterSubsystem.spinUp())) 
       .withTimeout(2)
       .andThen(intakeSubsystem.shoot())
       .withTimeout(3)
@@ -82,38 +82,39 @@ public static Command DriveBack(Drivetrain drivetrain, Double speed ){
 
 public static Command twoNoteDrive(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake){
 
-   return ShootSubwooferAuto(shooter, arm, intake).andThen(intake.runIntake(.75)
-   .raceWith(justDrive(drivetrain, 1.0)))
+   return Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()) 
+   .andThen(ShootSubwooferAuto(shooter, arm, intake)).andThen(intake.runIntake(.75)
+   .alongWith((drivetrain.DriveDist( 2.0))).withTimeout(5)).andThen(drivetrain.arcadeDriveCommand(()->0,()->0 ))
   .andThen(ShootStageAuto(shooter, arm, intake));
 }
 
 public static Command ampSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
  
-  return Commands.runOnce(()->drivetrain.resetGyro()) .andThen(ShootSubwooferAuto(shooter, arm, intake))
-  .andThen(DriveBack(drivetrain, -.2, 1.0))
-  .andThen(drivetrain.turntoAngle(-45))
-   .andThen(intake.runIntake(.75).raceWith(DriveBack(drivetrain, -.2))).withTimeout(4.)
-   .andThen(DriveBack(drivetrain, .2));
+  return Commands.runOnce(()->drivetrain.resetGyro())  .andThen(ShootSubwooferAuto(shooter, arm, intake))
+  //.andThen(justDrive(drivetrain, .25))
+  .andThen(drivetrain.turntoAngle(-65))
+  .andThen(intake.runIntake(.75).raceWith(justDrive(drivetrain, 1.0))).withTimeout(4.);
+   //.andThen(drivetrain.turntoAngle(0)).andThen(ShootStageAuto(shooter, arm, intake));
 }
 
 public static Command sourceSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
   return Commands.runOnce(()->drivetrain.resetGyro()) .andThen(ShootSubwooferAuto(shooter, arm, intake))  
   .withTimeout(5)
- .andThen(justDrive(drivetrain, 1.0)).andThen(drivetrain.turntoAngle(25)).andThen(justDrive(drivetrain, 1.0));
+ .andThen(drivetrain.DriveDist( 1.0)).andThen(drivetrain.turntoAngle(25)).andThen(justDrive(drivetrain, 2.0));
 }
 
 public static Command justDrive(Drivetrain drivetrain, Double distance){
-  Trajectory exampleTrajectory =
-  TrajectoryGenerator.generateTrajectory(
-      // Start at the origin facing the +X direction
-      new Pose2d(0, 0, new Rotation2d(0)),
-      // Pass through these two interior waypoints, making an 's' curve path
-      List.of( new Translation2d(distance/2, 0)),
-      // End 3 meters straight ahead of where we started, facing forward
-      new Pose2d(distance, 0, new Rotation2d(0)),
-      // Pass config
-      drivetrain.config);
+//    Trajectory exampleTrajectory =
+//    TrajectoryGenerator.generateTrajectory(
+//      // Start at the origin facing the +X direction
+//     new Pose2d(0, 0, new Rotation2d(0)),
+//     // Pass through these two interior waypoints, making an 's' curve path
+//     List.of( new Translation2d(distance/2, 0)),
+//    // End 3 meters straight ahead of where we started, facing forward
+//    new Pose2d(distance, 0, new Rotation2d(0)),
+//    // Pass config
+//    drivetrain.config);
       
-  return Commands.runOnce(()->drivetrain.resetGyro(), drivetrain).andThen(drivetrain.getAutonomousCommand(()->exampleTrajectory));
+  return drivetrain.DriveDist(distance);
 }
 }
