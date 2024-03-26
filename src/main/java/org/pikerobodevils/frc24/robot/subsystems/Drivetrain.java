@@ -350,6 +350,7 @@ public class Drivetrain extends SubsystemBase{
     setLeftRight(speeds.left, speeds.right);
   }
 
+  // doesnt completly stop
   public Command arcadeDriveCommand(DoubleSupplier speed, DoubleSupplier rotation) {
     return run(() -> arcadeDrive(speed.getAsDouble(), rotation.getAsDouble()));
   }
@@ -412,7 +413,7 @@ public class Drivetrain extends SubsystemBase{
   public Command DriveDist(double distance) {
 
      return arcadeDriveCommand(()->drivePID.calculate(getRightDistance(),-distance), ()->0).until(()->drivePID.atSetpoint())
-     .finallyDo(()->arcadeDriveCommand(()->0, ()->0));
+     .finallyDo(()->arcadeDrive(0, 0)); // only arcade drive stops
 
   }
   

@@ -84,8 +84,9 @@ public static Command twoNoteDrive(Shooter shooter,Drivetrain drivetrain, Arm ar
 
    return Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()) 
    .andThen(ShootSubwooferAuto(shooter, arm, intake)).andThen(intake.runIntake(.75)
-   .alongWith((drivetrain.DriveDist( 2.0))).withTimeout(5)).andThen(drivetrain.arcadeDriveCommand(()->0,()->0 ))
+   .alongWith((drivetrain.DriveDist( 1))))
   .andThen(ShootStageAuto(shooter, arm, intake));
+  //.finallyDo(()->drivetrain.arcadeDriveCommand(()->0, ()->0)); // doesnt stop anything
 }
 
 public static Command ampSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
