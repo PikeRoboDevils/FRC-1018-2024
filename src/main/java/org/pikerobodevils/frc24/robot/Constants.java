@@ -103,7 +103,7 @@ public final class Constants {
     public static final int FOLLOWER_MOTOR_ID = 11;
 
     public static final double SHOOT_SPEED = 4000;
-    public static final double CONSTANT_VELOCITY = 0;
+    public static final double CONSTANT_VELOCITY = 250;
 
     public static final double KS = 0.018177;
     public static final double KV = 0.00021708;

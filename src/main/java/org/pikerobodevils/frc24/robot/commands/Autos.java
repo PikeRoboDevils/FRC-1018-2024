@@ -85,8 +85,8 @@ public static Command twoNoteDrive(Shooter shooter,Drivetrain drivetrain, Arm ar
    return Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()) 
    .andThen(ShootSubwooferAuto(shooter, arm, intake)).andThen(intake.runIntake(.75)
    .alongWith((drivetrain.DriveDist( 1))))
-  .andThen(ShootStageAuto(shooter, arm, intake))
- .finallyDo(()->shooter.spin());
+  .andThen(ShootStageAuto(shooter, arm, intake));
+ //.finallyDo(()->shooter.spin()); // doesnt do what i want; breaks everything
   //.finallyDo(()->drivetrain.arcadeDriveCommand(()->0, ()->0)); // doesnt stop anything
 }
 
