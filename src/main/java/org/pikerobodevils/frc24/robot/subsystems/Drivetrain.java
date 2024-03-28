@@ -405,7 +405,7 @@ public class Drivetrain extends SubsystemBase{
   }
 
   public Command turntoAngle(double angle) {
-   double setpoint = (isRed()? angle:-angle);
+   double setpoint = angle ;//(isRed()? angle:-angle);
      return arcadeDriveCommand(()->0, ()->-turnDrivePid.calculate(navX.getAngle(),setpoint)).withTimeout(1);
   }
 
