@@ -91,10 +91,19 @@ public static Command twoNoteDrive(Shooter shooter,Drivetrain drivetrain, Arm ar
 }
 
 
-public static Command ampMidSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
+public static Command threeNote(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
 // should work but make sure encoders are plugged in!!! 
-  return  Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()) // .andThen(ShootSubwooferAuto(shooter, arm, intake)
+  return  Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()) 
+  .andThen(ShootSubwooferAuto(shooter, arm, intake))
  .andThen(drivetrain.turntoAngle(-90))
+ .andThen(drivetrain.DriveDist(1).alongWith(intake.runIntake(.75)));
+}
+
+ public static Command ampSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
+// should work but make sure encoders are plugged in!!! 
+  return  Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()) 
+  .andThen(ShootSubwooferAuto(shooter, arm, intake))
+ .andThen(drivetrain.turntoAngle(-75))
  .andThen(drivetrain.DriveDist(1).alongWith(intake.runIntake(.75)));
 
 
