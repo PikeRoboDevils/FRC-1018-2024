@@ -126,7 +126,7 @@ public final class Constants {
     public static final int RIGHT_ENCODER_B = 1;
 
 
-    public static final int CURRENT_LIMIT = 50;
+    public static final int CURRENT_LIMIT = 60;
     public static final double GEAR_RATIO = 1;
 
     public static final double KS = 0.21709;
@@ -136,6 +136,7 @@ public final class Constants {
     public static final double kTrackwidthMeters = 0.6;
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
         kTrackwidthMeters);
+    public static final double VOLTRAMP = 0.3;
 
   }
 
@@ -143,7 +144,8 @@ public final class Constants {
     // Setup by Cannon "heyyyy"
     // Sets contants for variables such as motor ID, dictance and speedin the the
     // robot.
-    public static final int MOTOR_ID = 8;
+    public static final int LMOTOR_ID = 8;
+    public static final int RMOTOR_ID = 12;
     public static final double CLIMB_SPEED = 0.5;
     public static final int CLIMB_DISTANCE = -80; 
     public static final double KP = 0.2;

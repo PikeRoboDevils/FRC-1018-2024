@@ -110,10 +110,12 @@ public class Drivetrain extends SubsystemBase{
     leftLeader.restoreFactoryDefaults();
     leftLeader.setIdleMode(IDLE_MODE);
     leftLeader.setSmartCurrentLimit(CURRENT_LIMIT);
+    leftLeader.setOpenLoopRampRate(VOLTRAMP);
 
     leftFollowerOne.restoreFactoryDefaults();
     leftFollowerOne.setIdleMode(IDLE_MODE);
     leftFollowerOne.follow(leftLeader);
+    leftFollowerOne.setOpenLoopRampRate(VOLTRAMP);
     // leftFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
 
     // leftFollowerTwo.restoreFactoryDefaults();
@@ -125,10 +127,12 @@ public class Drivetrain extends SubsystemBase{
     rightLeader.setIdleMode(IDLE_MODE);
     rightLeader.setInverted(true);
     rightLeader.setSmartCurrentLimit(CURRENT_LIMIT);
+    rightLeader.setOpenLoopRampRate(VOLTRAMP);
 
     rightFollowerOne.restoreFactoryDefaults();
     rightFollowerOne.setIdleMode(IDLE_MODE);
     rightFollowerOne.follow(rightLeader);
+    rightFollowerOne.setOpenLoopRampRate(VOLTRAMP);
     // rightFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
 
     // rightFollowerTwo.restoreFactoryDefaults();

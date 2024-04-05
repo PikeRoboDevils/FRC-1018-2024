@@ -35,6 +35,8 @@ public class Arm extends SubsystemBase {
     SUBWOOFER(30),
     INTAKE(0),
     PODIUM(45),
+    HPODIUM(47),
+    FPODIUM(50),
     SAFE(56);
     ArmPosition(double angleDegrees) {
       this.valueRadians = Units.degreesToRadians(angleDegrees);

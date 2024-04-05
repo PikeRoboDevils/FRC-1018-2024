@@ -6,11 +6,14 @@ package org.pikerobodevils.frc24.robot.subsystems;
 
 import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.*;
 
+import java.util.function.BooleanSupplier;
+
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
@@ -100,11 +103,11 @@ public class Shooter extends SubsystemBase {
    return run(()->setSpeed(feedforward.calculate(CONSTANT_VELOCITY)));
   }
 
-  public Command spinUpAmp(){
+  public Command spinUpAmp(BooleanSupplier hasNote){
         return run(
       ()->{
-        setSpeed(feedforward.calculate(SHOOT_SPEED));
-      })
+        setSpeed(feedforward.calculate(3000));
+      }).until(hasNote)
       .finallyDo(()->{setSpeed(feedforward.calculate(CONSTANT_VELOCITY));
       });
   }
@@ -153,5 +156,6 @@ public class Shooter extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    
   }
 }

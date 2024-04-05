@@ -4,6 +4,7 @@
 
 package org.pikerobodevils.frc24.robot;
 
+import static edu.wpi.first.units.Units.Amp;
 import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.SHOOT_SPEED;
 
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
@@ -25,10 +26,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -122,7 +119,7 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
 
     controlboard.driver.leftBumper().whileTrue(shooterSubsystem.spinUp(SHOOT_SPEED));
     controlboard.driver.rightBumper().whileTrue(arm.setGoalCommand(ArmPosition.SAFE));
-    controlboard.driver.a().whileTrue(drivetrain.turnToTx(vision.getTx()));
+    controlboard.driver.a().onTrue(shooterSubsystem.spinUpAmp(()->!intakeSubsystem.hasNote()));
     controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
     controlboard.driver.leftTrigger().whileTrue(intakeSubsystem.runOuttake());
     controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntake(.75).andThen(intakeSubsystem.stopInake()));
@@ -131,8 +128,12 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
     controlboard.operator.rightBumper().whileTrue(arm.armOverride(controlboard.operator::getLeftY));
     controlboard.operator.leftBumper().whileTrue(climber.climbOverride(()->controlboard.operator.getRawAxis(1)));
 
-    controlboard.operator.a().whileTrue(arm.setGoalCommand(ArmPosition.INTAKE));
+    controlboard.operator.leftTrigger(.75).whileTrue(arm.setGoalCommand( ArmPosition.FPODIUM));
+    controlboard.operator.rightTrigger(.75).whileTrue((arm.setGoalCommand(ArmPosition.HPODIUM)));
     controlboard.operator.y().whileTrue(arm.setGoalCommand(ArmPosition.PODIUM));
+    
+
+    controlboard.operator.a().whileTrue(arm.setGoalCommand(ArmPosition.INTAKE));
     controlboard.operator.b().whileTrue(arm.setGoalCommand(ArmPosition.AMP));
     controlboard.operator.x().whileTrue(arm.setGoalCommand(ArmPosition.SUBWOOFER));
     controlboard.operator.povUp().onTrue(climber.climberUp());
@@ -158,4 +159,5 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
       // .alongWith(intakeSubsystem.shoot())
       // .onlyWhile(()->shooterSubsystem.shootReady());
   }
+  
 }

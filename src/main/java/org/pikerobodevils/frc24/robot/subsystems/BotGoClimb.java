@@ -21,7 +21,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class BotGoClimb extends SubsystemBase {
   // Difines we have A motor and spark max that is linked
-  private final CANSparkMax ClimbLead = new CANSparkMax(MOTOR_ID, CANSparkLowLevel.MotorType.kBrushless);
+  private final CANSparkMax ClimbLead = new CANSparkMax(LMOTOR_ID, CANSparkLowLevel.MotorType.kBrushless);
+  private final CANSparkMax ClimbFollower = new CANSparkMax(RMOTOR_ID, CANSparkLowLevel.MotorType.kBrushless);
   private final PIDController pid = new PIDController (KP, 0, 0);
   private final RelativeEncoder encoder = ClimbLead.getEncoder();
 
@@ -31,6 +32,13 @@ public class BotGoClimb extends SubsystemBase {
     ClimbLead.restoreFactoryDefaults();
     ClimbLead.setSmartCurrentLimit(80);
     ClimbLead.burnFlash();
+   
+    ClimbFollower.restoreFactoryDefaults();
+    ClimbFollower.setSmartCurrentLimit(80);
+    ClimbFollower.follow(ClimbLead);
+    ClimbFollower.setInverted(false);
+    ClimbFollower.burnFlash();
+   
     encoder.setPosition(0);
 
   }

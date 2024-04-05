@@ -66,13 +66,13 @@ public static Command DriveBack(Drivetrain drivetrain, Double speed ){
 
       public static Command ShootStageAuto(Shooter shooterSubsystem, Arm arm, Intake intakeSubsystem){
     return Commands.runOnce(()->intakeSubsystem.runIntake(.25))
-      .andThen(arm.setGoalCommand(ArmPosition.PODIUM).alongWith(shooterSubsystem.spinUp())) 
+      .andThen(arm.setGoalCommand(ArmPosition.PODIUM)) 
       .withTimeout(2)
       .andThen(intakeSubsystem.shoot())
       .withTimeout(3)
-      .andThen(arm.setGoalCommand(ArmPosition.INTAKE))
+      .andThen(arm.setGoalCommand(ArmPosition.INTAKE));
       //to stop shooter
-     .andThen(shooterSubsystem.spin());
+     //.andThen(shooterSubsystem.spin());
   }
 
   public static Command getAutonomousCommand(Drivetrain drivetrain, Shooter shooter, Arm arm, Intake intake) {
@@ -94,34 +94,30 @@ public static Command twoNoteDrive(Shooter shooter,Drivetrain drivetrain, Arm ar
 public static Command threeNote(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
 // should work but make sure encoders are plugged in!!! 
   return  Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()) 
-  .andThen(ShootSubwooferAuto(shooter, arm, intake))
-  .andThen(()->drivetrain.resetEncoders())
-  .andThen(drivetrain.DriveDist(.35))
-  .andThen(drivetrain.turntoAngle(-70))
-  .andThen(()->drivetrain.resetEncoders())
- .andThen(intake.runIntake(.75).raceWith(drivetrain.DriveDist( 2)))
- .andThen(ShootStageAuto(shooter, arm, intake).raceWith(drivetrain.turntoAngle(45)))
- .andThen(drivetrain.turntoAngle(90))
-  .andThen(()->drivetrain.resetEncoders())
- .andThen(intake.runIntake(.75).alongWith(drivetrain.DriveDist( 1)));
+  .andThen(ShootSubwooferAuto(shooter, arm, intake)) .andThen(justDrive(drivetrain, 1.5).raceWith(intake.runIntake(.5)))
+  .andThen(ShootStageAuto(shooter, arm, intake))
+  .andThen(arm.setGoalCommand(ArmPosition.INTAKE).andThen(drivetrain.turntoAngle(90))
+  .andThen(justDrive(drivetrain, .25).raceWith(intake.runIntake(.5))))
+  .andThen(drivetrain.turntoAngle(45)).andThen(ShootStageAuto(shooter, arm, intake))
+  ;
 }
 
- public static Command ampSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
-// should work but make sure encoders are plugged in!!! 
+ public static Command ampSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) { 
   return  Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()) 
   .andThen(ShootSubwooferAuto(shooter, arm, intake))
   .andThen(()->drivetrain.resetEncoders())
-  .andThen(drivetrain.DriveDist(.35))
+  .andThen(justDrive(drivetrain, .35))
   .andThen(drivetrain.turntoAngle(-70))
   .andThen(()->drivetrain.resetEncoders())
- .andThen(intake.runIntake(.75).raceWith(drivetrain.DriveDist( 1.5)))
- .andThen(ShootStageAuto(shooter, arm, intake).raceWith(drivetrain.turntoAngle(45)));
+ .andThen(intake.runIntake(.75).alongWith(justDrive(drivetrain, 1.5)))
+ .andThen(ShootStageAuto(shooter, arm, intake).raceWith(drivetrain.turntoAngle(-30)));
 }
 
 public static Command sourceSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
-  return Commands.runOnce(()->drivetrain.resetGyro()) .andThen(ShootSubwooferAuto(shooter, arm, intake))  
-  .withTimeout(5)
- .andThen(drivetrain.turntoAngle(25)).andThen(justDrive(drivetrain, 2.0));
+  return Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()).andThen(ShootSubwooferAuto(shooter, arm, intake))  
+  .withTimeout(5).andThen(justDrive(drivetrain, .25))
+ .andThen(drivetrain.turntoAngle(25)).andThen(justDrive(drivetrain, 2.5))
+ .andThen(drivetrain.turntoAngle(15)).andThen(justDrive(drivetrain, 4.0));
 }
 
 public static Command justDrive(Drivetrain drivetrain, Double distance){
@@ -137,5 +133,4 @@ public static Command justDrive(Drivetrain drivetrain, Double distance){
 //    drivetrain.config);
       
   return drivetrain.DriveDist(distance);
-}
-}
+}}

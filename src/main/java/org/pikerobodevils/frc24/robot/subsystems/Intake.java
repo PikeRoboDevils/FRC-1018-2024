@@ -44,6 +44,12 @@ public class Intake extends SubsystemBase {
     ()->controlboard.driver.getHID().setRumble(RumbleType.kBothRumble, 0)).withTimeout(.5);
 }
 
+ public Command stopOuttake(){
+    
+  return startEnd(()->controlboard.operator.getHID().setRumble(RumbleType.kBothRumble, .5),
+    ()->controlboard.operator.getHID().setRumble(RumbleType.kBothRumble, 0)).withTimeout(.5);
+}
+
   public Command runIntake(double speed){
     return run(
       ()->{
@@ -68,10 +74,10 @@ public class Intake extends SubsystemBase {
     return run(
       ()->{
         setSpeed(SHOOT_SPEED);
-      })
+      }).until(()->!hasNote()).andThen(stopOuttake())
       .finallyDo(()->{setSpeed(0);
-      });
-  }
+      });  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
