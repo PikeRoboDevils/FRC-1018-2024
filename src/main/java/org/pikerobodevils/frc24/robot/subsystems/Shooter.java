@@ -100,13 +100,13 @@ public class Shooter extends SubsystemBase {
 
   public Command spin()
   {
-   return run(()->setSpeed(feedforward.calculate(CONSTANT_VELOCITY)));
+   return runOnce(()->setSpeed(feedforward.calculate(CONSTANT_VELOCITY)));
   }
 
   public Command spinUpAmp(BooleanSupplier hasNote){
         return run(
       ()->{
-        setSpeed(feedforward.calculate(3000));
+        setSpeed(.8);
       }).until(hasNote)
       .finallyDo(()->{setSpeed(feedforward.calculate(CONSTANT_VELOCITY));
       });

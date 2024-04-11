@@ -90,9 +90,11 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
      autoChooser.addOption("shoot no move", Autos.ShootSubwooferAuto(shooterSubsystem, arm, intakeSubsystem));
    //   autoChooser.addOption("move", Autos.DriveBack(drivetrain, .2));
           autoChooser.addOption("Middle High", Autos.twoNoteDrive(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-    autoChooser.addOption("Source Side", Autos.sourceSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+    autoChooser.addOption("Source RED", Autos.sourceRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+    autoChooser.addOption("Source BLUE", Autos.sourceBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
     autoChooser.addOption("three note", Autos.threeNote(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-     autoChooser.addOption("Amp Side", Autos.ampSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+     autoChooser.addOption("Amp RED", Autos.ampRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+     autoChooser.addOption("Amp BLUE", Autos.ampBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
     autoChooser.addOption("DRIVE", Autos.justDrive(drivetrain, 1.0));
     autoChooser.addOption("TESTSTAGE", Autos.ShootStageAuto(shooterSubsystem, arm, intakeSubsystem));
     shuffleboard.add("Auto Chooser", autoChooser);
