@@ -4,36 +4,30 @@
 
 package org.pikerobodevils.frc24.robot;
 
-import static edu.wpi.first.units.Units.Amp;
 import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.SHOOT_SPEED;
 
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
 import org.pikerobodevils.frc24.robot.commands.Autos;
 import org.pikerobodevils.frc24.robot.subsystems.Arm;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
 import org.pikerobodevils.frc24.robot.subsystems.BotGoClimb;
 import org.pikerobodevils.frc24.robot.subsystems.Drivetrain;
-import org.pikerobodevils.frc24.robot.subsystems.ExampleSubsystem;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
 import org.pikerobodevils.frc24.robot.subsystems.Shooter;
 import org.pikerobodevils.frc24.robot.subsystems.Vision;
 
-import com.pathplanner.lib.auto.AutoBuilder;
-
-import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
-
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -50,26 +44,48 @@ public class RobotContainer {
   private final BotGoClimb climber= new BotGoClimb(); 
   private final Arm arm = new Arm();
   private final Vision vision = new Vision();
-
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
   SendableChooser<Command> autoChooser = new SendableChooser<>();
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
-
+  private final MechanismLigament2d m_climber;
+  private final MechanismLigament2d m_arm;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    
+  
     drivetrain.setDefaultCommand(
         drivetrain
             .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
             .withName("Default Drive Command"));
+
+    
     // intakeSubsystem.setDefaultCommand(
     //   intakeSubsystem.runIntake(controlboard.getIntake()));
 
     //climber.setDefaultCommand(climber.climbOverride((controlboard.operator::getLeftY)));
 
     //arm.setDefaultCommand(arm.armOverride(controlboard.operator::getLeftY));
+
+    //sim mechanisms
+    //im not sure if this is an issue but mechanisms are on the left side only but it works 
+   // mech0 is climb mech1 is arm
+   Mechanism2d mech0  = new Mechanism2d(0, 0);//this is offset for red or blue sim
+   Mechanism2d mech1  = new Mechanism2d(0, 0);//this is offset for red or blue sim
+   // the mechanism root nodes
+   MechanismRoot2d root0 = mech0.getRoot("climb",-.5,0); // 0,0 is top left corner of bot 
+   MechanismRoot2d root1 = mech1.getRoot("Arm",-.6,0.1993392); // 0,0 is top left corner of bot 
+   // MechanismLigament2d objects represent each "section"/"stage" of the mechanism, and are based
+   // off the root node or another ligament object
+  m_climber = root0.append(new MechanismLigament2d("Climber", 0.5398262, 90));
+  m_arm = root1.append(new MechanismLigament2d("Arm", 0.895858, 0   ));
+
+
+    //for tracing data idk if itll work or not edit: It works
+    SmartDashboard.putData("Field", drivetrain.m_field);
+    SmartDashboard.putData("Climb", mech0);
+    SmartDashboard.putData("Arm", mech1);
+
 
     shuffleboard.addBoolean("Has Note",()->intakeSubsystem.hasNote());
     shuffleboard.addDouble("right velocity", ()->drivetrain.getRightVelocity());
@@ -161,5 +177,9 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
       // .alongWith(intakeSubsystem.shoot())
       // .onlyWhile(()->shooterSubsystem.shootReady());
   }
-  
+  public void robotPeriodic() {
+    // update the dashboard mechanism's state
+   //m_arm.setAngle(arm.getPositionDeg());
+  }
+
 }

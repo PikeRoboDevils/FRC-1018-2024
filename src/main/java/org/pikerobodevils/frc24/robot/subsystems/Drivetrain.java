@@ -17,6 +17,9 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
+import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.hal.simulation.SimDeviceDataJNI;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -27,8 +30,10 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.math.kinematics.proto.ChassisSpeedsProto;
 import edu.wpi.first.math.proto.Kinematics;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -39,6 +44,7 @@ import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
 import edu.wpi.first.units.Velocity;
 import edu.wpi.first.units.Voltage;
+import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.CounterBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Encoder;
@@ -46,6 +52,10 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.simulation.AnalogGyroSim;
+import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
+import edu.wpi.first.wpilibj.simulation.EncoderSim;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -66,10 +76,13 @@ import java.util.function.Supplier;
 import org.pikerobodevils.frc24.lib.vendor.SparkMax;
 import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils;
 import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils.UnitConversions;
+import org.pikerobodevils.frc24.robot.Robot;
 import org.pikerobodevils.frc24.robot.RobotContainer;
 
 public class Drivetrain extends SubsystemBase{
   private final ShuffleboardTab dashboard = Shuffleboard.getTab("Driver");
+  //for advantagescope tracking
+  public final Field2d m_field = new Field2d();
   private final SparkMax leftLeader = new SparkMax(LEFT_LEADER_ID, MotorType.kBrushless);
   private final SparkMax leftFollowerOne = new SparkMax(LEFT_FOLLOWER_ONE_ID, MotorType.kBrushless);
   //private final SparkMax leftFollowerTwo = new SparkMax(LEFT_FOLLOWER_TWO_ID, MotorType.kBrushless);
@@ -82,6 +95,18 @@ public class Drivetrain extends SubsystemBase{
 
   private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_A,LEFT_ENCODER_B,true, CounterBase.EncodingType.k4X);
   private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_A,RIGHT_ENCODER_B,true, CounterBase.EncodingType.k4X);
+
+  //simmulated version of encoders and FAKE gyro for sim
+  private EncoderSim m_leftEncoderSim = new EncoderSim(leftEncoder); 
+  private EncoderSim m_rightEncoderSim = new EncoderSim(rightEncoder);
+  // Create our gyro object like we would on a real robot.
+  //DO NOT USE THIS FOR ANYTHING ELSE BUT SIM
+private AnalogGyro m_gyro = new AnalogGyro(1);
+
+// Create the simulated gyro object, used for setting the gyro
+// angle. Like EncoderSim, this does not need to be commented out
+// when deploying code to the roboRIO.
+private AnalogGyroSim m_gyroSim = new AnalogGyroSim(m_gyro);
 
   private final AHRS navX = new AHRS();
   private DifferentialDriveOdometry m_Odometry;
@@ -102,6 +127,23 @@ public class Drivetrain extends SubsystemBase{
   // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
   private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
  
+      // Create the simulation model of our drivetrain. 
+      //STILL NEEDS CHANGING
+    DifferentialDrivetrainSim m_driveSim = new DifferentialDrivetrainSim(
+    DCMotor.getNEO(2),       // 2 NEO motors on each side of the drivetrain.
+    7.29,                    // 7.29:1 gearing reduction.
+    7.5,                     // MOI of 7.5 kg m^2 (from CAD model).
+    56.699,                    // The mass of the robot.
+    0.0762,       //  The robot uses 3" radius wheels.
+    1,         // The track width is 0.7112 meters.
+
+    // The standard deviations for measurement noise:
+    // x and y:          0.001 m
+    // heading:          0.001 rad
+    // l and r velocity: 0.1   m/s
+    // l and r position: 0.005 m
+    VecBuilder.fill(0.001, 0.001, 0.001, 0.1, 0.1, 0.005, 0.005));
+
   /** Creates a new Drivetrain. */
   public Drivetrain() {
     leftEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
@@ -146,6 +188,8 @@ public class Drivetrain extends SubsystemBase{
 
     // leftEncoder.setVelocityConversionFactor(1/GEAR_RATIO);
     // rightEncoder.setVelocityConversionFactor(1/GEAR_RATIO);
+
+    
     var autoVoltageConstraint =
 
         new DifferentialDriveVoltageConstraint(
@@ -399,13 +443,19 @@ public class Drivetrain extends SubsystemBase{
   @Override
   public void periodic() {
     currentPitchRate = pitchRate.calculate(getPitch());
+    if (Robot.isReal()) {
     m_Pose = m_Odometry.update(
       navX.getRotation2d(),
       getLeftDistance(),
-      getRightDistance()
-        );
-
-   
+      getRightDistance());
+    m_field.setRobotPose(m_Odometry.getPoseMeters());
+    } else { //done only for accurate simulation
+      m_Pose = m_Odometry.update(
+      m_gyro.getRotation2d(),
+      getLeftDistance(),
+      getRightDistance());
+    m_field.setRobotPose(m_Odometry.getPoseMeters());
+    }
   }
 
   public Command turntoAngle(double angle) {
@@ -461,6 +511,27 @@ public class Drivetrain extends SubsystemBase{
         .andThen(Commands.runOnce(() -> this.setLeftRightVoltage(0, 0)));
 
   }
+  //for simulations of autos
+  public void simulationPeriodic() {
+    // Set the inputs to the system. Note that we need to convert
+    // the [-1, 1] PWM signal to voltage by multiplying it by the
+    // robot controller voltage.
+    m_driveSim.setInputs(-leftLeader.get() * RobotController.getInputVoltage(),
+                         -rightLeader.get() * RobotController.getInputVoltage());
+  
+    // Advance the model by 20 ms. Note that if you are running this
+    // subsystem in a separate thread or have changed the nominal timestep
+    // of TimedRobot, this value needs to match it.
+    m_driveSim.update(0.02);
+   // Update all of our sensors.
+    m_leftEncoderSim.setDistance(m_driveSim.getLeftPositionMeters());
+    m_leftEncoderSim.setRate(m_driveSim.getLeftVelocityMetersPerSecond());
+    m_rightEncoderSim.setDistance(m_driveSim.getRightPositionMeters());
+    m_rightEncoderSim.setRate(m_driveSim.getRightVelocityMetersPerSecond());
+    m_gyroSim.setAngle(m_driveSim.getHeading().getDegrees());
 
+
+  }
+  
 }
 

@@ -5,10 +5,13 @@
 package org.pikerobodevils.frc24.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 
 import static org.pikerobodevils.frc24.robot.Constants.ClimbConstants.*;
 
 import java.util.function.DoubleSupplier;
+
+import org.pikerobodevils.frc24.robot.RobotContainer;
 
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
@@ -16,6 +19,9 @@ import com.revrobotics.RelativeEncoder;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -40,6 +46,7 @@ public class BotGoClimb extends SubsystemBase {
     ClimbFollower.burnFlash();
    
     encoder.setPosition(0);
+
 
   }
   public double getPosition(){

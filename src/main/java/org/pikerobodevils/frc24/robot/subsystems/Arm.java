@@ -55,14 +55,9 @@ public class Arm extends SubsystemBase {
   ArmFeedforward feedforward = new ArmFeedforward(KS, KG, KV, KA);
   ProfiledPIDController controller = new ProfiledPIDController(KP, KI, KD, CONSTRAINTS);
 
-  // @Log(name = "Arm Simulation")
-  private final Mechanism2d m_mech2d = new Mechanism2d(60, 60);
+  //removed
 
-  private final MechanismRoot2d m_armPivot = m_mech2d.getRoot("ArmPivot", 30, 30);
-  private final MechanismLigament2d m_armTower =
-      m_armPivot.append(new MechanismLigament2d("ArmTower", 30, -90));
-  private final MechanismLigament2d m_arm =
-      m_armPivot.append(new MechanismLigament2d("Arm", 30, 0, 6, new Color8Bit(Color.kYellow)));
+
 
   public Arm() {
     rightController.withInitializer(
@@ -91,7 +86,6 @@ public class Arm extends SubsystemBase {
     controller.reset(getPosition());
     setGoal(ArmPosition.SUBWOOFER.valueRadians);
 
-    m_armTower.setColor(new Color8Bit(Color.kBlue));
   }
 
   /**
@@ -251,6 +245,5 @@ public class Arm extends SubsystemBase {
     if (!DriverStation.isEnabled()) {
       controller.reset(getPosition());
     }
-    m_arm.setAngle(Units.radiansToDegrees(getPosition()));
   }
 }
