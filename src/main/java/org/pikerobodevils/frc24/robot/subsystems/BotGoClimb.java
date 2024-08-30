@@ -5,13 +5,11 @@
 package org.pikerobodevils.frc24.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Mechanism;
 
 import static org.pikerobodevils.frc24.robot.Constants.ClimbConstants.*;
 
+import java.beans.Encoder;
 import java.util.function.DoubleSupplier;
-
-import org.pikerobodevils.frc24.robot.RobotContainer;
 
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
@@ -23,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class BotGoClimb extends SubsystemBase {
   // Difines we have A motor and spark max that is linked
@@ -65,7 +62,7 @@ public class BotGoClimb extends SubsystemBase {
    
     encoder.setPosition(0);
 
-
+    
   }
   public double getPosition(){
     return encoder.getPosition();
@@ -98,7 +95,7 @@ public void resetEncoders(){
   }
   
 
-  @Override
+ @Override
   public void periodic() {
    // This method will be called once per scheduler run
   m_climber.setLength(encoder.getPosition() + 0.4);

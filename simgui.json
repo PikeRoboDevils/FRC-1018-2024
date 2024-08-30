@@ -1,37 +1,17 @@
 {
   "HALProvider": {
+    "Encoders": {
+      "window": {
+        "visible": true
+      }
+    },
     "Other Devices": {
-      "SPARK MAX [10]": {
+      "DutyCycleEncoder[6]": {
         "header": {
           "open": true
         }
       },
-      "SPARK MAX [11]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [12]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [5]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [6]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [7]": {
-        "header": {
-          "open": true
-        }
-      },
-      "SPARK MAX [8]": {
+      "SPARK MAX [9]": {
         "header": {
           "open": true
         }
@@ -44,11 +24,15 @@
       "/Shuffleboard/Driver Dashboard/Auto Chooser": "String Chooser",
       "/SmartDashboard/Arm": "Mechanism2d",
       "/SmartDashboard/Climb": "Mechanism2d",
+      "/SmartDashboard/Climber": "Mechanism2d",
       "/SmartDashboard/Field": "Field2d"
     }
   },
   "NetworkTables": {
     "Persistent Values": {
+      "open": false
+    },
+    "Transitory Values": {
       "open": false
     },
     "transitory": {

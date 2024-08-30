@@ -449,7 +449,7 @@ private AnalogGyroSim m_gyroSim = new AnalogGyroSim(m_gyro);
       getLeftDistance(),
       getRightDistance());
     m_field.setRobotPose(m_Odometry.getPoseMeters());
-    } else { //done only for accurate simulation
+    } else { //done only for simulation 
       m_Pose = m_Odometry.update(
       m_gyro.getRotation2d(),
       getLeftDistance(),

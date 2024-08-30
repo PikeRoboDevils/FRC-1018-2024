@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -54,8 +55,24 @@ public class Arm extends SubsystemBase {
   DutyCycleEncoder absoluteEncoder = new DutyCycleEncoder(ENCODER_ABS_DIO);
   ArmFeedforward feedforward = new ArmFeedforward(KS, KG, KV, KA);
   ProfiledPIDController controller = new ProfiledPIDController(KP, KI, KD, CONSTRAINTS);
+  private final MechanismLigament2d m_arm;
+  
+      //sim mechanisms
+    // the main mechanism object
+    private final Mechanism2d mech = new Mechanism2d(0,0);
+    // the mechanism root node
+    private final MechanismRoot2d root = mech.getRoot("Arm", -0.6, 0.254); //actuall
+    {
 
-  //removed
+     
+    // MechanismLigament2d objects represent each "section"/"stage" of the mechanism, and are based
+    // off the root node or another ligament object
+    m_arm = root.append(new MechanismLigament2d("arm", 0.889, 0));
+
+    // post the mechanism to the dashboard
+    SmartDashboard.putData("Arm", mech);}
+
+  /** Creates a new BotGoClimb. */
 
 
 
@@ -245,5 +262,7 @@ public class Arm extends SubsystemBase {
     if (!DriverStation.isEnabled()) {
       controller.reset(getPosition());
     }
+    //m_arm.setAngle(encoder.getDistance());
+    m_arm.setAngle(getPositionDeg());
   }
 }
