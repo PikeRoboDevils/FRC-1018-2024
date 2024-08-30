@@ -56,11 +56,6 @@ public class RobotContainer {
 
 
 
-    //for tracing data idk if itll work or not edit: It works
-    SmartDashboard.putData("Field", drivetrain.m_field);
-
-
-
     shuffleboard.addBoolean("Has Note",()->intakeSubsystem.hasNote());
     shuffleboard.addDouble("right velocity", ()->drivetrain.getRightVelocity());
     shuffleboard.addDouble("left velocity", ()->drivetrain.getLeftVelocity());
