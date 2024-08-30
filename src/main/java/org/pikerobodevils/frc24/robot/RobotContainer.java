@@ -6,6 +6,7 @@ package org.pikerobodevils.frc24.robot;
 
 import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.SHOOT_SPEED;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
 import org.pikerobodevils.frc24.robot.commands.Autos;
 import org.pikerobodevils.frc24.robot.subsystems.Arm;
@@ -42,7 +43,8 @@ public class RobotContainer {
   private final Arm arm = new Arm();
   private final Vision vision = new Vision();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
-  SendableChooser<Command> autoChooser = new SendableChooser<>();
+private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto");
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -141,7 +143,7 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     //return Autos.ShootSubwooferAuto(s);
-      return autoChooser.getSelected();
+      return autoChooser.get();
      
       // .andThen(shooterSubsystem.spinUp())
       // .alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))

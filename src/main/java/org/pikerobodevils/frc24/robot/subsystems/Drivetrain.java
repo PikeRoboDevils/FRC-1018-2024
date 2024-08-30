@@ -60,6 +60,7 @@ import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.pikerobodevils.frc24.lib.vendor.SparkMax;
 import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils;
 import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils.UnitConversions;
@@ -69,6 +70,7 @@ import org.pikerobodevils.frc24.robot.RobotContainer;
 public class Drivetrain extends SubsystemBase{
   private final ShuffleboardTab dashboard = Shuffleboard.getTab("Driver");
   //for advantagescope tracking
+  @AutoLogOutput
   public final Field2d m_field = new Field2d();
   private final SparkMax leftLeader = new SparkMax(LEFT_LEADER_ID, MotorType.kBrushless);
   private final SparkMax leftFollowerOne = new SparkMax(LEFT_FOLLOWER_ONE_ID, MotorType.kBrushless);
@@ -305,51 +307,52 @@ public class Drivetrain extends SubsystemBase{
     rightFollowerOne.setIdleMode(mode);
     // rightFollowerTwo.setIdleMode(mode);
   }
+  @AutoLogOutput
   public double getLeftVelocity(){
     return leftEncoder.getRate();
   }
+  @AutoLogOutput
   public double getRightVelocity(){
     return rightEncoder.getRate();
   }
-
+  @AutoLogOutput
   public double getLeftDistance(){
     return leftEncoder.getDistance();
   }
-
+  @AutoLogOutput
   public double getRightDistance(){
     return rightEncoder.getDistance();
   }
 
-//   @Log(name = "Yaw")
+  @AutoLogOutput
   public double getYaw() {
     return navX.getYaw();
   }
 
-//   @Log(name = "Pitch")
+  @AutoLogOutput
   public double getPitch() {
     return navX.getPitch();
   }
-
-//   @Log(name = "Pitch Rate")
+  @AutoLogOutput
   public double getPitchRate() {
     return currentPitchRate;
   }
 
-//   @Log(name = "Roll")
+  @AutoLogOutput
   public double getRoll() {
     return navX.getRoll();
   }
 
-//   @Log
+  @AutoLogOutput
   public double getLeftVoltage() {
     return leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
   }
 
-//   @Log
+  @AutoLogOutput
   public double getRightVoltage() {
     return leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
   }
-
+  @AutoLogOutput
   public Pose2d getPose() {
     return m_Pose;
   }
