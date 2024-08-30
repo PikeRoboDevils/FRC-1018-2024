@@ -126,7 +126,7 @@ public final class Constants {
     public static final int RIGHT_ENCODER_B = 1;
 
 
-    public static final int CURRENT_LIMIT = 60;
+    public static final int CURRENT_LIMIT = 56;
     public static final double GEAR_RATIO = 1;
 
     public static final double KS = 0.21709;

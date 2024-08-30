@@ -19,9 +19,6 @@ import org.pikerobodevils.frc24.robot.subsystems.Vision;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -41,7 +38,7 @@ public class RobotContainer {
   private final Intake intakeSubsystem = new Intake(controlboard);
   private final Drivetrain drivetrain = new Drivetrain();
   private final Shooter shooterSubsystem = new Shooter();
-  private final BotGoClimb climber= new BotGoClimb(); 
+  private final BotGoClimb climber = new BotGoClimb(); 
   private final Arm arm = new Arm();
   private final Vision vision = new Vision();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
@@ -49,8 +46,6 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final MechanismLigament2d m_climber;
-  private final MechanismLigament2d m_arm;
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
   
@@ -59,32 +54,11 @@ public class RobotContainer {
             .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
             .withName("Default Drive Command"));
 
-    
-    // intakeSubsystem.setDefaultCommand(
-    //   intakeSubsystem.runIntake(controlboard.getIntake()));
-
-    //climber.setDefaultCommand(climber.climbOverride((controlboard.operator::getLeftY)));
-
-    //arm.setDefaultCommand(arm.armOverride(controlboard.operator::getLeftY));
-
-    //sim mechanisms
-    //im not sure if this is an issue but mechanisms are on the left side only but it works 
-   // mech0 is climb mech1 is arm
-   Mechanism2d mech0  = new Mechanism2d(0, 0);//this is offset for red or blue sim
-   Mechanism2d mech1  = new Mechanism2d(0, 0);//this is offset for red or blue sim
-   // the mechanism root nodes
-   MechanismRoot2d root0 = mech0.getRoot("climb",-.5,0); // 0,0 is top left corner of bot 
-   MechanismRoot2d root1 = mech1.getRoot("Arm",-.6,0.1993392); // 0,0 is top left corner of bot 
-   // MechanismLigament2d objects represent each "section"/"stage" of the mechanism, and are based
-   // off the root node or another ligament object
-  m_climber = root0.append(new MechanismLigament2d("Climber", 0.5398262, 90));
-  m_arm = root1.append(new MechanismLigament2d("Arm", 0.895858, 0   ));
 
 
     //for tracing data idk if itll work or not edit: It works
     SmartDashboard.putData("Field", drivetrain.m_field);
-    SmartDashboard.putData("Climb", mech0);
-    SmartDashboard.putData("Arm", mech1);
+
 
 
     shuffleboard.addBoolean("Has Note",()->intakeSubsystem.hasNote());
@@ -112,6 +86,8 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
      autoChooser.addOption("Amp RED", Autos.ampRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
      autoChooser.addOption("Amp BLUE", Autos.ampBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
     autoChooser.addOption("DRIVE", Autos.justDrive(drivetrain, 1.0));
+        autoChooser.addOption("tubro", Autos.turbo(shooterSubsystem,drivetrain));
+
     autoChooser.addOption("TESTSTAGE", Autos.ShootStageAuto(shooterSubsystem, arm, intakeSubsystem));
     shuffleboard.add("Auto Chooser", autoChooser);
     // Configure the trigger bindings

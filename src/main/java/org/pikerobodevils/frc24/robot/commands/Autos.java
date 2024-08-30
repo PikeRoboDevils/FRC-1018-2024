@@ -154,4 +154,8 @@ public static Command justDrive(Drivetrain drivetrain, Double distance){
 //    drivetrain.config);
       
   return drivetrain.DriveDist(distance);
-}}
+}
+  public static Command turbo(Shooter armsShooter, Drivetrain drivetrain) {
+    return drivetrain.arcadeDriveCommand(() -> 0.0, () -> .1).withTimeout(1).andThen(drivetrain.arcadeDriveCommand(()->0.0, ()->0.0));
+  }
+} 
