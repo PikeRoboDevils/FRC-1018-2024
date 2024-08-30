@@ -1,5 +1,7 @@
 package org.pikerobodevils.frc24.robot;
 
+import org.littletonrobotics.junction.AutoLog;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;

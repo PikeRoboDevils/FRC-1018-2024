@@ -8,6 +8,9 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+
+import org.littletonrobotics.junction.AutoLog;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 
 /**
@@ -24,7 +27,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
  */
 public final class Constants {
 
-  public static final Mode currentMode = Mode.REAL;
+  public static final Mode currentMode = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -36,7 +39,7 @@ public final class Constants {
     /** Replaying from a log file. */
     REPLAY
   }
-
+  
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }

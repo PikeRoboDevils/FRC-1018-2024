@@ -11,7 +11,11 @@ import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
 import org.pikerobodevils.frc24.robot.commands.Autos;
 import org.pikerobodevils.frc24.robot.subsystems.Arm;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
+import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
+import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIOSim;
+import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIOSparkMax;
 
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.pikerobodevils.frc24.robot.subsystems.BotGoClimb;
@@ -20,6 +24,7 @@ import org.pikerobodevils.frc24.robot.subsystems.Intake;
 import org.pikerobodevils.frc24.robot.subsystems.Shooter;
 import org.pikerobodevils.frc24.robot.subsystems.Vision;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -27,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -36,11 +42,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+public class RobotContainer {
+
+  private Drivetrain drivetrain = isDriveSIM();
   private final ControlBoard controlboard = new ControlBoard();
   private final Intake intakeSubsystem = new Intake(controlboard);
-  private final Drivetrain drivetrain = new Drivetrain();
   private final Shooter shooterSubsystem = new Shooter();
   private final BotGoClimb climber = new BotGoClimb(); 
   private final Arm arm = new Arm();
@@ -156,6 +163,15 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
       // .alongWith(intakeSubsystem.shoot())
       // .onlyWhile(()->shooterSubsystem.shootReady());
   }
+public Drivetrain isDriveSIM() {
+  if (Constants.currentMode == org.pikerobodevils.frc24.robot.Constants.Mode.SIM) {
+    return drivetrain = new Drivetrain(new DriveIOSim());
+  } else {
+    return drivetrain = new Drivetrain(new DriveIOSparkMax());
+  }
+  
+}
+
   public void robotPeriodic() {
     // update the dashboard mechanism's state
    //m_arm.setAngle(arm.getPositionDeg());
