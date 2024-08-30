@@ -11,6 +11,9 @@ import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
 import org.pikerobodevils.frc24.robot.commands.Autos;
 import org.pikerobodevils.frc24.robot.subsystems.Arm;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import org.pikerobodevils.frc24.robot.subsystems.BotGoClimb;
 import org.pikerobodevils.frc24.robot.subsystems.Drivetrain;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
@@ -43,7 +46,8 @@ public class RobotContainer {
   private final Arm arm = new Arm();
   private final Vision vision = new Vision();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
-private final LoggedDashboardChooser<Command> autoChooser = new LoggedDashboardChooser<>("Auto");
+private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+private final SendableChooser<Command> pathplan = AutoBuilder.buildAutoChooser();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -85,8 +89,10 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
     autoChooser.addOption("DRIVE", Autos.justDrive(drivetrain, 1.0));
         autoChooser.addOption("tubro", Autos.turbo(shooterSubsystem,drivetrain));
 
+
     autoChooser.addOption("TESTSTAGE", Autos.ShootStageAuto(shooterSubsystem, arm, intakeSubsystem));
     shuffleboard.add("Auto Chooser", autoChooser);
+    shuffleboard.add("PATHS", pathplan);
     // Configure the trigger bindings
     configureBindings();
   }
@@ -143,7 +149,7 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     //return Autos.ShootSubwooferAuto(s);
-      return autoChooser.get();
+      return autoChooser.getSelected();
      
       // .andThen(shooterSubsystem.spinUp())
       // .alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))

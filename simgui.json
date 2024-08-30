@@ -22,7 +22,9 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Driver Dashboard/Auto Chooser": "String Chooser",
+      "/Shuffleboard/Driver Dashboard/PATHS": "String Chooser",
       "/SmartDashboard/Arm": "Mechanism2d",
+      "/SmartDashboard/Auto": "String Chooser",
       "/SmartDashboard/Climb": "Mechanism2d",
       "/SmartDashboard/Climber": "Mechanism2d",
       "/SmartDashboard/Field": "Field2d"

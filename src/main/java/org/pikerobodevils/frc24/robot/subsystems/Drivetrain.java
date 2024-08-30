@@ -6,16 +6,41 @@
 package org.pikerobodevils.frc24.robot.subsystems;
 
 
-import com.kauailabs.navx.frc.AHRS;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.ReplanningConfig;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkLowLevel.MotorType;
 import static edu.wpi.first.units.MutableMeasure.mutable;
 import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.CURRENT_LIMIT;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.IDLE_MODE;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.KA;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.KP;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.KS;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.KV;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.LEFT_ENCODER_A;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.LEFT_ENCODER_B;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.LEFT_FOLLOWER_ONE_ID;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.LEFT_LEADER_ID;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.RIGHT_ENCODER_A;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.RIGHT_ENCODER_B;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.RIGHT_FOLLOWER_ONE_ID;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.RIGHT_LEADER_ID;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.VOLTRAMP;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.kDriveKinematics;
+
+// import io.github.oblarg.oblog.Loggable;
+// import io.github.oblarg.oblog.annotations.Log;
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.pikerobodevils.frc24.lib.vendor.SparkMax;
+import org.pikerobodevils.frc24.robot.Robot;
+
+import com.kauailabs.navx.frc.AHRS;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.ReplanningConfig;
+import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
@@ -49,23 +74,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
-import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.*;
-
-import java.nio.channels.Pipe;
-import java.util.List;
-// import io.github.oblarg.oblog.Loggable;
-// import io.github.oblarg.oblog.annotations.Log;
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.AutoLogOutput;
-import org.pikerobodevils.frc24.lib.vendor.SparkMax;
-import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils;
-import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils.UnitConversions;
-import org.pikerobodevils.frc24.robot.Robot;
-import org.pikerobodevils.frc24.robot.RobotContainer;
 
 public class Drivetrain extends SubsystemBase{
   private final ShuffleboardTab dashboard = Shuffleboard.getTab("Driver");
@@ -191,11 +199,16 @@ public class Drivetrain extends SubsystemBase{
     m_Odometry = new DifferentialDriveOdometry(navX.getRotation2d(), getLeftDistance(), getRightDistance(),
     m_Pose);
 
-        AutoBuilder.configureRamsete(
+   drivePID.setTolerance(.1);  
+
+    //pathplanner
+        // Configure AutoBuilder last
+    AutoBuilder.configureLTV(
             this::getPose, // Robot pose supplier
             this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getWheelSpeeds, // Current ChassisSpeeds supplier
             this::drive, // Method that will drive the robot given ChassisSpeeds
+            0.02, // Robot control loop period in seconds. Default is 0.02
             new ReplanningConfig(), // Default path replanning config. See the API for the options here
             () -> {
               // Boolean supplier that controls when the path will be mirrored for the red alliance
@@ -206,12 +219,12 @@ public class Drivetrain extends SubsystemBase{
               if (alliance.isPresent()) {
                 return alliance.get() == DriverStation.Alliance.Red;
               }
-              return true;
+              return false;
             },
             this // Reference to this subsystem to set requirements
     );
-   drivePID.setTolerance(.1);  
   }
+
   public boolean isRed() {
                   var alliance = DriverStation.getAlliance();
               if (alliance.isPresent()) {
