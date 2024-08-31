@@ -13,8 +13,6 @@
 
 package org.pikerobodevils.frc24.robot.subsystems.drive;
 
-import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.CURRENT_LIMIT;
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.pikerobodevils.frc24.lib.vendor.SparkMax;
 import org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants;
@@ -85,8 +83,8 @@ public class REALDriveIO implements DriveIO {
 
     //leftLeader.enableVoltageCompensation(12.0); //bad for flapjack :(
     //rightLeader.enableVoltageCompensation(12.0); //bad for flapjack :(
-    leftLeader.setSmartCurrentLimit(CURRENT_LIMIT);
-    rightLeader.setSmartCurrentLimit(CURRENT_LIMIT);
+    leftLeader.setSmartCurrentLimit(DrivetrainConstants.CURRENT_LIMIT);
+    rightLeader.setSmartCurrentLimit(DrivetrainConstants.CURRENT_LIMIT);
 
     
 
