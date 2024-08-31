@@ -16,6 +16,8 @@ package org.pikerobodevils.frc24.robot.subsystems.drive;
 import edu.wpi.first.math.geometry.Rotation2d;
 import org.littletonrobotics.junction.AutoLog;
 
+import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
+
 public interface DriveIO {
   @AutoLog
   public static class DriveIOInputs {
@@ -41,4 +43,9 @@ public interface DriveIO {
   /** Run closed loop at the specified velocity. */
   public default void setVelocity(
       double leftRadPerSec, double rightRadPerSec, double leftFFVolts, double rightFFVolts) {}
+
+  /** ADDED FOR EASY DRIVETRAIN REPLACEMENT */
+  public default void set(double left, double right) {}
+  public default double getLeftVoltage() {return 0;}
+  public default double getRightVoltage() {return 0;}
 }

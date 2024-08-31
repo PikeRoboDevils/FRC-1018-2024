@@ -88,14 +88,14 @@ public class Drivetrain extends SubsystemBase{
   private final ShuffleboardTab dashboard = Shuffleboard.getTab("Driver");
   //for advantagescope tracking
   public final Field2d m_field = new Field2d();
-  private final SparkMax leftLeader = new SparkMax(LEFT_LEADER_ID, MotorType.kBrushless);
-  private final SparkMax leftFollowerOne = new SparkMax(LEFT_FOLLOWER_ONE_ID, MotorType.kBrushless);
-  //private final SparkMax leftFollowerTwo = new SparkMax(LEFT_FOLLOWER_TWO_ID, MotorType.kBrushless);
-
-  private final SparkMax rightLeader = new SparkMax(RIGHT_LEADER_ID, MotorType.kBrushless);
-  private final SparkMax rightFollowerOne = new SparkMax(RIGHT_FOLLOWER_ONE_ID, MotorType.kBrushless);
-  // private final SparkMax rightFollowerTwo =
-  //     new SparkMax(RIGHT_FOLLOWER_TWO_ID, MotorType.kBrushless);
+//  private final SparkMax leftLeader = new SparkMax(LEFT_LEADER_ID, MotorType.kBrushless);
+//  private final SparkMax leftFollowerOne = new SparkMax(LEFT_FOLLOWER_ONE_ID, MotorType.kBrushless);
+//  //private final SparkMax leftFollowerTwo = new SparkMax(LEFT_FOLLOWER_TWO_ID, MotorType.kBrushless);
+//
+//  private final SparkMax rightLeader = new SparkMax(RIGHT_LEADER_ID, MotorType.kBrushless);
+//  private final SparkMax rightFollowerOne = new SparkMax(RIGHT_FOLLOWER_ONE_ID, MotorType.kBrushless);
+//  // private final SparkMax rightFollowerTwo =
+//  //     new SparkMax(RIGHT_FOLLOWER_TWO_ID, MotorType.kBrushless);
 
   private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_A,LEFT_ENCODER_B,true, CounterBase.EncodingType.k4X);
   private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_A,RIGHT_ENCODER_B,true, CounterBase.EncodingType.k4X);
@@ -145,45 +145,6 @@ public class Drivetrain extends SubsystemBase{
     leftEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
     rightEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
     m_Pose = new Pose2d(0, 0, new Rotation2d());
-    leftLeader.restoreFactoryDefaults();
-    leftLeader.setIdleMode(IDLE_MODE);
-    leftLeader.setSmartCurrentLimit(CURRENT_LIMIT);
-    leftLeader.setOpenLoopRampRate(VOLTRAMP);
-
-    leftFollowerOne.restoreFactoryDefaults();
-    leftFollowerOne.setIdleMode(IDLE_MODE);
-    leftFollowerOne.follow(leftLeader);
-    leftFollowerOne.setOpenLoopRampRate(VOLTRAMP);
-    // leftFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
-
-    // leftFollowerTwo.restoreFactoryDefaults();
-    // leftFollowerTwo.setIdleMode(IDLE_MODE);
-    // leftFollowerTwo.follow(leftLeader);
-    // leftFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
-
-    rightLeader.restoreFactoryDefaults();
-    rightLeader.setIdleMode(IDLE_MODE);
-    rightLeader.setInverted(true);
-    rightLeader.setSmartCurrentLimit(CURRENT_LIMIT);
-    rightLeader.setOpenLoopRampRate(VOLTRAMP);
-
-    rightFollowerOne.restoreFactoryDefaults();
-    rightFollowerOne.setIdleMode(IDLE_MODE);
-    rightFollowerOne.follow(rightLeader);
-    rightFollowerOne.setOpenLoopRampRate(VOLTRAMP);
-    // rightFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
-
-    // rightFollowerTwo.restoreFactoryDefaults();
-    // rightFollowerTwo.setIdleMode(IDLE_MODE);
-    // rightFollowerTwo.follow(rightLeader);
-    // rightFollowerTwo.setSmartCurrentLimit(CURRENT_LIMIT);
-    // UnitConversions.setDegreesFromGearRatio(leftEncoder, GEAR_RATIO);
-    // UnitConversions.setDegreesFromGearRatio(rightEncoder, GEAR_RATIO);
-    // leftEncoder.setPositionConversionFactor(Math.PI*6);
-    // rightEncoder.setPositionConversionFactor(Math.PI*6);
-
-    // leftEncoder.setVelocityConversionFactor(1/GEAR_RATIO);
-    // rightEncoder.setVelocityConversionFactor(1/GEAR_RATIO);
 
     
     var autoVoltageConstraint =
@@ -294,8 +255,10 @@ public class Drivetrain extends SubsystemBase{
   {
     DifferentialDriveWheelSpeeds wheelSpeeds = kDriveKinematics.toWheelSpeeds(speeds);
     
-    leftLeader.set(-leftDrivePid.calculate(getLeftVelocity(),wheelSpeeds.leftMetersPerSecond));
-    rightLeader.set(-rightDrivePid.calculate(getRightVelocity(),wheelSpeeds.rightMetersPerSecond));
+    io.setVelocity((-leftDrivePid.calculate(getLeftVelocity(),wheelSpeeds.leftMetersPerSecond)),
+     (-rightDrivePid.calculate(getRightVelocity(),wheelSpeeds.rightMetersPerSecond)),
+      feedforward.calculate(getLeftVelocity(),wheelSpeeds.leftMetersPerSecond),
+      feedforward.calculate(getRightVelocity(),wheelSpeeds.rightMetersPerSecond));
   }
   public void resetEncoders(){
     leftEncoder.reset();
@@ -306,13 +269,11 @@ public class Drivetrain extends SubsystemBase{
     navX.reset();
   }
   public void setLeftRight(double left, double right) {
-    leftLeader.set(left);
-    rightLeader.set(right);
+    io.set(left,right);
   }
 
   public void setLeftRightVoltage(double left, double right) {
-    leftLeader.setVoltage(-left);
-    rightLeader.setVoltage(-right);
+    io.setVoltage(-left, -right);
   }
     public ChassisSpeeds getWheelSpeeds() {
 
@@ -325,15 +286,7 @@ public class Drivetrain extends SubsystemBase{
     return new DifferentialDriveWheelSpeeds(getLeftVelocity(),getRightVelocity());
   }
 
-  public void setIdleMode(CANSparkMax.IdleMode mode) {
-    leftLeader.setIdleMode(mode);
-    leftFollowerOne.setIdleMode(mode);
-    //leftFollowerTwo.setIdleMode(mode);
-
-    rightLeader.setIdleMode(mode);
-    rightFollowerOne.setIdleMode(mode);
-    // rightFollowerTwo.setIdleMode(mode);
-  }
+ 
   @AutoLogOutput
   public double getLeftVelocity(){
     return inputs.leftVelocityRadPerSec * kTrackwidthMeters;
@@ -372,12 +325,12 @@ public class Drivetrain extends SubsystemBase{
 
   @AutoLogOutput
   public double getLeftVoltage() {
-    return leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
+    return io.getLeftVoltage();
   }
 
   @AutoLogOutput
   public double getRightVoltage() {
-    return leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
+    return io.getRightVoltage();
   }
   @AutoLogOutput(key = "Odometry/Robot")
   public Pose2d getPose() {

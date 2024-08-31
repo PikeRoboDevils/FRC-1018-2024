@@ -13,6 +13,12 @@
 
 package org.pikerobodevils.frc24.robot.subsystems.drive;
 
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.CURRENT_LIMIT;
+
+import org.littletonrobotics.junction.AutoLogOutput;
+import org.pikerobodevils.frc24.lib.vendor.SparkMax;
+import org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants;
+
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -34,12 +40,14 @@ public class DriveIOSparkMax implements DriveIO {
   private static final double KP = 1.0; // TODO: MUST BE TUNED, consider using REV Hardware Client
   private static final double KD = 0.0; // TODO: MUST BE TUNED, consider using REV Hardware Client
 
-  private final CANSparkMax leftLeader = new CANSparkMax(1, MotorType.kBrushless);
-  private final CANSparkMax rightLeader = new CANSparkMax(2, MotorType.kBrushless);
-  private final CANSparkMax leftFollower = new CANSparkMax(3, MotorType.kBrushless);
-  private final CANSparkMax rightFollower = new CANSparkMax(4, MotorType.kBrushless);
+  private final CANSparkMax leftLeader = new SparkMax(DrivetrainConstants.LEFT_LEADER_ID, MotorType.kBrushless);
+  private final CANSparkMax rightLeader = new CANSparkMax(DrivetrainConstants.RIGHT_LEADER_ID, MotorType.kBrushless);
+  private final CANSparkMax leftFollower = new CANSparkMax(DrivetrainConstants.LEFT_FOLLOWER_ONE_ID, MotorType.kBrushless);
+  private final CANSparkMax rightFollower = new CANSparkMax(DrivetrainConstants.RIGHT_FOLLOWER_ONE_ID, MotorType.kBrushless);
+
   private final RelativeEncoder leftEncoder = leftLeader.getEncoder();
   private final RelativeEncoder rightEncoder = rightLeader.getEncoder();
+
   private final SparkPIDController leftPID = leftLeader.getPIDController();
   private final SparkPIDController rightPID = rightLeader.getPIDController();
 
@@ -58,15 +66,29 @@ public class DriveIOSparkMax implements DriveIO {
     leftFollower.setCANTimeout(250);
     rightFollower.setCANTimeout(250);
 
+    // part of old drivetrain
+    leftLeader.setIdleMode(DrivetrainConstants.IDLE_MODE);
+    rightFollower.setIdleMode(DrivetrainConstants.IDLE_MODE);
+    leftFollower.setIdleMode(DrivetrainConstants.IDLE_MODE);
+    rightFollower.setIdleMode(DrivetrainConstants.IDLE_MODE);
+    
+    //also part of old drive
+    leftLeader.setOpenLoopRampRate(DrivetrainConstants.VOLTRAMP);
+    leftFollower.setOpenLoopRampRate(DrivetrainConstants.VOLTRAMP);
+    rightLeader.setOpenLoopRampRate(DrivetrainConstants.VOLTRAMP);
+    rightFollower.setOpenLoopRampRate(DrivetrainConstants.VOLTRAMP);
+
     leftLeader.setInverted(false);
     rightLeader.setInverted(true);
     leftFollower.follow(leftLeader, false);
     rightFollower.follow(rightLeader, false);
 
-    leftLeader.enableVoltageCompensation(12.0);
-    rightLeader.enableVoltageCompensation(12.0);
-    leftLeader.setSmartCurrentLimit(60);
-    rightLeader.setSmartCurrentLimit(60);
+    //leftLeader.enableVoltageCompensation(12.0); //bad for flapjack :(
+    //rightLeader.enableVoltageCompensation(12.0); //bad for flapjack :(
+    leftLeader.setSmartCurrentLimit(CURRENT_LIMIT);
+    rightLeader.setSmartCurrentLimit(CURRENT_LIMIT);
+
+    
 
     leftPID.setP(KP);
     leftPID.setD(KD);
@@ -108,6 +130,7 @@ public class DriveIOSparkMax implements DriveIO {
     rightLeader.setVoltage(rightVolts);
   }
 
+
   @Override
   public void setVelocity(
       double leftRadPerSec, double rightRadPerSec, double leftFFVolts, double rightFFVolts) {
@@ -122,4 +145,19 @@ public class DriveIOSparkMax implements DriveIO {
         0,
         rightFFVolts);
   }
+  @Override
+    public void set(double left, double right) {
+      leftLeader.set(left);
+     rightLeader.set(right);
+}
+  @Override
+  public double getLeftVoltage() {
+    return leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
+  }
+
+  @Override
+  public double getRightVoltage() {
+    return leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
+  }
+
 }
