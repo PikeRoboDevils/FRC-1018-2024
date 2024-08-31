@@ -13,7 +13,7 @@ import org.pikerobodevils.frc24.robot.subsystems.Arm;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
 import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
 import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIOSim;
-import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIOSparkMax;
+import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIOREAL;
 
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -156,7 +156,7 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     //return Autos.ShootSubwooferAuto(s);
-      return autoChooser.getSelected();
+      return pathplan.getSelected();
      
       // .andThen(shooterSubsystem.spinUp())
       // .alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))
@@ -167,7 +167,7 @@ public Drivetrain isDriveSIM() {
   if (Constants.currentMode == org.pikerobodevils.frc24.robot.Constants.Mode.SIM) {
     return drivetrain = new Drivetrain(new DriveIOSim());
   } else {
-    return drivetrain = new Drivetrain(new DriveIOSparkMax());
+    return drivetrain = new Drivetrain(new DriveIOREAL());
   }
   
 }

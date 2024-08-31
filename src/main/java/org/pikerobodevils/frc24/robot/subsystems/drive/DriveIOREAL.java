@@ -18,6 +18,7 @@ import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.CURRE
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.pikerobodevils.frc24.lib.vendor.SparkMax;
 import org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants;
+import org.pikerobodevils.frc24.robot.subsystems.Drivetrain;
 
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
@@ -35,9 +36,9 @@ import edu.wpi.first.math.util.Units;
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
  * "CANSparkFlex".
  */
-public class DriveIOSparkMax implements DriveIO {
-  private static final double GEAR_RATIO = 10.0;
-  private static final double KP = 1.0; // TODO: MUST BE TUNED, consider using REV Hardware Client
+public class DriveIOREAL implements DriveIO {
+  private static final double GEAR_RATIO = DrivetrainConstants.GEAR_RATIO;
+  private static final double KP = DrivetrainConstants.KP; // TODO: MUST BE TUNED, consider using REV Hardware Client
   private static final double KD = 0.0; // TODO: MUST BE TUNED, consider using REV Hardware Client
 
   private final CANSparkMax leftLeader = new SparkMax(DrivetrainConstants.LEFT_LEADER_ID, MotorType.kBrushless);
@@ -55,7 +56,7 @@ public class DriveIOSparkMax implements DriveIO {
   private final float yaw = navx.getYaw();
 
 
-  public DriveIOSparkMax() {
+  public DriveIOREAL() {
     leftLeader.restoreFactoryDefaults();
     rightLeader.restoreFactoryDefaults();
     leftFollower.restoreFactoryDefaults();

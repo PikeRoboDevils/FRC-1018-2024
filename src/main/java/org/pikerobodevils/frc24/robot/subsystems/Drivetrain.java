@@ -203,7 +203,7 @@ public class Drivetrain extends SubsystemBase{
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
         this);
-    Pathfinding.setPathfinder(new LocalADStarAK()); //LocalADStarAK is used to made logging work with advantagekit or so im told 
+    Pathfinding.setPathfinder(new LocalADStarAK()); //idk what this is for 
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
           Logger.recordOutput(
@@ -424,10 +424,10 @@ public class Drivetrain extends SubsystemBase{
     double leftRadPerSec = leftMetersPerSec / kTrackwidthMeters;
     double rightRadPerSec = rightMetersPerSec / kTrackwidthMeters;
     io.setVelocity(
-        leftRadPerSec,
-        rightRadPerSec,
-        feedforward.calculate(leftRadPerSec),
-        feedforward.calculate(rightRadPerSec));
+        -leftRadPerSec,
+        -rightRadPerSec,
+        feedforward.calculate(-leftRadPerSec),
+        feedforward.calculate(-rightRadPerSec));
   }
 }
 
