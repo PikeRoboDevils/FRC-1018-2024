@@ -3,7 +3,7 @@
  * license that can be found in the LICENSE.md file or
  * at https://opensource.org/licenses/MIT. */
 
-package org.pikerobodevils.frc24.robot.subsystems;
+package org.pikerobodevils.frc24.robot.subsystems.drive;
 
 
 import static edu.wpi.first.units.MutableMeasure.mutable;
@@ -37,9 +37,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.pikerobodevils.frc24.lib.vendor.SparkMax;
 import org.pikerobodevils.frc24.robot.Robot;
-import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
 import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIOInputsAutoLogged;
-import org.pikerobodevils.frc24.robot.subsystems.drive.LocalADStarAK;
 
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -84,7 +82,7 @@ import edu.wpi.first.wpilibj2.command.RamseteCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 
-public class Drivetrain extends SubsystemBase{
+public class SUBDrive extends SubsystemBase{
   private final ShuffleboardTab dashboard = Shuffleboard.getTab("Driver");
   //for advantagescope tracking
   public final Field2d m_field = new Field2d();
@@ -136,7 +134,7 @@ public class Drivetrain extends SubsystemBase{
 
 
   /** Creates a new Drivetrain. */
-  public Drivetrain(DriveIO io) {
+  public SUBDrive(DriveIO io) {
     this.io = io;
     
     // Adds robot to "Field"

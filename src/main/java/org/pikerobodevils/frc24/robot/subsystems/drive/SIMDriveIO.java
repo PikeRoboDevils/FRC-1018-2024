@@ -14,7 +14,6 @@
 package org.pikerobodevils.frc24.robot.subsystems.drive;
 
 import org.pikerobodevils.frc24.robot.Constants;
-import org.pikerobodevils.frc24.robot.subsystems.Drivetrain;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -23,7 +22,7 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 
-public class DriveIOSim implements DriveIO {
+public class SIMDriveIO implements DriveIO {
   private static final double KP = 0.2;
   private static final double KD = 0.0;
   private DifferentialDrivetrainSim sim =

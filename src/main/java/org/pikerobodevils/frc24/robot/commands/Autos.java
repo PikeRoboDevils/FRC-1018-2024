@@ -12,14 +12,14 @@ import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.*;
 import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.SHOOT_SPEED;
 
 import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
+import org.pikerobodevils.frc24.robot.subsystems.Shooter.SUBShooter;
+import org.pikerobodevils.frc24.robot.subsystems.drive.SUBDrive;
 
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethodCollector;
 
 import org.pikerobodevils.frc24.robot.subsystems.Arm;
-import org.pikerobodevils.frc24.robot.subsystems.Drivetrain;
 import org.pikerobodevils.frc24.robot.subsystems.ExampleSubsystem;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
-import org.pikerobodevils.frc24.robot.subsystems.Shooter;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
@@ -48,15 +48,15 @@ public final class Autos {
   private Autos() {
     throw new UnsupportedOperationException("This is a utility class!");
   }
-public static Command DriveBack(Drivetrain drivetrain, Double speed, Double time ){
+public static Command DriveBack(SUBDrive drivetrain, Double speed, Double time ){
   return Commands.runOnce(()->drivetrain.resetEncoders()).andThen(new RunCommand(()->drivetrain.arcadeDriveCommand(()->-.2, ()->0.0)));
 }
 
-public static Command DriveBack(Drivetrain drivetrain, Double speed ){
+public static Command DriveBack(SUBDrive drivetrain, Double speed ){
   return new RunCommand(()->drivetrain.arcadeDrive(-.2, 0.0));
 }
 
-    public static Command ShootSubwooferAuto(Shooter shooterSubsystem, Arm arm, Intake intakeSubsystem){
+    public static Command ShootSubwooferAuto(SUBShooter shooterSubsystem, Arm arm, Intake intakeSubsystem){
     return Commands.runOnce(()->intakeSubsystem.runIntake(.25))
     .andThen(arm.setGoalCommand(ArmPosition.SUBWOOFER)).withTimeout(.125)
       .andThen(arm.setGoalCommand(ArmPosition.INTAKE).raceWith(shooterSubsystem.spinUp())) 
@@ -67,7 +67,7 @@ public static Command DriveBack(Drivetrain drivetrain, Double speed ){
       .andThen(arm.setGoalCommand(ArmPosition.INTAKE)).andThen(shooterSubsystem.spin());
   }
 
-      public static Command ShootStageAuto(Shooter shooterSubsystem, Arm arm, Intake intakeSubsystem){
+      public static Command ShootStageAuto(SUBShooter shooterSubsystem, Arm arm, Intake intakeSubsystem){
     return Commands.runOnce(()->intakeSubsystem.runIntake(.25)).raceWith(shooterSubsystem.spinUp())
       .andThen(arm.setGoalCommand(ArmPosition.PODIUM))
       .withTimeout(2)
@@ -78,12 +78,12 @@ public static Command DriveBack(Drivetrain drivetrain, Double speed ){
    //  .andThen(shooterSubsystem.spin());
   }
 
-  public static Command getAutonomousCommand(Drivetrain drivetrain, Shooter shooter, Arm arm, Intake intake) {
+  public static Command getAutonomousCommand(SUBDrive drivetrain, SUBShooter shooter, Arm arm, Intake intake) {
     return ShootSubwooferAuto(shooter, arm, intake).withTimeout(5)
       .andThen(DriveBack(drivetrain, -.2));
 }
 
-public static Command twoNoteDrive(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake){
+public static Command twoNoteDrive(SUBShooter shooter,SUBDrive drivetrain, Arm arm, Intake intake){
 
    return Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()) 
    .andThen(ShootSubwooferAuto(shooter, arm, intake))
@@ -94,7 +94,7 @@ public static Command twoNoteDrive(Shooter shooter,Drivetrain drivetrain, Arm ar
 }
 
 
-public static Command threeNote(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
+public static Command threeNote(SUBShooter shooter,SUBDrive drivetrain, Arm arm, Intake intake) {
   return  Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()) 
   .andThen(ShootSubwooferAuto(shooter, arm, intake)) .andThen(justDrive(drivetrain, 1.5).alongWith(intake.runIntake(.5)))
   .andThen(ShootStageAuto(shooter, arm, intake)).andThen(drivetrain.turntoAngle(90) // mid note
@@ -112,7 +112,7 @@ public static Command threeNote(Shooter shooter,Drivetrain drivetrain, Arm arm, 
 }
 
 
- public static Command ampRSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
+ public static Command ampRSide(SUBShooter shooter,SUBDrive drivetrain, Arm arm, Intake intake) {
   return Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders())
   .andThen(ShootSubwooferAuto(shooter, arm, intake))
   .andThen(justDrive(drivetrain, .25)).andThen(drivetrain.turntoAngle(-65))
@@ -120,7 +120,7 @@ public static Command threeNote(Shooter shooter,Drivetrain drivetrain, Arm arm, 
   .andThen(drivetrain.turntoAngle(-25)).andThen(ShootStageAuto(shooter, arm, intake));
 
  }
-  public static Command ampBSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
+  public static Command ampBSide(SUBShooter shooter,SUBDrive drivetrain, Arm arm, Intake intake) {
   return Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders())
   .andThen(ShootSubwooferAuto(shooter, arm, intake))
   .andThen(justDrive(drivetrain, .25)).andThen(drivetrain.turntoAngle(65))
@@ -128,20 +128,20 @@ public static Command threeNote(Shooter shooter,Drivetrain drivetrain, Arm arm, 
   .andThen(drivetrain.turntoAngle(25)).andThen(ShootStageAuto(shooter, arm, intake));
  }
 
-public static Command sourceRSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
+public static Command sourceRSide(SUBShooter shooter,SUBDrive drivetrain, Arm arm, Intake intake) {
   return Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()).andThen(ShootSubwooferAuto(shooter, arm, intake))  
  .andThen(justDrive(drivetrain, .25))
  .andThen(drivetrain.turntoAngle(25)).andThen(justDrive(drivetrain, 2.5))
  .andThen(drivetrain.turntoAngle(15)).andThen(justDrive(drivetrain, 4.0));
 }
-public static Command sourceBSide(Shooter shooter,Drivetrain drivetrain, Arm arm, Intake intake) {
+public static Command sourceBSide(SUBShooter shooter,SUBDrive drivetrain, Arm arm, Intake intake) {
   return Commands.runOnce(()->drivetrain.resetGyro()).andThen(()->drivetrain.resetEncoders()).andThen(ShootSubwooferAuto(shooter, arm, intake))  
   .withTimeout(5).andThen(justDrive(drivetrain, .25))
  .andThen(drivetrain.turntoAngle(-25)).andThen(justDrive(drivetrain, 2.5))
  .andThen(drivetrain.turntoAngle(-15)).andThen(justDrive(drivetrain, 4.0));
 }
 
-public static Command justDrive(Drivetrain drivetrain, Double distance){
+public static Command justDrive(SUBDrive drivetrain, Double distance){
 //    Trajectory exampleTrajectory =
 //    TrajectoryGenerator.generateTrajectory(
 //      // Start at the origin facing the +X direction
@@ -155,7 +155,7 @@ public static Command justDrive(Drivetrain drivetrain, Double distance){
       
   return drivetrain.DriveDist(distance);
 }
-  public static Command turbo(Shooter armsShooter, Drivetrain drivetrain) {
+  public static Command turbo(SUBShooter armsShooter, SUBDrive drivetrain) {
     return drivetrain.arcadeDriveCommand(() -> 0.0, () -> .1).withTimeout(1).andThen(drivetrain.arcadeDriveCommand(()->0.0, ()->0.0));
   }
 } 

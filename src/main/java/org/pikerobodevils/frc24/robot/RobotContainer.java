@@ -11,17 +11,17 @@ import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
 import org.pikerobodevils.frc24.robot.commands.Autos;
 import org.pikerobodevils.frc24.robot.subsystems.Arm;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
+import org.pikerobodevils.frc24.robot.subsystems.Shooter.SUBShooter;
 import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
-import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIOSim;
-import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIOREAL;
+import org.pikerobodevils.frc24.robot.subsystems.drive.SIMDriveIO;
+import org.pikerobodevils.frc24.robot.subsystems.drive.SUBDrive;
+import org.pikerobodevils.frc24.robot.subsystems.drive.REALDriveIO;
 
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.pikerobodevils.frc24.robot.subsystems.BotGoClimb;
-import org.pikerobodevils.frc24.robot.subsystems.Drivetrain;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
-import org.pikerobodevils.frc24.robot.subsystems.Shooter;
 import org.pikerobodevils.frc24.robot.subsystems.Vision;
 
 import edu.wpi.first.wpilibj.RobotBase;
@@ -45,10 +45,10 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
   // The robot's subsystems and commands are defined here...
 public class RobotContainer {
 
-  private Drivetrain drivetrain = isDriveSIM();
+  private SUBDrive drivetrain = isDriveSIM();
   private final ControlBoard controlboard = new ControlBoard();
   private final Intake intakeSubsystem = new Intake(controlboard);
-  private final Shooter shooterSubsystem = new Shooter();
+  private final SUBShooter shooterSubsystem = new SUBShooter();
   private final BotGoClimb climber = new BotGoClimb(); 
   private final Arm arm = new Arm();
   private final Vision vision = new Vision();
@@ -163,11 +163,11 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
       // .alongWith(intakeSubsystem.shoot())
       // .onlyWhile(()->shooterSubsystem.shootReady());
   }
-public Drivetrain isDriveSIM() {
+public SUBDrive isDriveSIM() {
   if (Constants.currentMode == org.pikerobodevils.frc24.robot.Constants.Mode.SIM) {
-    return drivetrain = new Drivetrain(new DriveIOSim());
+    return drivetrain = new SUBDrive(new SIMDriveIO());
   } else {
-    return drivetrain = new Drivetrain(new DriveIOREAL());
+    return drivetrain = new SUBDrive(new REALDriveIO());
   }
   
 }
