@@ -53,8 +53,8 @@ public class RobotContainer {
   private final Arm arm = new Arm();
   private final Vision vision = new Vision();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
-private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-private final SendableChooser<Command> pathplan = AutoBuilder.buildAutoChooser();
+//private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -83,23 +83,22 @@ private final SendableChooser<Command> pathplan = AutoBuilder.buildAutoChooser()
    shuffleboard.addDouble("PoseY", ()->drivetrain.getPose().getY());
 shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getDegrees());
 
-    // Another option that allows you to specify the default auto by its name
-    autoChooser.addOption("shoot move", Autos.getAutonomousCommand(drivetrain, shooterSubsystem, arm, intakeSubsystem));
-     autoChooser.addOption("shoot no move", Autos.ShootSubwooferAuto(shooterSubsystem, arm, intakeSubsystem));
-   //   autoChooser.addOption("move", Autos.DriveBack(drivetrain, .2));
-          autoChooser.addOption("Middle High", Autos.twoNoteDrive(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-    autoChooser.addOption("Source RED", Autos.sourceRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-    autoChooser.addOption("Source BLUE", Autos.sourceBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-    autoChooser.addOption("three note", Autos.threeNote(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-     autoChooser.addOption("Amp RED", Autos.ampRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-     autoChooser.addOption("Amp BLUE", Autos.ampBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-    autoChooser.addOption("DRIVE", Autos.justDrive(drivetrain, 1.0));
-        autoChooser.addOption("tubro", Autos.turbo(shooterSubsystem,drivetrain));
+//    // Another option that allows you to specify the default auto by its name
+//    autoChooser.addOption("shoot move", Autos.getAutonomousCommand(drivetrain, shooterSubsystem, arm, intakeSubsystem));
+//     autoChooser.addOption("shoot no move", Autos.ShootSubwooferAuto(shooterSubsystem, arm, intakeSubsystem));
+//   //   autoChooser.addOption("move", Autos.DriveBack(drivetrain, .2));
+//          autoChooser.addOption("Middle High", Autos.twoNoteDrive(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+//    autoChooser.addOption("Source RED", Autos.sourceRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+//    autoChooser.addOption("Source BLUE", Autos.sourceBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+//    autoChooser.addOption("three note", Autos.threeNote(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+//     autoChooser.addOption("Amp RED", Autos.ampRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+//     autoChooser.addOption("Amp BLUE", Autos.ampBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+//    autoChooser.addOption("DRIVE", Autos.justDrive(drivetrain, 1.0));
+//        autoChooser.addOption("tubro", Autos.turbo(shooterSubsystem,drivetrain));
 
 
     autoChooser.addOption("TESTSTAGE", Autos.ShootStageAuto(shooterSubsystem, arm, intakeSubsystem));
     shuffleboard.add("Auto Chooser", autoChooser);
-    shuffleboard.add("PATHS", pathplan);
     // Configure the trigger bindings
     configureBindings();
   }
@@ -156,7 +155,7 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     //return Autos.ShootSubwooferAuto(s);
-      return pathplan.getSelected();
+      return autoChooser.getSelected();
      
       // .andThen(shooterSubsystem.spinUp())
       // .alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))

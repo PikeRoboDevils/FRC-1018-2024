@@ -35,8 +35,8 @@ import edu.wpi.first.math.util.Units;
  */
 public class REALDriveIO implements DriveIO {
   private static final double GEAR_RATIO = DrivetrainConstants.GEAR_RATIO;
-  private static final double KP = DrivetrainConstants.KP; // TODO: MUST BE TUNED, consider using REV Hardware Client
-  private static final double KD = 0.0; // TODO: MUST BE TUNED, consider using REV Hardware Client
+  private static final double KP = DrivetrainConstants.KP; 
+  private static final double KD = DrivetrainConstants.KD;
 
   private final CANSparkMax leftLeader = new SparkMax(DrivetrainConstants.LEFT_LEADER_ID, MotorType.kBrushless);
   private final CANSparkMax rightLeader = new CANSparkMax(DrivetrainConstants.RIGHT_LEADER_ID, MotorType.kBrushless);
@@ -157,5 +157,30 @@ public class REALDriveIO implements DriveIO {
   public double getRightVoltage() {
     return leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
   }
+  @Override
+  public Rotation2d getRotation2d() {
+    return navx.getRotation2d();
+  }
+  @Override
+  public double getYaw() {
+    return yaw;
+  }
+  @Override
+  public double getPitch() {
+    return navx.getPitch();
+  }
+  @Override
+  public double getRoll() {
+    return navx.getRoll();
+  }
+  @Override
+  public double getRate() {
+    return navx.getRate();
+  }
+  @Override
+  public double getAngle() {
+    return navx.getAngle();
+  }
+  
 
 }

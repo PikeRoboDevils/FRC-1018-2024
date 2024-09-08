@@ -27,7 +27,7 @@ public class SIMDriveIO implements DriveIO {
   private static final double KD = 0.0;
   private DifferentialDrivetrainSim sim =
       DifferentialDrivetrainSim.createKitbotSim(
-          KitbotMotor.kDualCIMPerSide, KitbotGearing.k10p71, KitbotWheelSize.kSixInch, null);
+          KitbotMotor.kDoubleNEOPerSide, KitbotGearing.k10p71, KitbotWheelSize.kSixInch, null);
 
   private double leftAppliedVolts = 0.0;
   private double rightAppliedVolts = 0.0;
@@ -52,6 +52,7 @@ public class SIMDriveIO implements DriveIO {
                   + rightFFVolts,
               -12.0,
               12.0);
+
       sim.setInputs(leftAppliedVolts, rightAppliedVolts);
     }
 
@@ -74,7 +75,8 @@ public class SIMDriveIO implements DriveIO {
     closedLoop = false;
     leftAppliedVolts = MathUtil.clamp(leftVolts, -12.0, 12.0);
     rightAppliedVolts = MathUtil.clamp(rightVolts, -12.0, 12.0);
-    sim.setInputs(leftAppliedVolts, rightAppliedVolts);
+             //this code is so weird inverted AND flipped JUST for sim
+    sim.setInputs(-rightAppliedVolts, -leftAppliedVolts);
   }
 
   @Override
@@ -86,4 +88,5 @@ public class SIMDriveIO implements DriveIO {
     this.leftFFVolts = leftFFVolts;
     this.rightFFVolts = rightFFVolts;
   }
+
 }

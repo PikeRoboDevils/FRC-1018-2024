@@ -48,4 +48,10 @@ public interface DriveIO {
   public default void set(double left, double right) {}
   public default double getLeftVoltage() {return 0;}
   public default double getRightVoltage() {return 0;}
+  public default Rotation2d getRotation2d(){return new Rotation2d();}
+  public default double getYaw() {return 0;}
+  public default double getPitch() {return 0;}
+  public default double getRoll() {return 0;}
+  public default double getRate() {return 0;}
+    public default double getAngle() {return 0;}
 }

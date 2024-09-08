@@ -101,7 +101,7 @@ public class SUBDrive extends SubsystemBase{
   // AdvantageKit inputs
   private final DriveIO io;
   private final DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
-  private final AHRS navX = new AHRS();
+//  private final AHRS navX = new AHRS();
   private DifferentialDriveOdometry m_Odometry;
 
   LinearFilter pitchRate = LinearFilter.backwardFiniteDifference(1, 2, 0.02);
@@ -180,39 +180,11 @@ public class SUBDrive extends SubsystemBase{
 
             
 
-    m_Odometry = new DifferentialDriveOdometry(navX.getRotation2d(), getLeftDistance(), getRightDistance(),
+    m_Odometry = new DifferentialDriveOdometry(getRotation2d(), getLeftDistance(), getRightDistance(),
     m_Pose);
 
    drivePID.setTolerance(.1);  
-    // Configure AutoBuilder for PathPlanner
-    AutoBuilder.configureRamsete(
-        this::getPose,
-        this::setOdometry,
-        () ->
-            kinematics.toChassisSpeeds(
-                new DifferentialDriveWheelSpeeds(
-                    getLeftVelocity(), getRightVelocity())),
-        (speeds) -> {
-          var wheelSpeeds = kinematics.toWheelSpeeds(speeds);
-          driveVelocity(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
-        },
-        new ReplanningConfig(),
-        () ->
-            DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red,
-        this);
-    Pathfinding.setPathfinder(new LocalADStarAK()); //idk what this is for 
-    PathPlannerLogging.setLogActivePathCallback(
-        (activePath) -> {
-          Logger.recordOutput(
-              "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
-        });
-    PathPlannerLogging.setLogTargetPoseCallback(
-        (targetPose) -> {
-          Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
-        });
   
-        
       // Configure SysId
       sysId =
       new SysIdRoutine(
@@ -226,6 +198,33 @@ public class SUBDrive extends SubsystemBase{
 
   
   
+
+      // Configure AutoBuilder for PathPlanner
+      
+          // Configure AutoBuilder last
+          AutoBuilder.configureLTV(
+                  this::getPose, // Robot pose supplier
+                  this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+                  this::getWheelSpeeds, // Current ChassisSpeeds supplier
+                  this::drive, // Method that will drive the robot given ChassisSpeeds
+                  0.02, // Robot control loop period in seconds. Default is 0.02
+                  new ReplanningConfig(), // Default path replanning config. See the API for the options here
+                  this::isRed,
+                  this // Reference to this subsystem to set requirements
+          );
+    
+
+
+         PathPlannerLogging.setLogActivePathCallback(
+             (activePath) -> {
+               Logger.recordOutput(
+                   "Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+             });
+         PathPlannerLogging.setLogTargetPoseCallback(
+             (targetPose) -> {
+               Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+             });
+           
       }
 
   public boolean isRed() {
@@ -235,17 +234,7 @@ public class SUBDrive extends SubsystemBase{
               } return false;
   }
 
-  public void resetOdometry(Pose2d pose) {
-
-    m_Odometry.resetPosition(
-
-        navX.getRotation2d(), getLeftDistance(), getRightDistance(), pose);
-
-  }
-   /** Resets the current odometry pose.
-    * made for pathplanner it say reset but it gives a value so i gotta make sure
-    */
-   public void setOdometry(Pose2d pose) {
+   public void resetOdometry(Pose2d pose) {
     m_Odometry.resetPosition(inputs.gyroYaw, getLeftDistance(), getRightDistance(), pose);
   }
 
@@ -263,9 +252,6 @@ public class SUBDrive extends SubsystemBase{
     rightEncoder.reset();
 
   }
-  public void resetGyro(){
-    navX.reset();
-  }
   public void setLeftRight(double left, double right) {
     io.set(left,right);
   }
@@ -276,7 +262,7 @@ public class SUBDrive extends SubsystemBase{
     public ChassisSpeeds getWheelSpeeds() {
 
 
-    return new ChassisSpeeds(getLeftVelocity(), getRightVelocity(), Units.degreesToRadians(navX.getRate()));
+    return new ChassisSpeeds(getLeftVelocity(), getRightVelocity(), Units.degreesToRadians(getRate()));
 
   }
 
@@ -302,14 +288,18 @@ public class SUBDrive extends SubsystemBase{
     return inputs.rightPositionRad * kTrackwidthMeters;
   }
 
+    @AutoLogOutput
+  public Rotation2d getRotation2d() {
+    return io.getRotation2d();
+  }
   @AutoLogOutput
   public double getYaw() {
-    return navX.getYaw();
+    return io.getYaw();
   }
 
   @AutoLogOutput
   public double getPitch() {
-    return navX.getPitch();
+    return io.getPitch();
   }
   @AutoLogOutput
   public double getPitchRate() {
@@ -318,7 +308,15 @@ public class SUBDrive extends SubsystemBase{
 
   @AutoLogOutput
   public double getRoll() {
-    return navX.getRoll();
+    return io.getRoll();
+  }
+    @AutoLogOutput
+  public double getRate() {
+    return io.getRate();
+  }
+    @AutoLogOutput
+  public double getAngle() {
+    return io.getAngle();
   }
 
   @AutoLogOutput
@@ -399,7 +397,7 @@ public class SUBDrive extends SubsystemBase{
 
   public Command turntoAngle(double angle) {
    double setpoint = angle ;//(isRed()? angle:-angle);
-     return arcadeDriveCommand(()->0, ()->-turnDrivePid.calculate(navX.getAngle(),setpoint)).withTimeout(1);
+     return arcadeDriveCommand(()->0, ()->-turnDrivePid.calculate(getAngle(),setpoint)).withTimeout(1);
   }
 
   

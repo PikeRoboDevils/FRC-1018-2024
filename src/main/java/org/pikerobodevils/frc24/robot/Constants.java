@@ -27,7 +27,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
  */
 public final class Constants {
 
-  public static final Mode currentMode = Mode.REAL;
+  public static final Mode currentMode = Mode.SIM;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -149,10 +149,12 @@ public final class Constants {
     public static final double KA = 0.69281;
     public static final double KV = 2.8975;
     public static final double KP = 0.01;
+     public static final double KD = 0.0;
     public static final double kTrackwidthMeters = 0.6;
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
         kTrackwidthMeters);
     public static final double VOLTRAMP = 0.34;
+   
 
   }
 

@@ -1,6 +1,12 @@
 {
   "version": 1.0,
-  "startingPose": null,
+  "startingPose": {
+    "position": {
+      "x": 0.73,
+      "y": 4.4499912076747234
+    },
+    "rotation": -57.99190095562391
+  },
   "command": {
     "type": "sequential",
     "data": {
@@ -9,6 +15,12 @@
           "type": "path",
           "data": {
             "pathName": "Source Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Source Back"
           }
         }
       ]
