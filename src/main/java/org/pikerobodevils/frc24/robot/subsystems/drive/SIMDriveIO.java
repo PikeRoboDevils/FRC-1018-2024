@@ -88,5 +88,10 @@ public class SIMDriveIO implements DriveIO {
     this.leftFFVolts = leftFFVolts;
     this.rightFFVolts = rightFFVolts;
   }
+  
+  @Override 
+  public void Brake(){
+    setVoltage(0,0);
+  }
 
 }

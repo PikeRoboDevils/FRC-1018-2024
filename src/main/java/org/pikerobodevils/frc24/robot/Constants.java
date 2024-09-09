@@ -151,9 +151,9 @@ public final class Constants {
     public static final double KP = 0.01;
      public static final double KD = 0.0;
     public static final double kTrackwidthMeters = 0.6;
-    public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
-        kTrackwidthMeters);
+    public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
     public static final double VOLTRAMP = 0.34;
+    public static final double SlewRateLimiter = 2;  // Joystick cant go faster than this rate
    
 
   }

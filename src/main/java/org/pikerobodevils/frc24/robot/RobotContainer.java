@@ -24,6 +24,7 @@ import org.pikerobodevils.frc24.robot.subsystems.BotGoClimb;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
 import org.pikerobodevils.frc24.robot.subsystems.Vision;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -53,15 +54,18 @@ public class RobotContainer {
   private final Arm arm = new Arm();
   private final Vision vision = new Vision();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
-//private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
+  
+  //private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+  private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
   
+    //CONTROLLER INPUT HERE
     drivetrain.setDefaultCommand(
         drivetrain
             .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
@@ -176,4 +180,9 @@ public SUBDrive isDriveSIM() {
    //m_arm.setAngle(arm.getPositionDeg());
   }
 
+
+
+public void disabled() {
+  drivetrain.Brake();
+} 
 }

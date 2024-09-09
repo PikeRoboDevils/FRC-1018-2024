@@ -53,5 +53,6 @@ public interface DriveIO {
   public default double getPitch() {return 0;}
   public default double getRoll() {return 0;}
   public default double getRate() {return 0;}
-    public default double getAngle() {return 0;}
+  public default double getAngle() {return 0;}
+  public default void Brake() {}
 }

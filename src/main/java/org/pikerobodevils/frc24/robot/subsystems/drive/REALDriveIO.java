@@ -22,6 +22,7 @@ import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -86,7 +87,11 @@ public class REALDriveIO implements DriveIO {
     leftLeader.setSmartCurrentLimit(DrivetrainConstants.CURRENT_LIMIT);
     rightLeader.setSmartCurrentLimit(DrivetrainConstants.CURRENT_LIMIT);
 
-    
+    //not sure if it helps but IM TOLD....
+    leftLeader.setIdleMode(IdleMode.kCoast);
+    rightLeader.setIdleMode(IdleMode.kCoast);
+    leftFollower.setIdleMode(IdleMode.kCoast);
+    rightFollower.setIdleMode(IdleMode.kCoast);
 
     leftPID.setP(KP);
     leftPID.setD(KD);
@@ -181,6 +186,12 @@ public class REALDriveIO implements DriveIO {
   public double getAngle() {
     return navx.getAngle();
   }
-  
+  @Override
+  public void Brake() {
+    leftLeader.setIdleMode(IdleMode.kBrake);
+    rightLeader.setIdleMode(IdleMode.kBrake);
+    leftFollower.setIdleMode(IdleMode.kBrake);
+    rightFollower.setIdleMode(IdleMode.kBrake);
+  }
 
 }

@@ -37,6 +37,7 @@ import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import org.pikerobodevils.frc24.lib.vendor.SparkMax;
 import org.pikerobodevils.frc24.robot.Robot;
+import org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants;
 import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIOInputsAutoLogged;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -109,26 +110,14 @@ public class SUBDrive extends SubsystemBase{
 
   @AutoLogOutput
   private Pose2d m_Pose;
-  public TrajectoryConfig config;
 
   private final PIDController leftDrivePid = new PIDController(KP, 0, 0);
   private final PIDController rightDrivePid = new PIDController(KP, 0, 0);
  private final PIDController turnDrivePid = new PIDController(KP, 0, 0);
  private final PIDController drivePID = new PIDController(.75, 0, 0);
-    // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
-  private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
-  // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
-  private final MutableMeasure<Distance> m_distance = mutable(Meters.of(0));
-  // Mutable holder for unit-safe linear velocity values, persisted to avoid reallocation.
-  private final MutableMeasure<Velocity<Distance>> m_velocity = mutable(MetersPerSecond.of(0));
  
-  //no idea what this is - wisdom
   private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(KS, KV, KA);
-  // now this i can assume but still idk shi- wisdom
-  private final DifferentialDriveKinematics kinematics =
-      new DifferentialDriveKinematics(kTrackwidthMeters);
 
-  // I know what this is not how to use it -wisdom
   private final SysIdRoutine sysId;
 
 
@@ -144,41 +133,6 @@ public class SUBDrive extends SubsystemBase{
     rightEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
     m_Pose = new Pose2d(0, 0, new Rotation2d());
 
-    
-    var autoVoltageConstraint =
-
-        new DifferentialDriveVoltageConstraint(
-
-            new SimpleMotorFeedforward(
-
-                KS,
-
-                KV,
-
-                KA),
-
-           kDriveKinematics,
-
-            10);
-
-    config =
-
-        new TrajectoryConfig(
-
-                1,
-
-                1)
-
-            // Add kinematics to ensure max speed is actually obeyed
-
-            .setKinematics(kDriveKinematics)
-
-            // Apply the voltage constraint
-
-            .addConstraint(autoVoltageConstraint);
-
-
-            
 
     m_Odometry = new DifferentialDriveOdometry(getRotation2d(), getLeftDistance(), getRightDistance(),
     m_Pose);
@@ -357,17 +311,6 @@ public class SUBDrive extends SubsystemBase{
   public Command runDynamicSysId(SysIdRoutine.Direction direction){
     return sysId.dynamic(direction);
   }
-  // public Command driveTrajectoryCommand(Trajectory trajectory) {
-  //   return driveTrajectoryCommand(() -> trajectory);
-  // }
-
-  // public Command driveTrajectoryCommand(Supplier<Trajectory> trajectory) {
-  //   RamseteController ramsete = new RamseteController();
-  //   PIDController leftController = new PIDController(0,0,0);
-  //   PIDController rightController = new PIDController(0,0,0);
-  //   return run(() -> {
-
-  //   })
   
   public Command setLeftRightVoltageCommand(double leftVoltage, double rightVoltage) {
     return run(() -> {
@@ -413,17 +356,10 @@ public class SUBDrive extends SubsystemBase{
     io.setVoltage(leftVolts, rightVolts);
   }
 
-   /** Run closed loop at the specified voltage. */
-   public void driveVelocity(double leftMetersPerSec, double rightMetersPerSec) {
-    Logger.recordOutput("Drive/LeftVelocitySetpointMetersPerSec", leftMetersPerSec);
-    Logger.recordOutput("Drive/RightVelocitySetpointMetersPerSec", rightMetersPerSec);
-    double leftRadPerSec = leftMetersPerSec / kTrackwidthMeters;
-    double rightRadPerSec = rightMetersPerSec / kTrackwidthMeters;
-    io.setVelocity(
-        -leftRadPerSec,
-        -rightRadPerSec,
-        feedforward.calculate(-leftRadPerSec),
-        feedforward.calculate(-rightRadPerSec));
+
+  //FOR SAFETY DONT TOUCH 
+  public void Brake() {
+    io.Brake();
   }
 }
 
