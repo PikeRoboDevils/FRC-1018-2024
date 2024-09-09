@@ -11,6 +11,7 @@ import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.CURRENT_LIMIT;
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.DRIVEKP;
 import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.IDLE_MODE;
 import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.KA;
 import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.KP;
@@ -114,7 +115,7 @@ public class SUBDrive extends SubsystemBase{
   private final PIDController leftDrivePid = new PIDController(KP, 0, 0);
   private final PIDController rightDrivePid = new PIDController(KP, 0, 0);
  private final PIDController turnDrivePid = new PIDController(KP, 0, 0);
- private final PIDController drivePID = new PIDController(.75, 0, 0);
+ private final PIDController drivePID = new PIDController(DRIVEKP, 0, 0);
  
   private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(KS, KV, KA);
 
