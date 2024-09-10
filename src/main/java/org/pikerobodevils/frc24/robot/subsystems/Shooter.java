@@ -2,7 +2,7 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package org.pikerobodevils.frc24.robot.subsystems.Shooter;
+package org.pikerobodevils.frc24.robot.subsystems;
 
 import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.*;
 
@@ -29,7 +29,7 @@ import static edu.wpi.first.units.Units.Rotations;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
-public class SUBShooter extends SubsystemBase {
+public class Shooter extends SubsystemBase {
   private final CANSparkMax shooterLead = new CANSparkMax(10,CANSparkLowLevel.MotorType.kBrushless);
   private final CANSparkMax shooterFollow = new CANSparkMax(11,CANSparkLowLevel.MotorType.kBrushless);
 
@@ -70,7 +70,7 @@ public class SUBShooter extends SubsystemBase {
               // WPILog with this subsystem's name ("shooter")
               this));
   /** Creates a new Shooter. */
-  public SUBShooter() {
+  public Shooter() {
     shooterLead.restoreFactoryDefaults();
     shooterLead.setSmartCurrentLimit(30);
     shooterLead.burnFlash();

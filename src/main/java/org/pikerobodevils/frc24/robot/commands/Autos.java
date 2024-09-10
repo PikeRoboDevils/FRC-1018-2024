@@ -11,15 +11,15 @@ import javax.print.attribute.standard.MediaSize.JIS;
 import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.*;
 import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.SHOOT_SPEED;
 
-import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
-import org.pikerobodevils.frc24.robot.subsystems.Shooter.SUBShooter;
 import org.pikerobodevils.frc24.robot.subsystems.drive.SUBDrive;
 
 import com.fasterxml.jackson.databind.introspect.AnnotatedMethodCollector;
 
-import org.pikerobodevils.frc24.robot.subsystems.Arm;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
 import org.pikerobodevils.frc24.robot.subsystems.ExampleSubsystem;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
+import org.pikerobodevils.frc24.robot.subsystems.Shooter;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm.ArmPosition;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
@@ -56,7 +56,7 @@ public static Command DriveBack(SUBDrive drivetrain, Double speed ){
   return new RunCommand(()->drivetrain.arcadeDrive(-.2, 0.0));
 }
 
-    public static Command ShootSubwooferAuto(SUBShooter shooterSubsystem, Arm arm, Intake intakeSubsystem){
+    public static Command ShootSubwooferAuto(Shooter shooterSubsystem, SUBArm arm, Intake intakeSubsystem){
     return Commands.runOnce(()->intakeSubsystem.runIntake(.25))
     .andThen(arm.setGoalCommand(ArmPosition.SUBWOOFER)).withTimeout(.125)
       .andThen(arm.setGoalCommand(ArmPosition.INTAKE).raceWith(shooterSubsystem.spinUp())) 
@@ -67,7 +67,7 @@ public static Command DriveBack(SUBDrive drivetrain, Double speed ){
       .andThen(arm.setGoalCommand(ArmPosition.INTAKE)).andThen(shooterSubsystem.spin());
   }
 
-      public static Command ShootStageAuto(SUBShooter shooterSubsystem, Arm arm, Intake intakeSubsystem){
+      public static Command ShootStageAuto(Shooter shooterSubsystem, SUBArm arm, Intake intakeSubsystem){
     return Commands.runOnce(()->intakeSubsystem.runIntake(.25)).raceWith(shooterSubsystem.spinUp())
       .andThen(arm.setGoalCommand(ArmPosition.PODIUM))
       .withTimeout(2)
@@ -78,7 +78,7 @@ public static Command DriveBack(SUBDrive drivetrain, Double speed ){
    //  .andThen(shooterSubsystem.spin());
   }
 
-  public static Command getAutonomousCommand(SUBDrive drivetrain, SUBShooter shooter, Arm arm, Intake intake) {
+  public static Command getAutonomousCommand(SUBDrive drivetrain, Shooter shooter, SUBArm arm, Intake intake) {
     return ShootSubwooferAuto(shooter, arm, intake).withTimeout(5)
       .andThen(DriveBack(drivetrain, -.2));
 }
@@ -157,7 +157,7 @@ public static Command justDrive(SUBDrive drivetrain, Double distance){
       
   return drivetrain.DriveDist(distance);
 }
-  public static Command turbo(SUBShooter armsShooter, SUBDrive drivetrain) {
+  public static Command turbo(Shooter armsShooter, SUBDrive drivetrain) {
     return drivetrain.arcadeDriveCommand(() -> 0.0, () -> .1).withTimeout(1).andThen(drivetrain.arcadeDriveCommand(()->0.0, ()->0.0));
   }
 } 

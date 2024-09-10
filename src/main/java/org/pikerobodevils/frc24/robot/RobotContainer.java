@@ -9,9 +9,8 @@ import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.SHOOT_SP
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
 import org.pikerobodevils.frc24.robot.commands.Autos;
-import org.pikerobodevils.frc24.robot.subsystems.Arm;
-import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
-import org.pikerobodevils.frc24.robot.subsystems.Shooter.SUBShooter;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmIO;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
 import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
 import org.pikerobodevils.frc24.robot.subsystems.drive.SIMDriveIO;
 import org.pikerobodevils.frc24.robot.subsystems.drive.SUBDrive;
@@ -22,7 +21,10 @@ import com.pathplanner.lib.auto.AutoBuilder;
 
 import org.pikerobodevils.frc24.robot.subsystems.BotGoClimb;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
+import org.pikerobodevils.frc24.robot.subsystems.Shooter;
 import org.pikerobodevils.frc24.robot.subsystems.Vision;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm.ArmPosition;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -46,12 +48,12 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
   // The robot's subsystems and commands are defined here...
 public class RobotContainer {
 
-  private SUBDrive drivetrain = isDriveSIM();
+  private final SUBDrive drivetrain = new SUBDrive(DriveIO.isReal());
   private final ControlBoard controlboard = new ControlBoard();
   private final Intake intakeSubsystem = new Intake(controlboard);
-  private final SUBShooter shooterSubsystem = new SUBShooter();
+  private final Shooter shooterSubsystem = new Shooter();
   private final BotGoClimb climber = new BotGoClimb(); 
-  private final Arm arm = new Arm();
+  private final SUBArm arm = new SUBArm(ArmIO.isReal());
   private final Vision vision = new Vision();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
   
@@ -166,14 +168,7 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
       // .alongWith(intakeSubsystem.shoot())
       // .onlyWhile(()->shooterSubsystem.shootReady());
   }
-public SUBDrive isDriveSIM() {
-  if (Constants.currentMode == org.pikerobodevils.frc24.robot.Constants.Mode.SIM) {
-    return drivetrain = new SUBDrive(new SIMDriveIO());
-  } else {
-    return drivetrain = new SUBDrive(new REALDriveIO());
-  }
-  
-}
+
 
   public void robotPeriodic() {
     // update the dashboard mechanism's state
