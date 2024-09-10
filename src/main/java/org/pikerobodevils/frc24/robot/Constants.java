@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 
 /**
@@ -24,6 +25,19 @@ import com.revrobotics.CANSparkBase.IdleMode;
  */
 public final class Constants {
 
+  public static final Mode currentMode = Mode.SIM;
+
+  public static enum Mode {
+    /** Running on a real robot. */
+    REAL,
+
+    /** Running a physics simulator. */
+    SIM,
+
+    /** Replaying from a log file. */
+    REPLAY
+  }
+  
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
@@ -126,17 +140,21 @@ public final class Constants {
     public static final int RIGHT_ENCODER_B = 1;
 
 
-    public static final int CURRENT_LIMIT = 56;
-    public static final double GEAR_RATIO = 1;
+    public static final int CURRENT_LIMIT = 60;
+    public static final double GEAR_RATIO = 10.86;
 
     public static final double KS = 0.21709;
     public static final double KA = 0.69281;
     public static final double KV = 2.8975;
     public static final double KP = 0.01;
+    public static final double KD = 0.0;
+    public static final double DRIVEKP = 0.7; //TODO:
+    
     public static final double kTrackwidthMeters = 0.6;
-    public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(
-        kTrackwidthMeters);
-    public static final double VOLTRAMP = 0.3;
+    public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
+    public static final double VOLTRAMP = 0.34;
+    public static final double SlewRateLimiter = 2;  // Joystick cant go faster than this rate
+   
 
   }
 

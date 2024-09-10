@@ -6,16 +6,28 @@ package org.pikerobodevils.frc24.robot;
 
 import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.SHOOT_SPEED;
 
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
 import org.pikerobodevils.frc24.robot.commands.Autos;
-import org.pikerobodevils.frc24.robot.subsystems.Arm;
-import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmPosition;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmIO;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
+import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
+import org.pikerobodevils.frc24.robot.subsystems.drive.SIMDriveIO;
+import org.pikerobodevils.frc24.robot.subsystems.drive.SUBDrive;
+import org.pikerobodevils.frc24.robot.subsystems.drive.REALDriveIO;
+
+import com.fasterxml.jackson.annotation.JsonCreator.Mode;
+import com.pathplanner.lib.auto.AutoBuilder;
+
 import org.pikerobodevils.frc24.robot.subsystems.BotGoClimb;
-import org.pikerobodevils.frc24.robot.subsystems.Drivetrain;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
 import org.pikerobodevils.frc24.robot.subsystems.Shooter;
 import org.pikerobodevils.frc24.robot.subsystems.Vision;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm.ArmPosition;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -23,6 +35,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -32,32 +45,33 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-public class RobotContainer {
   // The robot's subsystems and commands are defined here...
+public class RobotContainer {
+
+  private final SUBDrive drivetrain = new SUBDrive(DriveIO.isReal());
   private final ControlBoard controlboard = new ControlBoard();
   private final Intake intakeSubsystem = new Intake(controlboard);
-  private final Drivetrain drivetrain = new Drivetrain();
   private final Shooter shooterSubsystem = new Shooter();
   private final BotGoClimb climber = new BotGoClimb(); 
-  private final Arm arm = new Arm();
+  private final SUBArm arm = new SUBArm(ArmIO.isReal());
   private final Vision vision = new Vision();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
-  SendableChooser<Command> autoChooser = new SendableChooser<>();
+  
+  //private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+  private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
+
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
+  new CommandXboxController(OperatorConstants.kDriverControllerPort);
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
   
+    //CONTROLLER INPUT HERE
     drivetrain.setDefaultCommand(
         drivetrain
             .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
             .withName("Default Drive Command"));
-
-
-
-    //for tracing data idk if itll work or not edit: It works
-    SmartDashboard.putData("Field", drivetrain.m_field);
 
 
 
@@ -75,18 +89,19 @@ public class RobotContainer {
    shuffleboard.addDouble("PoseY", ()->drivetrain.getPose().getY());
 shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getDegrees());
 
-    // Another option that allows you to specify the default auto by its name
-    autoChooser.addOption("shoot move", Autos.getAutonomousCommand(drivetrain, shooterSubsystem, arm, intakeSubsystem));
-     autoChooser.addOption("shoot no move", Autos.ShootSubwooferAuto(shooterSubsystem, arm, intakeSubsystem));
-   //   autoChooser.addOption("move", Autos.DriveBack(drivetrain, .2));
-          autoChooser.addOption("Middle High", Autos.twoNoteDrive(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-    autoChooser.addOption("Source RED", Autos.sourceRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-    autoChooser.addOption("Source BLUE", Autos.sourceBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-    autoChooser.addOption("three note", Autos.threeNote(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-     autoChooser.addOption("Amp RED", Autos.ampRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-     autoChooser.addOption("Amp BLUE", Autos.ampBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-    autoChooser.addOption("DRIVE", Autos.justDrive(drivetrain, 1.0));
-        autoChooser.addOption("tubro", Autos.turbo(shooterSubsystem,drivetrain));
+//    // Another option that allows you to specify the default auto by its name
+//    autoChooser.addOption("shoot move", Autos.getAutonomousCommand(drivetrain, shooterSubsystem, arm, intakeSubsystem));
+//     autoChooser.addOption("shoot no move", Autos.ShootSubwooferAuto(shooterSubsystem, arm, intakeSubsystem));
+//   //   autoChooser.addOption("move", Autos.DriveBack(drivetrain, .2));
+//          autoChooser.addOption("Middle High", Autos.twoNoteDrive(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+//    autoChooser.addOption("Source RED", Autos.sourceRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+//    autoChooser.addOption("Source BLUE", Autos.sourceBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+//    autoChooser.addOption("three note", Autos.threeNote(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+//     autoChooser.addOption("Amp RED", Autos.ampRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+//     autoChooser.addOption("Amp BLUE", Autos.ampBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
+//    autoChooser.addOption("DRIVE", Autos.justDrive(drivetrain, 1.0));
+//        autoChooser.addOption("tubro", Autos.turbo(shooterSubsystem,drivetrain));
+
 
     autoChooser.addOption("TESTSTAGE", Autos.ShootStageAuto(shooterSubsystem, arm, intakeSubsystem));
     shuffleboard.add("Auto Chooser", autoChooser);
@@ -153,9 +168,16 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
       // .alongWith(intakeSubsystem.shoot())
       // .onlyWhile(()->shooterSubsystem.shootReady());
   }
+
+
   public void robotPeriodic() {
     // update the dashboard mechanism's state
    //m_arm.setAngle(arm.getPositionDeg());
   }
 
+
+
+public void disabled() {
+  drivetrain.Brake();
+} 
 }

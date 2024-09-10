@@ -42,7 +42,7 @@
     "rotation": 0,
     "rotateFast": false
   },
-  "reversed": true,
+  "reversed": false,
   "folder": "Source",
   "previewStartingState": {
     "rotation": -59.591462180786685,
