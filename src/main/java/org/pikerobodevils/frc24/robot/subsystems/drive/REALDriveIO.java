@@ -13,6 +13,8 @@
 
 package org.pikerobodevils.frc24.robot.subsystems.drive;
 
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.*;
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.pikerobodevils.frc24.lib.vendor.SparkMax;
 import org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants;
@@ -29,13 +31,14 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.CounterBase;
+import edu.wpi.first.wpilibj.Encoder;
 
 /**
  * NOTE: To use the Spark Flex / NEO Vortex, replace all instances of "CANSparkMax" with
  * "CANSparkFlex".
  */
 public class REALDriveIO implements DriveIO {
-  private static final double GEAR_RATIO = DrivetrainConstants.GEAR_RATIO;
   private static final double KP = DrivetrainConstants.KP; 
   private static final double KD = DrivetrainConstants.KD;
 
@@ -44,8 +47,9 @@ public class REALDriveIO implements DriveIO {
   private final CANSparkMax leftFollower = new CANSparkMax(DrivetrainConstants.LEFT_FOLLOWER_ONE_ID, MotorType.kBrushless);
   private final CANSparkMax rightFollower = new CANSparkMax(DrivetrainConstants.RIGHT_FOLLOWER_ONE_ID, MotorType.kBrushless);
 
-  private final RelativeEncoder leftEncoder = leftLeader.getEncoder();
-  private final RelativeEncoder rightEncoder = rightLeader.getEncoder();
+  private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_A,LEFT_ENCODER_B,false, CounterBase.EncodingType.k4X);
+  private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_A,RIGHT_ENCODER_B,false, CounterBase.EncodingType.k4X);
+  
 
   private final SparkPIDController leftPID = leftLeader.getPIDController();
   private final SparkPIDController rightPID = rightLeader.getPIDController();
@@ -77,8 +81,8 @@ public class REALDriveIO implements DriveIO {
     rightLeader.setOpenLoopRampRate(DrivetrainConstants.VOLTRAMP);
     rightFollower.setOpenLoopRampRate(DrivetrainConstants.VOLTRAMP);
 
-    leftLeader.setInverted(false);
-    rightLeader.setInverted(true);
+    leftLeader.setInverted(true);
+    rightLeader.setInverted(false);
     leftFollower.follow(leftLeader, false);
     rightFollower.follow(rightLeader, false);
 
@@ -98,6 +102,9 @@ public class REALDriveIO implements DriveIO {
     rightPID.setP(KP);
     rightPID.setD(KD);
 
+    leftEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
+    rightEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
+
     leftLeader.burnFlash();
     rightLeader.burnFlash();
     leftFollower.burnFlash();
@@ -110,17 +117,15 @@ public class REALDriveIO implements DriveIO {
 
   @Override
   public void updateInputs(DriveIOInputs inputs) {
-    inputs.leftPositionRad = Units.rotationsToRadians(leftEncoder.getPosition() / GEAR_RATIO);
-    inputs.leftVelocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(leftEncoder.getVelocity() / GEAR_RATIO);
-    inputs.leftAppliedVolts = leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
+    inputs.leftPosition = WHEEL_RADIUS * Units.rotationsToRadians(leftEncoder.getDistance() );
+    inputs.leftVelocity =
+        Units.rotationsPerMinuteToRadiansPerSecond(leftEncoder.getRate());
     inputs.leftCurrentAmps =
         new double[] {leftLeader.getOutputCurrent(), leftFollower.getOutputCurrent()};
 
-    inputs.rightPositionRad = Units.rotationsToRadians(rightEncoder.getPosition() / GEAR_RATIO);
+    inputs.rightPosition = Units.rotationsToRadians(rightEncoder.getDistance());
     inputs.rightVelocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(rightEncoder.getVelocity() / GEAR_RATIO);
-    inputs.rightAppliedVolts = rightLeader.getAppliedOutput() * rightLeader.getBusVoltage();
+        Units.rotationsPerMinuteToRadiansPerSecond(rightEncoder.getRate());
     inputs.rightCurrentAmps =
         new double[] {rightLeader.getOutputCurrent(), rightFollower.getOutputCurrent()};
 
@@ -138,12 +143,12 @@ public class REALDriveIO implements DriveIO {
   public void setVelocity(
       double leftRadPerSec, double rightRadPerSec, double leftFFVolts, double rightFFVolts) {
     leftPID.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(leftRadPerSec * GEAR_RATIO),
+        Units.radiansPerSecondToRotationsPerMinute(leftRadPerSec ),
         ControlType.kVelocity,
         0,
         leftFFVolts);
     rightPID.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(rightRadPerSec * GEAR_RATIO),
+        Units.radiansPerSecondToRotationsPerMinute(rightRadPerSec ),
         ControlType.kVelocity,
         0,
         rightFFVolts);

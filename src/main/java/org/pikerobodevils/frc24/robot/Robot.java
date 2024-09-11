@@ -11,7 +11,7 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-
+import org.pikerobodevils.frc24.robot.Constants.Mode;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -40,11 +40,15 @@ public class Robot extends LoggedRobot  {
     //Log must start before intization
     Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
 
-      if (isReal()) {
-    Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+    //Always log to network tables
     Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+
+    //log if real robot
+    if (Constants.currentMode == Mode.REAL){
+    Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
     new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-      } 
+  }
+      
 
       // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
       Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
@@ -73,12 +77,12 @@ public class Robot extends LoggedRobot  {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {
-    m_robotContainer.disabled();
-  }
+  public void disabledInit() {}
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+      m_robotContainer.disabled();
+  }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override

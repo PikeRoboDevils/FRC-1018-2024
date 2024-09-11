@@ -139,9 +139,8 @@ public final class Constants {
     public static final int RIGHT_ENCODER_A = 0;
     public static final int RIGHT_ENCODER_B = 1;
 
-
-    public static final int CURRENT_LIMIT = 60;
-    public static final double GEAR_RATIO = 10.86;
+    public static final double WHEEL_RADIUS = Units.inchesToMeters(6.0);
+    public static final int CURRENT_LIMIT = 56;
 
     public static final double KS = 0.21709;
     public static final double KA = 0.69281;
@@ -153,7 +152,7 @@ public final class Constants {
     public static final double kTrackwidthMeters = 0.6;
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
     public static final double VOLTRAMP = 0.34;
-    public static final double SlewRateLimiter = 2;  // Joystick cant go faster than this rate
+    public static final double SlewRateLimiter = 3;  // Joystick cant go faster than this rate
    
 
   }

@@ -17,7 +17,7 @@ public class ControlBoard {
 
   //reordered for clarity but....
   public double getSpeed() {
-    double leftY = driver.getLeftY();
+    double leftY = -driver.getLeftY();
     return Math.signum(leftY) * //Signum is for 0 or not 0 drift 
       filter.calculate( //SlewRateLimiter cant go faster than that rate 
        Math.pow(

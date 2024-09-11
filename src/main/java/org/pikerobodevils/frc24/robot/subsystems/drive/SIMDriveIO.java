@@ -13,6 +13,8 @@
 
 package org.pikerobodevils.frc24.robot.subsystems.drive;
 
+import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.KP;
+
 import org.pikerobodevils.frc24.robot.Constants;
 
 import edu.wpi.first.math.MathUtil;
@@ -23,8 +25,8 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 
 public class SIMDriveIO implements DriveIO {
-  private static final double KP = 0.2;
-  private static final double KD = 0.0;
+  private static final double KP = 1400; //actually too high
+  private static final double KD = 100;//JACKED CUZ SIM
   private DifferentialDrivetrainSim sim =
       DifferentialDrivetrainSim.createKitbotSim(
           KitbotMotor.kDoubleNEOPerSide, KitbotGearing.k10p71, KitbotWheelSize.kSixInch, null);
@@ -42,13 +44,13 @@ public class SIMDriveIO implements DriveIO {
     if (closedLoop) {
       leftAppliedVolts =
           MathUtil.clamp(
-              leftPID.calculate(sim.getLeftVelocityMetersPerSecond() / Constants.DrivetrainConstants.kTrackwidthMeters)
+              leftPID.calculate(sim.getLeftVelocityMetersPerSecond())
                   + leftFFVolts,
               -12.0,
               12.0);
       rightAppliedVolts =
           MathUtil.clamp(
-              leftPID.calculate(sim.getRightVelocityMetersPerSecond() / Constants.DrivetrainConstants.kTrackwidthMeters)
+              rightPID.calculate(sim.getRightVelocityMetersPerSecond() )
                   + rightFFVolts,
               -12.0,
               12.0);
@@ -57,13 +59,13 @@ public class SIMDriveIO implements DriveIO {
     }
 
     sim.update(0.02);
-    inputs.leftPositionRad = sim.getLeftPositionMeters() / Constants.DrivetrainConstants.kTrackwidthMeters;
-    inputs.leftVelocityRadPerSec = sim.getLeftVelocityMetersPerSecond() / Constants.DrivetrainConstants.kTrackwidthMeters;
+    inputs.leftPosition = sim.getLeftPositionMeters();
+    inputs.leftVelocity = sim.getLeftVelocityMetersPerSecond() ;
     inputs.leftAppliedVolts = leftAppliedVolts;
     inputs.leftCurrentAmps = new double[] {sim.getLeftCurrentDrawAmps()};
 
-    inputs.rightPositionRad = sim.getRightPositionMeters() / Constants.DrivetrainConstants.kTrackwidthMeters;
-    inputs.rightVelocityRadPerSec = sim.getRightVelocityMetersPerSecond() / Constants.DrivetrainConstants.kTrackwidthMeters;
+    inputs.rightPosition = sim.getRightPositionMeters();
+    inputs.rightVelocity = sim.getRightVelocityMetersPerSecond();
     inputs.rightAppliedVolts = rightAppliedVolts;
     inputs.rightCurrentAmps = new double[] {sim.getRightCurrentDrawAmps()};
 
@@ -76,7 +78,7 @@ public class SIMDriveIO implements DriveIO {
     leftAppliedVolts = MathUtil.clamp(leftVolts, -12.0, 12.0);
     rightAppliedVolts = MathUtil.clamp(rightVolts, -12.0, 12.0);
              //this code is so weird inverted AND flipped JUST for sim
-    sim.setInputs(-rightAppliedVolts, -leftAppliedVolts);
+    sim.setInputs(leftAppliedVolts, rightAppliedVolts);
   }
 
   @Override

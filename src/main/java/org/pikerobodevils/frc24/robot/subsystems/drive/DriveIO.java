@@ -27,8 +27,10 @@ import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 public interface DriveIO {
   @AutoLog
   public static class DriveIOInputs {
-    public double leftPositionRad = 0.0;
-    public double leftVelocityRadPerSec = 0.0;
+    public double leftPosition;
+    public double rightPosition;
+    public double rightVelocity;
+    public double leftVelocity;
     public double leftAppliedVolts = 0.0;
     public double[] leftCurrentAmps = new double[] {};
 
@@ -38,6 +40,7 @@ public interface DriveIO {
     public double[] rightCurrentAmps = new double[] {};
 
     public Rotation2d gyroYaw = new Rotation2d();
+
   }
 
   /** Updates the set of loggable inputs. */

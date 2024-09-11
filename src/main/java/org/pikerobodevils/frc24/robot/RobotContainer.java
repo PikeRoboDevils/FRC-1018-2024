@@ -8,7 +8,6 @@ import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.SHOOT_SP
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
-import org.pikerobodevils.frc24.robot.commands.Autos;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmIO;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
 import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
@@ -76,34 +75,19 @@ public class RobotContainer {
 
 
     shuffleboard.addBoolean("Has Note",()->intakeSubsystem.hasNote());
-    shuffleboard.addDouble("right velocity", ()->drivetrain.getRightVelocity());
-    shuffleboard.addDouble("left velocity", ()->drivetrain.getLeftVelocity());
-    shuffleboard.addDouble("left distance", ()->drivetrain.getLeftDistance() );
-    shuffleboard.addDouble("right distance", ()->drivetrain.getRightDistance());
+    // shuffleboard.addDouble("right velocity", ()->drivetrain.getRightVelocity());
+    // shuffleboard.addDouble("left velocity", ()->drivetrain.getLeftVelocity());
+    // shuffleboard.addDouble("left distance", ()->drivetrain.getLeftDistance() );
+    // shuffleboard.addDouble("right distance", ()->drivetrain.getRightDistance());
     shuffleboard.addDouble("Arm Deg", ()->arm.getPositionDeg());
     shuffleboard.addBoolean("At Arm Goal", ()->arm.atGoal());
     shuffleboard.addDouble("Climb Position", ()->climber.getPosition());
     shuffleboard.addDouble("Shooter Velocity", ()->shooterSubsystem.getVelocity());
-    shuffleboard.addDouble("Rotation", ()->drivetrain.getYaw());
+    // shuffleboard.addDouble("Rotation", ()->drivetrain.getYaw());
     shuffleboard.addDouble("PoseX", ()->drivetrain.getPose().getX());
    shuffleboard.addDouble("PoseY", ()->drivetrain.getPose().getY());
 shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getDegrees());
 
-//    // Another option that allows you to specify the default auto by its name
-//    autoChooser.addOption("shoot move", Autos.getAutonomousCommand(drivetrain, shooterSubsystem, arm, intakeSubsystem));
-//     autoChooser.addOption("shoot no move", Autos.ShootSubwooferAuto(shooterSubsystem, arm, intakeSubsystem));
-//   //   autoChooser.addOption("move", Autos.DriveBack(drivetrain, .2));
-//          autoChooser.addOption("Middle High", Autos.twoNoteDrive(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-//    autoChooser.addOption("Source RED", Autos.sourceRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-//    autoChooser.addOption("Source BLUE", Autos.sourceBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-//    autoChooser.addOption("three note", Autos.threeNote(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-//     autoChooser.addOption("Amp RED", Autos.ampRSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-//     autoChooser.addOption("Amp BLUE", Autos.ampBSide(shooterSubsystem, drivetrain, arm, intakeSubsystem));
-//    autoChooser.addOption("DRIVE", Autos.justDrive(drivetrain, 1.0));
-//        autoChooser.addOption("tubro", Autos.turbo(shooterSubsystem,drivetrain));
-
-
-    autoChooser.addOption("TESTSTAGE", Autos.ShootStageAuto(shooterSubsystem, arm, intakeSubsystem));
     shuffleboard.add("Auto Chooser", autoChooser);
     // Configure the trigger bindings
     configureBindings();
