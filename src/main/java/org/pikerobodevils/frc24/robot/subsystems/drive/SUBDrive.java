@@ -39,17 +39,12 @@ import org.littletonrobotics.junction.Logger;
 
 public class SUBDrive extends SubsystemBase {
 
-  public static final double TRACK_WIDTH = Units.inchesToMeters(26.0);//TODO
-
-
-
-
   private final DriveIO io;
   private final DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
   private final DifferentialDriveOdometry odometry;
   private final Pose2d pose;
   private final DifferentialDriveKinematics kinematics =
-      new DifferentialDriveKinematics(TRACK_WIDTH);
+      kDriveKinematics;
   private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(KS, KV);
   private final SysIdRoutine sysId;
 
@@ -66,7 +61,7 @@ public class SUBDrive extends SubsystemBase {
     pose);
 
     // Configure AutoBuilder for PathPlanner
-    AutoBuilder.configureRamsete(
+    AutoBuilder.configureLTV(
         this::getPose,
         this::setPose,
         () ->
@@ -77,6 +72,7 @@ public class SUBDrive extends SubsystemBase {
           var wheelSpeeds = kinematics.toWheelSpeeds(speeds);
           driveVelocity(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
         },
+        0.02,
         new ReplanningConfig(),
         () ->
             DriverStation.getAlliance().isPresent()

@@ -147,9 +147,9 @@ public final class Constants {
     public static final double KV = 2.8975;
     public static final double KP = 0.01;
     public static final double KD = 0.0;
-    public static final double DRIVEKP = 0.7; //TODO:
+    public static final double DRIVEKP = 0.7; //TODO:TUNE ALL THESE FOR PATHPLANNING....
     
-    public static final double kTrackwidthMeters = 0.6;
+    public static final double kTrackwidthMeters = 0.6;//Double check this
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
     public static final double VOLTRAMP = 0.34;
     public static final double SlewRateLimiter = 3;  // Joystick cant go faster than this rate
