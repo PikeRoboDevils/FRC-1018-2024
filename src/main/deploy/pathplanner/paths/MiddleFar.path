@@ -3,29 +3,29 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.642660362248319,
-        "y": 7.005529395674147
+        "x": 2.9066934025451485,
+        "y": 5.550936522700434
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.426549104168107,
-        "y": 6.956236908194216
+        "x": 3.9066934025451485,
+        "y": 5.550936522700434
       },
       "isLocked": false,
-      "linkedName": "AmpNotePickup"
+      "linkedName": "MiddlePause"
     },
     {
       "anchor": {
-        "x": 0.8338753339418218,
-        "y": 6.850839379282182
+        "x": 8.012618136505887,
+        "y": 6.042791657623258
       },
       "prevControl": {
-        "x": 0.8690078435791662,
-        "y": 6.932815235102653
+        "x": 5.469511611930248,
+        "y": 8.176711404439212
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "MiddleFarPause"
     }
   ],
   "rotationTargets": [],
@@ -42,8 +42,8 @@
     "rotation": 0,
     "rotateFast": false
   },
-  "reversed": true,
-  "folder": "Amp",
+  "reversed": false,
+  "folder": "Middle",
   "previewStartingState": {
     "rotation": 0,
     "velocity": 0

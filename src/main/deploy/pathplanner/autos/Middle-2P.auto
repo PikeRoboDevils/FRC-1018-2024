@@ -1,0 +1,119 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2671762861357376,
+      "y": 5.550936522700434
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "MiddleForward"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "INTAKE"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmPODIUM"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SPIN"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SHOOT"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "INTAKE"
+          }
+        },
+        {
+          "type": "deadline",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "MiddleFar"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "INTAKE"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "MiddleBack"
+          }
+        },
+        {
+          "type": "sequential",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "ArmPODIUM"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "SPIN"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SHOOT"
+          }
+        }
+      ]
+    }
+  },
+  "folder": "MIDDLE",
+  "choreoAuto": false
+}

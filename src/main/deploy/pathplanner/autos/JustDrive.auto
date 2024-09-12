@@ -5,7 +5,7 @@
       "x": 1.2671762861357376,
       "y": 5.550936522700434
     },
-    "rotation": 0
+    "rotation": 0.0
   },
   "command": {
     "type": "sequential",
@@ -14,12 +14,12 @@
         {
           "type": "path",
           "data": {
-            "pathName": "MiddleBack"
+            "pathName": "MiddleForward"
           }
         }
       ]
     }
   },
-  "folder": null,
+  "folder": "MIDDLE",
   "choreoAuto": false
 }

@@ -39,9 +39,9 @@ public class Intake extends SubsystemBase {
     return !irDetector.get();
   }
   public Command stopInake(){
-    
-  return startEnd(()->controlboard.driver.getHID().setRumble(RumbleType.kBothRumble, .5),
-    ()->controlboard.driver.getHID().setRumble(RumbleType.kBothRumble, 0)).withTimeout(.5);
+
+  return run(()->setSpeed(0)).andThen(startEnd(()->controlboard.driver.getHID().setRumble(RumbleType.kBothRumble, .5),
+    ()->controlboard.driver.getHID().setRumble(RumbleType.kBothRumble, 0)).withTimeout(.5));
 }
 
  public Command stopOuttake(){
@@ -58,6 +58,17 @@ public class Intake extends SubsystemBase {
       .until(()->hasNote())      
       .finallyDo(()->{
       setSpeed(0);
+    });
+  }
+  
+    public Command runIntakeLIMIT(){
+    return run(
+      ()->{
+        setSpeed(.75);
+      })
+      .until(()->hasNote())    
+       .finallyDo(()->{
+       stopInake();
     });
   }
 
@@ -82,4 +93,5 @@ public class Intake extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
+
 }

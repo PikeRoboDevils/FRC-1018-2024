@@ -77,7 +77,7 @@ public class SUBDrive extends SubsystemBase {
         },
 
         0.02,
-        new ReplanningConfig(),
+        new ReplanningConfig(true,true),
         () ->
             DriverStation.getAlliance().isPresent()
                 && DriverStation.getAlliance().get() == Alliance.Red,
@@ -154,11 +154,14 @@ public class SUBDrive extends SubsystemBase {
     return odometry.getPoseMeters();
   }
 
-  /** Resets the current odometry pose. */
+  /** SETS the current odometry pose. */
   public void setPose(Pose2d pose) {
-    odometry.resetPosition(inputs.gyroYaw, getLeftPositionMeters(), getRightPositionMeters(), getPose());
+    odometry.resetPosition(pose.getRotation(), getLeftPositionMeters(), getRightPositionMeters(), pose);
   }
-
+/** Resets the current odometry pose. */
+  public void resetPose(Pose2d pose) {
+odometry.resetPosition(inputs.gyroYaw, getLeftPositionMeters(), getRightPositionMeters(), getPose());
+  }
   /** Returns the position of the left wheels in meters. */
   @AutoLogOutput
   public double getLeftPositionMeters() {
@@ -215,7 +218,9 @@ public class SUBDrive extends SubsystemBase {
     return run(() -> idkDrive(speed.getAsDouble(), rotation.getAsDouble()));
   }
   
-
+  /* Pretty much same as arcade drive but the position is more intuitive 
+   * You gotta use it to understand
+  */
   public void idkDrive(double speed, double rotation) {
     var speeds = DifferentialDrive.curvatureDriveIK(speed, rotation, true);
     io.setVoltage(speeds.left * 12.0, speeds.right * 12.0);

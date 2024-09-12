@@ -6,35 +6,26 @@ package org.pikerobodevils.frc24.robot;
 
 import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.SHOOT_SPEED;
 
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
+import org.json.simple.JSONObject;
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
-import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmIO;
-import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
-import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
-import org.pikerobodevils.frc24.robot.subsystems.drive.SIMDriveIO;
-import org.pikerobodevils.frc24.robot.subsystems.drive.SUBDrive;
-import org.pikerobodevils.frc24.robot.subsystems.drive.REALDriveIO;
-
-import com.fasterxml.jackson.annotation.JsonCreator.Mode;
-import com.pathplanner.lib.auto.AutoBuilder;
-
 import org.pikerobodevils.frc24.robot.subsystems.BotGoClimb;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
 import org.pikerobodevils.frc24.robot.subsystems.Shooter;
 import org.pikerobodevils.frc24.robot.subsystems.Vision;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmIO;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm.ArmPosition;
+import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
+import org.pikerobodevils.frc24.robot.subsystems.drive.SUBDrive;
 
-import edu.wpi.first.math.filter.SlewRateLimiter;
-import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.RobotController;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 
@@ -55,9 +46,10 @@ public class RobotContainer {
   private final SUBArm arm = new SUBArm(ArmIO.isReal());
   private final Vision vision = new Vision();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
-  
+
   //private final SendableChooser<Command> autoChooser = new SendableChooser<>();
   private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
+
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
@@ -65,19 +57,30 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-  
     //CONTROLLER INPUT HERE
     drivetrain.setDefaultCommand(
-        // drivetrain
-        //     .tankDriveCommand(controlboard::getSpeed, controlboard::getSpeedRIGHT)
+        //  drivetrain
+        //      .tankDriveCommand(controlboard::getSpeed, controlboard::getSpeedRIGHT));
         
-       drivetrain
-             .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
-             .withName("Default Drive Command"));
+        drivetrain
+              .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
+              .withName("Default Drive Command"));
 
-    // drivetrain
-    //         .idkDriveCommand(controlboard::getSpeed, controlboard::getTurn)
-    //         .withName("Default Drive Command"));
+      // drivetrain
+      //        .idkDriveCommand(controlboard::getSpeed, controlboard::getTurn)
+      //         .withName("Default Drive Command"));
+
+
+
+    NamedCommands.registerCommand("INTAKE", intakeSubsystem.runIntakeLIMIT());
+    NamedCommands.registerCommand("SPIN", shooterSubsystem.spinUp(SHOOT_SPEED));
+    NamedCommands.registerCommand("SHOOT", intakeSubsystem.shoot());
+
+    NamedCommands.registerCommand("ArmINTAKE", arm.setGoalCommand(ArmPosition.INTAKE));
+    NamedCommands.registerCommand("ArmSUBWOOFER", arm.setGoalCommand(ArmPosition.SUBWOOFER));
+    NamedCommands.registerCommand("ArmPODIUM", arm.setGoalCommand(ArmPosition.PODIUM));
+    NamedCommands.registerCommand("ArmFARPODIUM", arm.setGoalCommand(ArmPosition.FPODIUM));
+    NamedCommands.registerCommand("ArmAMP", arm.setGoalCommand(ArmPosition.AMP));
 
 
     shuffleboard.addBoolean("Has Note",()->intakeSubsystem.hasNote());
@@ -121,7 +124,7 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
     controlboard.driver.a().onTrue(shooterSubsystem.spinUpAmp(()->!intakeSubsystem.hasNote()));
     controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
     controlboard.driver.leftTrigger().whileTrue(intakeSubsystem.runOuttake());
-    controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntake(.75).andThen(intakeSubsystem.stopInake()));
+    controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntakeLIMIT());
     
 
     controlboard.operator.rightBumper().whileTrue(arm.armOverride(controlboard.operator::getLeftY));
@@ -151,6 +154,7 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
     //return Autos.ShootSubwooferAuto(s);
+
       return autoChooser.getSelected();
      
       // .andThen(shooterSubsystem.spinUp())

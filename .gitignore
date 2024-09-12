@@ -182,3 +182,5 @@ logs/
 ctre_sim/
 simgui-ds.json
 simgui.json
+
+src/main/java/org/pikerobodevils/frc24/robot/BUILD.java
