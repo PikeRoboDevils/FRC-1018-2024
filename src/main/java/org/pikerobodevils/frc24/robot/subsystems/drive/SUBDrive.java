@@ -125,11 +125,12 @@ public class SUBDrive extends SubsystemBase {
     Logger.recordOutput("Drive/RightVelocitySetpointMetersPerSec", rightMetersPerSec);
     double leftRadPerSec = leftMetersPerSec / WHEEL_RADIUS;
     double rightRadPerSec = rightMetersPerSec / WHEEL_RADIUS;
-    io.setVelocity(
-        leftRadPerSec,
-        rightRadPerSec,
-        feedforward.calculate(leftRadPerSec),
-        feedforward.calculate(rightRadPerSec));
+    // io.setVelocity(
+    //     leftRadPerSec,
+    //     rightRadPerSec,
+    //     feedforward.calculate(leftRadPerSec),
+    //     feedforward.calculate(rightRadPerSec));
+    io.setVoltage(feedforward.calculate(leftRadPerSec), feedforward.calculate(rightRadPerSec));
   }
 
   /** Stops the drive. */

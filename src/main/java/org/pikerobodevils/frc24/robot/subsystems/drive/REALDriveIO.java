@@ -140,6 +140,8 @@ public class REALDriveIO implements DriveIO {
 
   @Override
   public void setVelocity(
+    //THIS JUST DOESNT WOKR I DONT KNOW WHYYYYYY EVEY VALUE IS UP TO PAR AHHHHHHHHHHHH 
+    //voltage works fine tho
       double leftRadPerSec, double rightRadPerSec, double leftFFVolts, double rightFFVolts) {
     leftPID.setReference(
         Units.radiansPerSecondToRotationsPerMinute(leftRadPerSec ),
