@@ -68,10 +68,16 @@ public class RobotContainer {
   
     //CONTROLLER INPUT HERE
     drivetrain.setDefaultCommand(
-        drivetrain
-            .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
-            .withName("Default Drive Command"));
+        // drivetrain
+        //     .tankDriveCommand(controlboard::getSpeed, controlboard::getSpeedRIGHT)
+        
+       drivetrain
+             .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
+             .withName("Default Drive Command"));
 
+    // drivetrain
+    //         .idkDriveCommand(controlboard::getSpeed, controlboard::getTurn)
+    //         .withName("Default Drive Command"));
 
 
     shuffleboard.addBoolean("Has Note",()->intakeSubsystem.hasNote());

@@ -23,6 +23,13 @@ public class ControlBoard {
        Math.pow(
         MathUtil.applyDeadband(leftY, .04), 2));
   }
+  public double getSpeedRIGHT() {
+    double rightY = -driver.getRightY();
+    return Math.signum(rightY) * //Signum is for 0 or not 0 drift 
+      filter.calculate( //SlewRateLimiter cant go faster than that rate 
+       Math.pow(
+        MathUtil.applyDeadband(rightY, .04), 2));
+  }
 
   public double getTurn() {
     double rightX = -driver.getRightX()*.80;

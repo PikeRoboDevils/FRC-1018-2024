@@ -21,6 +21,8 @@ import java.util.function.DoubleSupplier;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -68,10 +70,12 @@ public class SUBDrive extends SubsystemBase {
             kinematics.toChassisSpeeds(
                 new DifferentialDriveWheelSpeeds(
                     getLeftVelocityMetersPerSec(), getRightVelocityMetersPerSec())),
+
         (speeds) -> {
           var wheelSpeeds = kinematics.toWheelSpeeds(speeds);
           driveVelocity(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
         },
+
         0.02,
         new ReplanningConfig(),
         () ->
@@ -128,12 +132,6 @@ public class SUBDrive extends SubsystemBase {
         feedforward.calculate(rightRadPerSec));
   }
 
-  /** Run open loop based on stick positions. */
-  public void driveArcade(double xSpeed, double zRotation) {
-    var speeds = DifferentialDrive.arcadeDriveIK(xSpeed, zRotation, true);
-    io.setVoltage(speeds.left * 12.0, speeds.right * 12.0);
-  }
-
   /** Stops the drive. */
   public void stop() {
     io.setVoltage(0.0, 0.0);
@@ -157,7 +155,7 @@ public class SUBDrive extends SubsystemBase {
 
   /** Resets the current odometry pose. */
   public void setPose(Pose2d pose) {
-    odometry.resetPosition(inputs.gyroYaw, getLeftPositionMeters(), getRightPositionMeters(), pose);
+    odometry.resetPosition(inputs.gyroYaw, getLeftPositionMeters(), getRightPositionMeters(), getPose());
   }
 
   /** Returns the position of the left wheels in meters. */
@@ -183,7 +181,6 @@ public class SUBDrive extends SubsystemBase {
   public double getRightVelocityMetersPerSec() {
     return inputs.rightVelocity;
   }
-
   // /** Returns the average velocity in radians/second. */
   // public double getCharacterizationVelocity() {
   //   return (inputs.leftVelocityRadPerSec + inputs.rightVelocityRadPerSec) / 2.0;
@@ -202,5 +199,26 @@ public class SUBDrive extends SubsystemBase {
     io.setVoltage(speeds.left * 12.0, speeds.right * 12.0);
    
   }
+
+  public Command tankDriveCommand(DoubleSupplier speedL, DoubleSupplier speedR){
+    return run(()-> tankDrive(speedL.getAsDouble(), speedR.getAsDouble()));
+  }
+  
+
+  public void tankDrive(double left, double right) {
+    var speeds = DifferentialDrive.tankDriveIK(left, right, true);
+    io.setVoltage(speeds.left * 12.0, speeds.right * 12.0);
+  }
+
+  public Command idkDriveCommand(DoubleSupplier speed, DoubleSupplier rotation) {
+    return run(() -> idkDrive(speed.getAsDouble(), rotation.getAsDouble()));
+  }
+  
+
+  public void idkDrive(double speed, double rotation) {
+    var speeds = DifferentialDrive.curvatureDriveIK(speed, rotation, true);
+    io.setVoltage(speeds.left * 12.0, speeds.right * 12.0);
+  }
+
   
 }

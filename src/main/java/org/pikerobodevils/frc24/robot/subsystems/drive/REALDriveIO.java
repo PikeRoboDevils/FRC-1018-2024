@@ -26,8 +26,10 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -49,7 +51,6 @@ public class REALDriveIO implements DriveIO {
 
   private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_A,LEFT_ENCODER_B,false, CounterBase.EncodingType.k4X);
   private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_A,RIGHT_ENCODER_B,false, CounterBase.EncodingType.k4X);
-  
 
   private final SparkPIDController leftPID = leftLeader.getPIDController();
   private final SparkPIDController rightPID = rightLeader.getPIDController();
@@ -102,8 +103,8 @@ public class REALDriveIO implements DriveIO {
     rightPID.setP(KP);
     rightPID.setD(KD);
 
-    leftEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
-    rightEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
+    leftEncoder.setDistancePerPulse(1);//(Math.PI*.1524)/2048);//IS THIS RIGHT???
+    rightEncoder.setDistancePerPulse(1);//(Math.PI*.1524)/2048);
 
     leftLeader.burnFlash();
     rightLeader.burnFlash();
@@ -111,8 +112,6 @@ public class REALDriveIO implements DriveIO {
     rightFollower.burnFlash();
 
     navx.zeroYaw();
-    //yaw.setUpdateFrequency(100.0); // couldnt find navx alternative
-    //pigeon.optimizeBusUtilization(); // couldnt find navx alternative
   }
 
   @Override
@@ -144,14 +143,14 @@ public class REALDriveIO implements DriveIO {
       double leftRadPerSec, double rightRadPerSec, double leftFFVolts, double rightFFVolts) {
     leftPID.setReference(
         Units.radiansPerSecondToRotationsPerMinute(leftRadPerSec ),
-        ControlType.kVelocity,
+        CANSparkBase.ControlType.kVelocity,
         0,
         leftFFVolts);
     rightPID.setReference(
         Units.radiansPerSecondToRotationsPerMinute(rightRadPerSec ),
-        ControlType.kVelocity,
-        0,
-        rightFFVolts);
+        CANSparkBase.ControlType.kVelocity);
+        //0,
+        //rightFFVolts);
   }
   @Override
     public void set(double left, double right) {
