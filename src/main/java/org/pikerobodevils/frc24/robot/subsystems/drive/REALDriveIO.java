@@ -49,7 +49,7 @@ public class REALDriveIO implements DriveIO {
   private final CANSparkMax leftFollower = new CANSparkMax(DrivetrainConstants.LEFT_FOLLOWER_ONE_ID, MotorType.kBrushless);
   private final CANSparkMax rightFollower = new CANSparkMax(DrivetrainConstants.RIGHT_FOLLOWER_ONE_ID, MotorType.kBrushless);
 
-  private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_A,LEFT_ENCODER_B,false, CounterBase.EncodingType.k4X);
+  private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_A,LEFT_ENCODER_B,true, CounterBase.EncodingType.k4X);
   private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_A,RIGHT_ENCODER_B,false, CounterBase.EncodingType.k4X);
 
   private final SparkPIDController leftPID = leftLeader.getPIDController();
@@ -92,15 +92,11 @@ public class REALDriveIO implements DriveIO {
     leftLeader.setSmartCurrentLimit(DrivetrainConstants.CURRENT_LIMIT);
     rightLeader.setSmartCurrentLimit(DrivetrainConstants.CURRENT_LIMIT);
 
-    //not sure if it helps but IM TOLD....
-    leftLeader.setIdleMode(IdleMode.kCoast);
-    rightLeader.setIdleMode(IdleMode.kCoast);
-    leftFollower.setIdleMode(IdleMode.kCoast);
-    rightFollower.setIdleMode(IdleMode.kCoast);
-
     leftPID.setP(KP);
     leftPID.setD(KD);
+    leftPID.setI(0);
     rightPID.setP(KP);
+    rightPID.setI(0);
     rightPID.setD(KD);
 
     leftEncoder.setDistancePerPulse(1);//(Math.PI*.1524)/2048);//IS THIS RIGHT???
@@ -140,19 +136,17 @@ public class REALDriveIO implements DriveIO {
 
   @Override
   public void setVelocity(
-    //THIS JUST DOESNT WOKR I DONT KNOW WHYYYYYY EVEY VALUE IS UP TO PAR AHHHHHHHHHHHH 
-    //voltage works fine tho
       double leftRadPerSec, double rightRadPerSec, double leftFFVolts, double rightFFVolts) {
     leftPID.setReference(
         Units.radiansPerSecondToRotationsPerMinute(leftRadPerSec ),
-        CANSparkBase.ControlType.kVelocity,
+        CANSparkBase.ControlType.kSmartVelocity,
         0,
         leftFFVolts);
     rightPID.setReference(
         Units.radiansPerSecondToRotationsPerMinute(rightRadPerSec ),
-        CANSparkBase.ControlType.kVelocity);
-        //0,
-        //rightFFVolts);
+        CANSparkBase.ControlType.kSmartVelocity,
+        0,
+        rightFFVolts);
   }
   @Override
     public void set(double left, double right) {

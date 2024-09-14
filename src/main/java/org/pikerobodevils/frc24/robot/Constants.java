@@ -25,7 +25,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
  */
 public final class Constants {
 
-  public static final Mode currentMode = Mode.SIM;
+  public static final Mode currentMode = Mode.REAL;
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -131,7 +131,8 @@ public final class Constants {
     public static final int RIGHT_LEADER_ID = 4;
     public static final int RIGHT_FOLLOWER_ONE_ID = 5;
 
-    public static final IdleMode IDLE_MODE = IdleMode.kBrake;
+    //not sure if it helps but IM TOLD....
+    public static final IdleMode IDLE_MODE = IdleMode.kCoast;
 
     public static final int LEFT_ENCODER_A = 2;
     public static final int LEFT_ENCODER_B = 3;
@@ -139,15 +140,15 @@ public final class Constants {
     public static final int RIGHT_ENCODER_A = 0;
     public static final int RIGHT_ENCODER_B = 1;
 
-    public static final double WHEEL_RADIUS = Units.inchesToMeters(6.0);
+    public static final double WHEEL_RADIUS = Units.inchesToMeters(3.0);
     public static final int CURRENT_LIMIT = 56;
 
-    public static final double KS = 0.21709;
-    public static final double KA = 0.69281;
+    public static final double KS = 0;
+    public static final double KA = 0.0;
     public static final double KV = 2.8975;
-    public static final double KP = 0.01;
+    public static final double KP = 0.0;
     public static final double KD = 0.0;
-    public static final double DRIVEKP = 0.7; //TODO:TUNE ALL THESE FOR PATHPLANNING....
+    // public static final double DRIVEKP = 0.01;
     
     public static final double kTrackwidthMeters = 0.6;//Double check this
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);

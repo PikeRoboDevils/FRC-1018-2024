@@ -26,6 +26,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
@@ -62,26 +63,29 @@ public class SUBDrive extends SubsystemBase {
   getRightPositionMeters(),
     pose);
 
-    // Configure AutoBuilder for PathPlanner
-    AutoBuilder.configureLTV(
-        this::getPose,
-        this::setPose,
-        () ->
-            kinematics.toChassisSpeeds(
-                new DifferentialDriveWheelSpeeds(
-                    getLeftVelocityMetersPerSec(), getRightVelocityMetersPerSec())),
+    // // Configure AutoBuilder for PathPlanner
+    // AutoBuilder.configureLTV(
+    //     this::getPose,
+    //     this::setPose,
+    //     () ->
+    //         kinematics.toChassisSpeeds(
+    //             new DifferentialDriveWheelSpeeds(
+    //                 getLeftVelocityMetersPerSec(), getRightVelocityMetersPerSec())),
 
-        (speeds) -> {
-          var wheelSpeeds = kinematics.toWheelSpeeds(speeds);
-          driveVelocity(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
-        },
+    //     (speeds) -> {
+    //       var wheelSpeeds = kinematics.toWheelSpeeds(speeds);
+    //       driveVelocity(wheelSpeeds.leftMetersPerSecond, wheelSpeeds.rightMetersPerSecond);
+    //     },
 
-        0.02,
-        new ReplanningConfig(true,true),
-        () ->
-            DriverStation.getAlliance().isPresent()
-                && DriverStation.getAlliance().get() == Alliance.Red,
-        this);
+    //     0.02,
+    //     new ReplanningConfig(true,true),
+    //     () ->
+    //         DriverStation.getAlliance().isPresent()
+    //             && DriverStation.getAlliance().get() == Alliance.Red,
+    //     this);
+
+    AutoBuilder.configureRamsete(this::getPose, this::setPose, () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(inputs.leftVelocity, inputs.rightVelocity)), this::runVelocity,
+    new ReplanningConfig(),   () -> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red, this);
 
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
@@ -118,6 +122,15 @@ public class SUBDrive extends SubsystemBase {
   public void driveVolts(double leftVolts, double rightVolts) {
     io.setVoltage(leftVolts, rightVolts);
   }
+    public void runVelocity(ChassisSpeeds speeds) {
+    DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(speeds);
+    // 5600 * 0.0762 = M
+    //5600 = 473 * 12
+    //(473 * 12) * 0.0762 = M
+    //12 = M / (473 * 0.0762)
+    //manually divide by the max set speed to achieve percentage.
+    io.setVoltage(wheelSpeeds.leftMetersPerSecond* 10.86/(KV * WHEEL_RADIUS*2), wheelSpeeds.rightMetersPerSecond * 10.86/(KV * WHEEL_RADIUS*2));
+  }
 
   /** Run closed loop at the specified voltage. */
   public void driveVelocity(double leftMetersPerSec, double rightMetersPerSec) {
@@ -125,12 +138,12 @@ public class SUBDrive extends SubsystemBase {
     Logger.recordOutput("Drive/RightVelocitySetpointMetersPerSec", rightMetersPerSec);
     double leftRadPerSec = leftMetersPerSec / WHEEL_RADIUS;
     double rightRadPerSec = rightMetersPerSec / WHEEL_RADIUS;
-    // io.setVelocity(
-    //     leftRadPerSec,
-    //     rightRadPerSec,
-    //     feedforward.calculate(leftRadPerSec),
-    //     feedforward.calculate(rightRadPerSec));
-    io.setVoltage(feedforward.calculate(leftRadPerSec), feedforward.calculate(rightRadPerSec));
+    io.setVelocity(
+        leftRadPerSec,
+        rightRadPerSec,
+        feedforward.calculate(leftRadPerSec),
+        feedforward.calculate(rightRadPerSec));
+    //io.setVoltage(feedforward.calculate(leftRadPerSec), feedforward.calculate(rightRadPerSec));
   }
 
   /** Stops the drive. */

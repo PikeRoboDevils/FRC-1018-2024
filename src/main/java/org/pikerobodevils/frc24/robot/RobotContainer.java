@@ -170,8 +170,7 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
   }
 
 
-
-public void disabled() {
+public void safety() {
   drivetrain.Brake();
 } 
 }
