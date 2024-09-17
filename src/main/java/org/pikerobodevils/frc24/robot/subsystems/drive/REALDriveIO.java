@@ -52,9 +52,6 @@ public class REALDriveIO implements DriveIO {
   private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_A,LEFT_ENCODER_B,true, CounterBase.EncodingType.k4X);
   private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_A,RIGHT_ENCODER_B,false, CounterBase.EncodingType.k4X);
 
-  private final SparkPIDController leftPID = leftLeader.getPIDController();
-  private final SparkPIDController rightPID = rightLeader.getPIDController();
-
   private final AHRS navx = new AHRS();
   private final float yaw = navx.getYaw();
 
@@ -70,18 +67,6 @@ public class REALDriveIO implements DriveIO {
     leftFollower.setCANTimeout(250);
     rightFollower.setCANTimeout(250);
 
-    // part of old drivetrain
-    leftLeader.setIdleMode(DrivetrainConstants.IDLE_MODE);
-    rightFollower.setIdleMode(DrivetrainConstants.IDLE_MODE);
-    leftFollower.setIdleMode(DrivetrainConstants.IDLE_MODE);
-    rightFollower.setIdleMode(DrivetrainConstants.IDLE_MODE);
-    
-    //also part of old drive
-    leftLeader.setOpenLoopRampRate(DrivetrainConstants.VOLTRAMP);
-    leftFollower.setOpenLoopRampRate(DrivetrainConstants.VOLTRAMP);
-    rightLeader.setOpenLoopRampRate(DrivetrainConstants.VOLTRAMP);
-    rightFollower.setOpenLoopRampRate(DrivetrainConstants.VOLTRAMP);
-
     leftLeader.setInverted(true);
     rightLeader.setInverted(false);
     leftFollower.follow(leftLeader, false);
@@ -92,20 +77,14 @@ public class REALDriveIO implements DriveIO {
     leftLeader.setSmartCurrentLimit(DrivetrainConstants.CURRENT_LIMIT);
     rightLeader.setSmartCurrentLimit(DrivetrainConstants.CURRENT_LIMIT);
 
-    leftPID.setP(KP);
-    leftPID.setD(KD);
-    leftPID.setI(0);
-    rightPID.setP(KP);
-    rightPID.setI(0);
-    rightPID.setD(KD);
-
-    leftEncoder.setDistancePerPulse(1);//(Math.PI*.1524)/2048);//IS THIS RIGHT???
-    rightEncoder.setDistancePerPulse(1);//(Math.PI*.1524)/2048);
-
     leftLeader.burnFlash();
     rightLeader.burnFlash();
     leftFollower.burnFlash();
     rightFollower.burnFlash();
+
+    leftEncoder.setDistancePerPulse((Math.PI*.1524)/2048);//IS THIS RIGHT???
+    rightEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
+
 
     navx.zeroYaw();
   }
@@ -133,21 +112,6 @@ public class REALDriveIO implements DriveIO {
     rightLeader.setVoltage(rightVolts);
   }
 
-
-  @Override
-  public void setVelocity(
-      double leftRadPerSec, double rightRadPerSec, double leftFFVolts, double rightFFVolts) {
-    leftPID.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(leftRadPerSec ),
-        CANSparkBase.ControlType.kSmartVelocity,
-        0,
-        leftFFVolts);
-    rightPID.setReference(
-        Units.radiansPerSecondToRotationsPerMinute(rightRadPerSec ),
-        CANSparkBase.ControlType.kSmartVelocity,
-        0,
-        rightFFVolts);
-  }
   @Override
     public void set(double left, double right) {
       leftLeader.set(left);

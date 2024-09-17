@@ -25,7 +25,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
  */
 public final class Constants {
 
-  public static final Mode currentMode = Mode.REAL;
+  public static final Mode currentMode = Mode.SIM;//TODO:IS MODE SET CURRECTLY??
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -142,6 +142,7 @@ public final class Constants {
 
     public static final double WHEEL_RADIUS = Units.inchesToMeters(3.0);
     public static final int CURRENT_LIMIT = 56;
+    public static final double GEAR_RATIO = 10.86;
 
     public static final double KS = 0;
     public static final double KA = 0.0;

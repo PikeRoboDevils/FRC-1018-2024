@@ -48,7 +48,7 @@ public class RobotContainer {
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
 
   //private final SendableChooser<Command> autoChooser = new SendableChooser<>();
-  private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser();
+  private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("JustDrive");
 
 
   // Replace with CommandPS4Controller or CommandJoystick if needed

@@ -51,6 +51,8 @@ public class SUBDrive extends SubsystemBase {
   private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(KS, KV);
   private final SysIdRoutine sysId;
 
+  public static final double MotorKV = KP; //473;//??????
+
   /** Creates a new Drive. */
   public SUBDrive(DriveIO io) {
     this.io = io;
@@ -84,8 +86,7 @@ public class SUBDrive extends SubsystemBase {
     //             && DriverStation.getAlliance().get() == Alliance.Red,
     //     this);
 
-    AutoBuilder.configureRamsete(this::getPose, this::setPose, () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(inputs.leftVelocity, inputs.rightVelocity)), this::runVelocity,
-    new ReplanningConfig(),   () -> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red, this);
+    AutoBuilder.configureLTV(this::getPose, this::setPose, () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(inputs.leftVelocity, inputs.rightVelocity)), this::runVelocity,0.02, new ReplanningConfig(), () -> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red, this);
 
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
@@ -129,22 +130,22 @@ public class SUBDrive extends SubsystemBase {
     //(473 * 12) * 0.0762 = M
     //12 = M / (473 * 0.0762)
     //manually divide by the max set speed to achieve percentage.
-    io.setVoltage(wheelSpeeds.leftMetersPerSecond* 10.86/(KV * WHEEL_RADIUS*2), wheelSpeeds.rightMetersPerSecond * 10.86/(KV * WHEEL_RADIUS*2));
+    io.setVoltage(wheelSpeeds.leftMetersPerSecond* GEAR_RATIO/(MotorKV * WHEEL_RADIUS*2), wheelSpeeds.rightMetersPerSecond * GEAR_RATIO/(MotorKV * WHEEL_RADIUS*2));
   }
 
-  /** Run closed loop at the specified voltage. */
-  public void driveVelocity(double leftMetersPerSec, double rightMetersPerSec) {
-    Logger.recordOutput("Drive/LeftVelocitySetpointMetersPerSec", leftMetersPerSec);
-    Logger.recordOutput("Drive/RightVelocitySetpointMetersPerSec", rightMetersPerSec);
-    double leftRadPerSec = leftMetersPerSec / WHEEL_RADIUS;
-    double rightRadPerSec = rightMetersPerSec / WHEEL_RADIUS;
-    io.setVelocity(
-        leftRadPerSec,
-        rightRadPerSec,
-        feedforward.calculate(leftRadPerSec),
-        feedforward.calculate(rightRadPerSec));
-    //io.setVoltage(feedforward.calculate(leftRadPerSec), feedforward.calculate(rightRadPerSec));
-  }
+  // /** Run closed loop at the specified voltage. */
+  // public void driveVelocity(double leftMetersPerSec, double rightMetersPerSec) {
+  //   Logger.recordOutput("Drive/LeftVelocitySetpointMetersPerSec", leftMetersPerSec);
+  //   Logger.recordOutput("Drive/RightVelocitySetpointMetersPerSec", rightMetersPerSec);
+  //   double leftRadPerSec = leftMetersPerSec / WHEEL_RADIUS;
+  //   double rightRadPerSec = rightMetersPerSec / WHEEL_RADIUS;
+  //   io.setVelocity(
+  //       leftRadPerSec,
+  //       rightRadPerSec,
+  //       feedforward.calculate(leftRadPerSec),
+  //       feedforward.calculate(rightRadPerSec));
+  //   //io.setVoltage(feedforward.calculate(leftRadPerSec), feedforward.calculate(rightRadPerSec));
+  // }
 
   /** Stops the drive. */
   public void stop() {
@@ -231,8 +232,7 @@ odometry.resetPosition(inputs.gyroYaw, getLeftPositionMeters(), getRightPosition
     return run(() -> idkDrive(speed.getAsDouble(), rotation.getAsDouble()));
   }
   
-  /* Pretty much same as arcade drive but the position is more intuitive 
-   * You gotta use it to understand
+  /* Pretty much same as arcade drive
   */
   public void idkDrive(double speed, double rotation) {
     var speeds = DifferentialDrive.curvatureDriveIK(speed, rotation, true);
