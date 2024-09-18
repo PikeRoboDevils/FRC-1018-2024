@@ -19,6 +19,7 @@ import org.pikerobodevils.frc24.robot.Constants;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
@@ -33,30 +34,9 @@ public class SIMDriveIO implements DriveIO {
 
   private double leftAppliedVolts = 0.0;
   private double rightAppliedVolts = 0.0;
-  private boolean closedLoop = false;
-  private PIDController leftPID = new PIDController(KP, 0.0, KD);
-  private PIDController rightPID = new PIDController(KP, 0.0, KD);
-  private double leftFFVolts = 0.0;
-  private double rightFFVolts = 0.0;
 
   @Override
   public void updateInputs(DriveIOInputs inputs) {
-    if (closedLoop) {
-      leftAppliedVolts =
-          MathUtil.clamp(
-              leftPID.calculate(sim.getLeftVelocityMetersPerSecond())
-                  + leftFFVolts,
-              -12.0,
-              12.0);
-      rightAppliedVolts =
-          MathUtil.clamp(
-              rightPID.calculate(sim.getRightVelocityMetersPerSecond() )
-                  + rightFFVolts,
-              -12.0,
-              12.0);
-
-      sim.setInputs(leftAppliedVolts, rightAppliedVolts);
-    }
 
     sim.update(0.02);
     inputs.leftPosition = sim.getLeftPositionMeters();
@@ -69,26 +49,17 @@ public class SIMDriveIO implements DriveIO {
     inputs.rightAppliedVolts = rightAppliedVolts;
     inputs.rightCurrentAmps = new double[] {sim.getRightCurrentDrawAmps()};
 
-    inputs.gyroYaw = sim.getHeading();
+    inputs.gryoAngle = sim.getHeading();
+    inputs.rate = 0.02;
+    inputs.angle = 0;
   }
 
   @Override
   public void setVoltage(double leftVolts, double rightVolts) {
-    closedLoop = false;
     leftAppliedVolts = MathUtil.clamp(leftVolts, -12.0, 12.0);
     rightAppliedVolts = MathUtil.clamp(rightVolts, -12.0, 12.0);
              //this code is so weird inverted AND flipped JUST for sim
     sim.setInputs(leftAppliedVolts, rightAppliedVolts);
-  }
-
-  @Override
-  public void setVelocity(
-      double leftRadPerSec, double rightRadPerSec, double leftFFVolts, double rightFFVolts) {
-    closedLoop = true;
-    leftPID.setSetpoint(leftRadPerSec);
-    rightPID.setSetpoint(rightRadPerSec);
-    this.leftFFVolts = leftFFVolts;
-    this.rightFFVolts = rightFFVolts;
   }
   
   @Override 

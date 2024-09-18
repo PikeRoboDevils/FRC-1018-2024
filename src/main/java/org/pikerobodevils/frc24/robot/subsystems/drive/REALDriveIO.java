@@ -53,8 +53,6 @@ public class REALDriveIO implements DriveIO {
   private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_A,RIGHT_ENCODER_B,false, CounterBase.EncodingType.k4X);
 
   private final AHRS navx = new AHRS();
-  private final float yaw = navx.getYaw();
-
 
   public REALDriveIO() {
     leftLeader.restoreFactoryDefaults();
@@ -92,18 +90,22 @@ public class REALDriveIO implements DriveIO {
   @Override
   public void updateInputs(DriveIOInputs inputs) {
     inputs.leftPosition = WHEEL_RADIUS * Units.rotationsToRadians(leftEncoder.getDistance() );
-    inputs.leftVelocity =
-        Units.rotationsPerMinuteToRadiansPerSecond(leftEncoder.getRate());
-    inputs.leftCurrentAmps =
-        new double[] {leftLeader.getOutputCurrent(), leftFollower.getOutputCurrent()};
+    inputs.leftVelocity = Units.rotationsPerMinuteToRadiansPerSecond(leftEncoder.getRate());
+
+    inputs.leftVoltage = leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
+    inputs.leftAppliedVolts = leftLeader.getAppliedOutput();
+    inputs.leftCurrentAmps = new double[] {leftLeader.getOutputCurrent(), leftFollower.getOutputCurrent()};
 
     inputs.rightPosition = Units.rotationsToRadians(rightEncoder.getDistance());
-    inputs.rightVelocityRadPerSec =
-        Units.rotationsPerMinuteToRadiansPerSecond(rightEncoder.getRate());
-    inputs.rightCurrentAmps =
-        new double[] {rightLeader.getOutputCurrent(), rightFollower.getOutputCurrent()};
+    inputs.rightVelocity = Units.rotationsPerMinuteToRadiansPerSecond(rightEncoder.getRate());
 
-    inputs.gyroYaw = Rotation2d.fromDegrees(yaw);
+    inputs.rightVoltage = rightLeader.getAppliedOutput() * rightLeader.getBusVoltage();
+    inputs.rightAppliedVolts = rightLeader.getAppliedOutput();
+    inputs.rightCurrentAmps = new double[] {rightLeader.getOutputCurrent(), rightFollower.getOutputCurrent()};
+    
+    inputs.angle = navx.getAngle();
+    inputs.rate = navx.getRate();
+    inputs.gryoAngle = navx.getRotation2d();
   }
 
   @Override
@@ -117,39 +119,7 @@ public class REALDriveIO implements DriveIO {
       leftLeader.set(left);
      rightLeader.set(right);
 }
-  @Override
-  public double getLeftVoltage() {
-    return leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
-  }
 
-  @Override
-  public double getRightVoltage() {
-    return leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
-  }
-  @Override
-  public Rotation2d getRotation2d() {
-    return navx.getRotation2d();
-  }
-  @Override
-  public double getYaw() {
-    return yaw;
-  }
-  @Override
-  public double getPitch() {
-    return navx.getPitch();
-  }
-  @Override
-  public double getRoll() {
-    return navx.getRoll();
-  }
-  @Override
-  public double getRate() {
-    return navx.getRate();
-  }
-  @Override
-  public double getAngle() {
-    return navx.getAngle();
-  }
   @Override
   public void Brake() {
     leftLeader.setIdleMode(IdleMode.kBrake);

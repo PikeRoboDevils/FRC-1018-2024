@@ -16,6 +16,17 @@
           "open": true
         }
       }
+    },
+    "RoboRIO": {
+      "3.3V Rail": {
+        "open": true
+      },
+      "5V Rail": {
+        "open": true
+      },
+      "6V Rail": {
+        "open": true
+      }
     }
   },
   "NTProvider": {

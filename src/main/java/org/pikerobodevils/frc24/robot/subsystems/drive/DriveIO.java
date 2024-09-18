@@ -28,18 +28,24 @@ public interface DriveIO {
   @AutoLog
   public static class DriveIOInputs {
     public double leftPosition;
-    public double rightPosition;
-    public double rightVelocity;
     public double leftVelocity;
-    public double leftAppliedVolts = 0.0;
+
+    public double leftVoltage;
+    public double leftAppliedVolts;
     public double[] leftCurrentAmps = new double[] {};
 
-    public double rightPositionRad = 0.0;
-    public double rightVelocityRadPerSec = 0.0;
-    public double rightAppliedVolts = 0.0;
+    public double rightPosition;
+    public double rightVelocity;
+    // public double rightPositionRad = 0.0;
+    // public double rightVelocityRadPerSec = 0.0;
+
+    public double rightVoltage;
+    public double rightAppliedVolts;
     public double[] rightCurrentAmps = new double[] {};
 
-    public Rotation2d gyroYaw = new Rotation2d();
+    public double angle;
+    public double rate;
+    public Rotation2d gryoAngle = new Rotation2d();
 
   }
 
@@ -55,14 +61,6 @@ public interface DriveIO {
 
   /** ADDED FOR EASY DRIVETRAIN REPLACEMENT */
   public default void set(double left, double right) {}
-  public default double getLeftVoltage() {return 0;}
-  public default double getRightVoltage() {return 0;}
-  public default Rotation2d getRotation2d(){return new Rotation2d();}
-  public default double getYaw() {return 0;}
-  public default double getPitch() {return 0;}
-  public default double getRoll() {return 0;}
-  public default double getRate() {return 0;}
-  public default double getAngle() {return 0;}
   public default void Brake() {}
 
 public static DriveIO isReal() {

@@ -60,7 +60,7 @@ public class SUBDrive extends SubsystemBase {
      pose = new Pose2d(0, 0, new Rotation2d());
 
 
-    odometry = new DifferentialDriveOdometry(io.getRotation2d(),
+    odometry = new DifferentialDriveOdometry(inputs.gryoAngle,
   getLeftPositionMeters(),
   getRightPositionMeters(),
     pose);
@@ -116,14 +116,16 @@ public class SUBDrive extends SubsystemBase {
     Logger.processInputs("Drive", inputs);
 
     // Update odometry
-    odometry.update(inputs.gyroYaw, getLeftPositionMeters(), getRightPositionMeters());
+    odometry.update(inputs.gryoAngle, getLeftPositionMeters(), getRightPositionMeters());
   }
 
   /** Run open loop at the specified voltage. */
   public void driveVolts(double leftVolts, double rightVolts) {
     io.setVoltage(leftVolts, rightVolts);
   }
-    public void runVelocity(ChassisSpeeds speeds) {
+
+
+  public void runVelocity(ChassisSpeeds speeds) {
     DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(speeds);
     // 5600 * 0.0762 = M
     //5600 = 473 * 12
@@ -132,20 +134,6 @@ public class SUBDrive extends SubsystemBase {
     //manually divide by the max set speed to achieve percentage.
     io.setVoltage(wheelSpeeds.leftMetersPerSecond* GEAR_RATIO/(MotorKV * WHEEL_RADIUS*2), wheelSpeeds.rightMetersPerSecond * GEAR_RATIO/(MotorKV * WHEEL_RADIUS*2));
   }
-
-  // /** Run closed loop at the specified voltage. */
-  // public void driveVelocity(double leftMetersPerSec, double rightMetersPerSec) {
-  //   Logger.recordOutput("Drive/LeftVelocitySetpointMetersPerSec", leftMetersPerSec);
-  //   Logger.recordOutput("Drive/RightVelocitySetpointMetersPerSec", rightMetersPerSec);
-  //   double leftRadPerSec = leftMetersPerSec / WHEEL_RADIUS;
-  //   double rightRadPerSec = rightMetersPerSec / WHEEL_RADIUS;
-  //   io.setVelocity(
-  //       leftRadPerSec,
-  //       rightRadPerSec,
-  //       feedforward.calculate(leftRadPerSec),
-  //       feedforward.calculate(rightRadPerSec));
-  //   //io.setVoltage(feedforward.calculate(leftRadPerSec), feedforward.calculate(rightRadPerSec));
-  // }
 
   /** Stops the drive. */
   public void stop() {
@@ -170,12 +158,9 @@ public class SUBDrive extends SubsystemBase {
 
   /** SETS the current odometry pose. */
   public void setPose(Pose2d pose) {
-    odometry.resetPosition(pose.getRotation(), getLeftPositionMeters(), getRightPositionMeters(), pose);
+    odometry.resetPosition(inputs.gryoAngle, getLeftPositionMeters(), getRightPositionMeters(), pose);
   }
-/** Resets the current odometry pose. */
-  public void resetPose(Pose2d pose) {
-odometry.resetPosition(inputs.gyroYaw, getLeftPositionMeters(), getRightPositionMeters(), getPose());
-  }
+
   /** Returns the position of the left wheels in meters. */
   @AutoLogOutput
   public double getLeftPositionMeters() {
