@@ -25,7 +25,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
  */
 public final class Constants {
 
-  public static final Mode currentMode = Mode.SIM;//TODO:IS MODE SET CURRECTLY??
+  public static final Mode currentMode = Mode.REAL;//TODO:IS MODE SET CURRECTLY??
 
   public static enum Mode {
     /** Running on a real robot. */
@@ -142,11 +142,11 @@ public final class Constants {
 
     public static final double WHEEL_RADIUS = Units.inchesToMeters(3.0);
     public static final int CURRENT_LIMIT = 56;
-    public static final double GEAR_RATIO = 10.86;
+    public static final double GEAR_RATIO = 1;
 
     public static final double KS = 0;
     public static final double KA = 0.0;
-    public static final double KV = 2.8975;
+    public static final double KV = 2.8975; //trash
     public static final double KP = 0.0;
     public static final double KD = 0.0;
     // public static final double DRIVEKP = 0.01;
@@ -154,7 +154,7 @@ public final class Constants {
     public static final double kTrackwidthMeters = 0.6;//Double check this
     public static final DifferentialDriveKinematics kDriveKinematics = new DifferentialDriveKinematics(kTrackwidthMeters);
     public static final double VOLTRAMP = 0.34;
-    public static final double SlewRateLimiter = 3;  // Joystick cant go faster than this rate
+    public static final double SlewRateLimiter = 2;  // Joystick cant go faster than this rate
    
 
   }

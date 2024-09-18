@@ -49,7 +49,7 @@ public class REALDriveIO implements DriveIO {
   private final CANSparkMax leftFollower = new CANSparkMax(DrivetrainConstants.LEFT_FOLLOWER_ONE_ID, MotorType.kBrushless);
   private final CANSparkMax rightFollower = new CANSparkMax(DrivetrainConstants.RIGHT_FOLLOWER_ONE_ID, MotorType.kBrushless);
 
-  private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_A,LEFT_ENCODER_B,true, CounterBase.EncodingType.k4X);
+  private final Encoder leftEncoder = new Encoder(LEFT_ENCODER_A,LEFT_ENCODER_B,false, CounterBase.EncodingType.k4X);
   private final Encoder rightEncoder = new Encoder(RIGHT_ENCODER_A,RIGHT_ENCODER_B,false, CounterBase.EncodingType.k4X);
 
   private final AHRS navx = new AHRS();
@@ -89,14 +89,14 @@ public class REALDriveIO implements DriveIO {
 
   @Override
   public void updateInputs(DriveIOInputs inputs) {
-    inputs.leftPosition = WHEEL_RADIUS * Units.rotationsToRadians(leftEncoder.getDistance() );
+    inputs.leftPosition =leftEncoder.getDistance();
     inputs.leftVelocity = Units.rotationsPerMinuteToRadiansPerSecond(leftEncoder.getRate());
 
     inputs.leftVoltage = leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
     inputs.leftAppliedVolts = leftLeader.getAppliedOutput();
     inputs.leftCurrentAmps = new double[] {leftLeader.getOutputCurrent(), leftFollower.getOutputCurrent()};
 
-    inputs.rightPosition = Units.rotationsToRadians(rightEncoder.getDistance());
+    inputs.rightPosition = rightEncoder.getDistance();
     inputs.rightVelocity = Units.rotationsPerMinuteToRadiansPerSecond(rightEncoder.getRate());
 
     inputs.rightVoltage = rightLeader.getAppliedOutput() * rightLeader.getBusVoltage();

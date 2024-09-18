@@ -51,7 +51,7 @@ public class SUBDrive extends SubsystemBase {
   private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(KS, KV);
   private final SysIdRoutine sysId;
 
-  public static final double MotorKV = KP; //473;//??????
+  public static final double MotorKV = 4.73;//??????
 
   /** Creates a new Drive. */
   public SUBDrive(DriveIO io) {

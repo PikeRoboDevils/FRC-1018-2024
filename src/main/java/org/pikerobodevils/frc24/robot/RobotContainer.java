@@ -4,17 +4,18 @@
 
 package org.pikerobodevils.frc24.robot;
 
-import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.SHOOT_SPEED;
+import static org.pikerobodevils.frc24.robot.Constants.*;
 
 import org.json.simple.JSONObject;
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
-import org.pikerobodevils.frc24.robot.subsystems.BotGoClimb;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
 import org.pikerobodevils.frc24.robot.subsystems.Shooter;
 import org.pikerobodevils.frc24.robot.subsystems.Vision;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmIO;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm.ArmPosition;
+import org.pikerobodevils.frc24.robot.subsystems.climb.BotGoClimb;
+import org.pikerobodevils.frc24.robot.subsystems.climb.ClimbIO;
 import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
 import org.pikerobodevils.frc24.robot.subsystems.drive.SUBDrive;
 
@@ -42,7 +43,7 @@ public class RobotContainer {
   private final ControlBoard controlboard = new ControlBoard();
   private final Intake intakeSubsystem = new Intake(controlboard);
   private final Shooter shooterSubsystem = new Shooter();
-  private final BotGoClimb climber = new BotGoClimb(); 
+  private final BotGoClimb climber = new BotGoClimb(ClimbIO.isReal()); 
   private final SUBArm arm = new SUBArm(ArmIO.isReal());
   private final Vision vision = new Vision();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
@@ -73,7 +74,7 @@ public class RobotContainer {
 
 
     NamedCommands.registerCommand("INTAKE", intakeSubsystem.runIntakeLIMIT());
-    NamedCommands.registerCommand("SPIN", shooterSubsystem.spinUp(SHOOT_SPEED));
+    NamedCommands.registerCommand("SPIN", shooterSubsystem.spinUp(ShooterConstants.SHOOT_SPEED));
     NamedCommands.registerCommand("SHOOT", intakeSubsystem.shoot());
 
     NamedCommands.registerCommand("ArmINTAKE", arm.setGoalCommand(ArmPosition.INTAKE));
@@ -119,7 +120,7 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
     // controlboard.driver.x().whileTrue((shooterSubsystem.sysIdDynamic(Direction.kForward)).finallyDo(()->shooterSubsystem.setSpeed(0)));
     // controlboard.driver.y().whileTrue((shooterSubsystem.sysIdDynamic(Direction.kReverse)).finallyDo(()->shooterSubsystem.setSpeed(0)));
 
-    controlboard.driver.leftBumper().whileTrue(shooterSubsystem.spinUp(SHOOT_SPEED));
+    controlboard.driver.leftBumper().whileTrue(shooterSubsystem.spinUp(ShooterConstants.SHOOT_SPEED));
     controlboard.driver.rightBumper().whileTrue(arm.setGoalCommand(ArmPosition.SAFE));
     controlboard.driver.a().onTrue(shooterSubsystem.spinUpAmp(()->!intakeSubsystem.hasNote()));
     controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
@@ -140,9 +141,9 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
     controlboard.operator.x().whileTrue(arm.setGoalCommand(ArmPosition.SUBWOOFER));
     controlboard.operator.povUp().onTrue(climber.climberUp());
     controlboard.operator.povDown().onTrue(climber.climberDown());
-    controlboard.operator.povLeft().onTrue(arm.setGoalCommand(ArmPosition.AMP).andThen(()->climber.resetEncoders()));
+    controlboard.operator.povLeft().onTrue(arm.setGoalCommand(ArmPosition.AMP));
     controlboard.operator.povRight().onTrue(arm.setGoalCommand(ArmPosition.STOW));
-    controlboard.operator.start().onTrue(Commands.runOnce(()->climber.resetEncoders()));
+    // controlboard.operator.start().onTrue(Commands.runOnce(()->climber.resetEncoders()));
   }
 
 

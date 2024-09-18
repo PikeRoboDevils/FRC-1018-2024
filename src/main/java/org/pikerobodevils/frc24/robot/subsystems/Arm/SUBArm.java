@@ -4,19 +4,12 @@
 
 package org.pikerobodevils.frc24.robot.subsystems.Arm;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkLowLevel;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import static org.pikerobodevils.frc24.robot.Constants.ArmConstants.*;
@@ -27,10 +20,6 @@ import java.util.function.DoubleSupplier;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
-import org.pikerobodevils.frc24.lib.vendor.SparkMax;
-import org.pikerobodevils.frc24.lib.vendor.SparkMaxUtils;
-import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
-import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIOInputsAutoLogged;
 
 public class SUBArm extends SubsystemBase {
 
