@@ -68,7 +68,7 @@ public class RobotContainer {
               .withName("Default Drive Command"));
 
       // drivetrain
-      //        .idkDriveCommand(controlboard::getSpeed, controlboard::getTurn)
+      //        .carDriveCommand(controlboard::getSpeed, controlboard::getTurn)
       //         .withName("Default Drive Command"));
 
 

@@ -54,8 +54,8 @@ public class REALDriveIO implements DriveIO {
     leftFollower.setCANTimeout(250);
     rightFollower.setCANTimeout(250);
 
-    leftLeader.setInverted(true);
-    rightLeader.setInverted(false);
+    leftLeader.setInverted(false);
+    rightLeader.setInverted(true);
     leftFollower.follow(leftLeader, false);
     rightFollower.follow(rightLeader, false);
 
@@ -70,10 +70,11 @@ public class REALDriveIO implements DriveIO {
     rightFollower.burnFlash();
 
     leftEncoder.setDistancePerPulse((Math.PI*.1524)/2048);//IS THIS RIGHT???
-    rightEncoder.setDistancePerPulse((Math.PI*.1524)/2048);
+    rightEncoder.setDistancePerPulse((Math.PI*.1524)/2048);// is radians or rotations?
 
 
     navx.zeroYaw();
+   
   }
 
   @Override
@@ -99,8 +100,8 @@ public class REALDriveIO implements DriveIO {
 
   @Override
   public void setVoltage(double leftVolts, double rightVolts) {
-    leftLeader.setVoltage(MathUtil.clamp(leftVolts, -12.0, 12.0));
-    rightLeader.setVoltage(MathUtil.clamp(rightVolts, -12.0, 12.0));
+    leftLeader.setVoltage(MathUtil.clamp(-leftVolts, -12.0, 12.0));
+    rightLeader.setVoltage(MathUtil.clamp(-rightVolts, -12.0, 12.0));
   }
 
   @Override

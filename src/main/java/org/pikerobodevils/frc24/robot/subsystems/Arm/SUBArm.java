@@ -18,6 +18,7 @@ import static org.pikerobodevils.frc24.robot.Constants.ArmConstants.*;
 // import io.github.oblarg.oblog.annotations.Log;
 import java.util.function.DoubleSupplier;
 
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -44,18 +45,10 @@ public class SUBArm extends SubsystemBase {
       //sim mechanisms
     // the main mechanism object
     @AutoLogOutput
-    private final Mechanism2d mech = new Mechanism2d(0,0);
+    private final Mechanism2d mech = new Mechanism2d(1,1);
+    
     // the mechanism root node
-    private final MechanismRoot2d root = mech.getRoot("Arm", -0.6, 0.254); //actuall
-    {
-
-     
-    // MechanismLigament2d objects represent each "section"/"stage" of the mechanism, and are based
-    // off the root node or another ligament object
-    m_arm = root.append(new MechanismLigament2d("arm", 0.889, 0));
-
-    // post the mechanism to the dashboard
-    SmartDashboard.putData("Arm", mech);}
+    private final MechanismRoot2d root = mech.getRoot("Arm", 0.3, 0.254);
 
     // AdvantageKit inputs
   private final ArmIO io;
@@ -68,6 +61,10 @@ public class SUBArm extends SubsystemBase {
     setDefaultCommand(holdPositionCommand().withName("Default Hold Position"));
     io.setGoal(ArmPosition.SUBWOOFER.valueRadians);
     io.reset();
+
+    m_arm = root.append(new MechanismLigament2d("arm", 0.889, 0));
+
+
   }
 
   /**
@@ -140,8 +137,9 @@ public class SUBArm extends SubsystemBase {
     if (!DriverStation.isEnabled()) {
       io.reset();
     }
-    //m_arm.setAngle(encoder.getDistance());
+
     m_arm.setAngle(inputs.Angle);
+    Logger.recordOutput("ARM", mech);
   }
 
   public double getPositionDeg() {

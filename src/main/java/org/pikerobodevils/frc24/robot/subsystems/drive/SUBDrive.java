@@ -203,13 +203,13 @@ public class SUBDrive extends SubsystemBase {
     io.setVoltage(speeds.left * 12.0, speeds.right * 12.0);
   }
 
-  public Command idkDriveCommand(DoubleSupplier speed, DoubleSupplier rotation) {
-    return run(() -> idkDrive(speed.getAsDouble(), rotation.getAsDouble()));
+  public Command carDriveCommand(DoubleSupplier speed, DoubleSupplier rotation) {
+    return run(() -> carDrive(speed.getAsDouble(), rotation.getAsDouble()));
   }
   
   /* Pretty much same as arcade drive
   */
-  public void idkDrive(double speed, double rotation) {
+  public void carDrive(double speed, double rotation) {
     var speeds = DifferentialDrive.curvatureDriveIK(speed, rotation, true);
     io.setVoltage(speeds.left * 12.0, speeds.right * 12.0);
   }

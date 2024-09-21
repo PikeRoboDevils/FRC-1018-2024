@@ -31,6 +31,7 @@
   },
   "NTProvider": {
     "types": {
+      "/AdvantageKit/RealOutputs/ARM": "Mechanism2d",
       "/AdvantageKit/RealOutputs/SUBArm/Mech": "Mechanism2d",
       "/FMSInfo": "FMSInfo",
       "/Shuffleboard/Driver Dashboard/Auto Chooser": "String Chooser",

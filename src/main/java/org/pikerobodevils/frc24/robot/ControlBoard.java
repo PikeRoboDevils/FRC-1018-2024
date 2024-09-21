@@ -32,7 +32,7 @@ public class ControlBoard {
   }
 
   public double getTurn() {
-    double rightX = -driver.getRightX()*.80; 
+    double rightX = driver.getRightX()*.80; 
     return Math.signum(rightX) * Math.pow(MathUtil.applyDeadband(rightX, .04), 2);
   }
 

@@ -40,7 +40,7 @@ SingleJointedArmSim.estimateMOI(0.889, 30), //no idea moment of inertia yap
 0.889,
 0, 
 Math.PI * 2,
-false,
+true,
 0 
 );
   ArmFeedforward feedforward = new ArmFeedforward(KS, KG, KV, KA);
