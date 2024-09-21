@@ -1,16 +1,3 @@
-// Copyright 2021-2024 FRC 6328
-// http://github.com/Mechanical-Advantage
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// version 3 as published by the Free Software Foundation or
-// available in the root directory of this project.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-
 package org.pikerobodevils.frc24.robot.subsystems.drive;
 
 import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.*;
@@ -31,6 +18,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.SparkPIDController;
+
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.CounterBase;
@@ -89,15 +78,15 @@ public class REALDriveIO implements DriveIO {
 
   @Override
   public void updateInputs(DriveIOInputs inputs) {
-    inputs.leftPosition =leftEncoder.getDistance();
-    inputs.leftVelocity = Units.rotationsPerMinuteToRadiansPerSecond(leftEncoder.getRate());
+    inputs.leftPosition = leftEncoder.getDistance();
+    inputs.leftVelocity = leftEncoder.getRate();//already in radians 
 
     inputs.leftVoltage = leftLeader.getAppliedOutput() * leftLeader.getBusVoltage();
     inputs.leftAppliedVolts = leftLeader.getAppliedOutput();
     inputs.leftCurrentAmps = new double[] {leftLeader.getOutputCurrent(), leftFollower.getOutputCurrent()};
 
     inputs.rightPosition = rightEncoder.getDistance();
-    inputs.rightVelocity = Units.rotationsPerMinuteToRadiansPerSecond(rightEncoder.getRate());
+    inputs.rightVelocity = rightEncoder.getRate();//Already in radians
 
     inputs.rightVoltage = rightLeader.getAppliedOutput() * rightLeader.getBusVoltage();
     inputs.rightAppliedVolts = rightLeader.getAppliedOutput();
@@ -110,8 +99,8 @@ public class REALDriveIO implements DriveIO {
 
   @Override
   public void setVoltage(double leftVolts, double rightVolts) {
-    leftLeader.setVoltage(leftVolts);
-    rightLeader.setVoltage(rightVolts);
+    leftLeader.setVoltage(MathUtil.clamp(leftVolts, -12.0, 12.0));
+    rightLeader.setVoltage(MathUtil.clamp(rightVolts, -12.0, 12.0));
   }
 
   @Override
