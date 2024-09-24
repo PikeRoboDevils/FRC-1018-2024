@@ -4,11 +4,7 @@ name: CI
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the main branch.
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [push]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -31,8 +27,12 @@ jobs:
     # Grant execute permission for gradlew
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+      
+   # Causes instant pull after commit but its ok were gonna forget
+   #  to run spotless ever time if spotless check fails than ¯\_(ツ)_/¯
+    - name: Compile and run tests on robot code
+      run: ./gradlew spotlessApply
 
-    # Runs a single command using the runners shell
     - name: Compile and run tests on robot code
       run: ./gradlew build
   spotless:
