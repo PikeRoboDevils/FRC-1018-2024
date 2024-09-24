@@ -4,16 +4,16 @@
 
 package org.pikerobodevils.frc24.robot.subsystems;
 
+import static edu.wpi.first.units.MutableMeasure.mutable;
+import static edu.wpi.first.units.Units.Rotations;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+import static edu.wpi.first.units.Units.Volts;
 import static org.pikerobodevils.frc24.robot.Constants.ShooterConstants.*;
-
-import java.util.function.BooleanSupplier;
 
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.networktables.BooleanSubscriber;
 import edu.wpi.first.units.Angle;
 import edu.wpi.first.units.Measure;
 import edu.wpi.first.units.MutableMeasure;
@@ -24,20 +24,18 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import static edu.wpi.first.units.MutableMeasure.mutable;
-import static edu.wpi.first.units.Units.Rotations;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-import static edu.wpi.first.units.Units.Volts;
+import java.util.function.BooleanSupplier;
 
 public class Shooter extends SubsystemBase {
-  private final CANSparkMax shooterLead = new CANSparkMax(10,CANSparkLowLevel.MotorType.kBrushless);
-  private final CANSparkMax shooterFollow = new CANSparkMax(11,CANSparkLowLevel.MotorType.kBrushless);
+  private final CANSparkMax shooterLead =
+      new CANSparkMax(10, CANSparkLowLevel.MotorType.kBrushless);
+  private final CANSparkMax shooterFollow =
+      new CANSparkMax(11, CANSparkLowLevel.MotorType.kBrushless);
 
   private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(KS, KV, KA);
   private final RelativeEncoder encoder = shooterLead.getEncoder();
-  
 
-   // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
+  // Mutable holder for unit-safe voltage values, persisted to avoid reallocation.
   private final MutableMeasure<Voltage> m_appliedVoltage = mutable(Volts.of(0));
   // Mutable holder for unit-safe linear distance values, persisted to avoid reallocation.
   private final MutableMeasure<Angle> m_angle = mutable(Rotations.of(0));
@@ -61,10 +59,11 @@ public class Shooter extends SubsystemBase {
                 log.motor("shooter-wheel")
                     .voltage(
                         m_appliedVoltage.mut_replace(
-                            shooterLead.getAppliedOutput() * RobotController.getBatteryVoltage(), Volts))
+                            shooterLead.getAppliedOutput() * RobotController.getBatteryVoltage(),
+                            Volts))
                     .angularPosition(m_angle.mut_replace(encoder.getPosition(), Rotations))
                     .angularVelocity(
-                        m_velocity.mut_replace(encoder.getVelocity()/60, RotationsPerSecond));
+                        m_velocity.mut_replace(encoder.getVelocity() / 60, RotationsPerSecond));
               },
               // Tell SysId to make generated commands require this subsystem, suffix test state in
               // WPILog with this subsystem's name ("shooter")
@@ -83,60 +82,61 @@ public class Shooter extends SubsystemBase {
     shooterFollow.burnFlash();
     Timer.delay(.1);
 
-   // setDefaultCommand(spin());
+    // setDefaultCommand(spin());
   }
-  public void setSpeed(double speed){
+
+  public void setSpeed(double speed) {
     shooterLead.set(speed);
   }
 
-  public double getVelocity(){
+  public double getVelocity() {
     return encoder.getVelocity();
   }
 
-  public boolean shootReady(){
-    return encoder.getVelocity()>=SHOOT_SPEED;
+  public boolean shootReady() {
+    return encoder.getVelocity() >= SHOOT_SPEED;
   }
 
-
-  public Command spin()
-  {
-   return runOnce(()->setSpeed(feedforward.calculate(CONSTANT_VELOCITY)));
+  public Command spin() {
+    return runOnce(() -> setSpeed(feedforward.calculate(CONSTANT_VELOCITY)));
   }
 
-  public Command spinUpAmp(BooleanSupplier hasNote){
-        return run(
-      ()->{
-        setSpeed(.8);
-      }).until(hasNote)
-      .finallyDo(()->{setSpeed(feedforward.calculate(CONSTANT_VELOCITY));
-      });
+  public Command spinUpAmp(BooleanSupplier hasNote) {
+    return run(() -> {
+          setSpeed(.8);
+        })
+        .until(hasNote)
+        .finallyDo(
+            () -> {
+              setSpeed(feedforward.calculate(CONSTANT_VELOCITY));
+            });
   }
 
-  public Command spinUpPodium(){
+  public Command spinUpPodium() {
+    return run(() -> {
+          setSpeed(feedforward.calculate(SHOOT_SPEED));
+        })
+        .finallyDo(
+            () -> {
+              setSpeed(feedforward.calculate(CONSTANT_VELOCITY));
+            });
+  }
+
+  public Command spinUp() {
     return run(
-      ()->{
-        setSpeed(feedforward.calculate(SHOOT_SPEED));
-      })
-      .finallyDo(()->{setSpeed(feedforward.calculate(CONSTANT_VELOCITY));
-      });
+        () -> {
+          setSpeed(feedforward.calculate(SHOOT_SPEED));
+        });
   }
 
-  public Command spinUp(){
-    return run(
-      ()->{
-        setSpeed(feedforward.calculate(SHOOT_SPEED));
-      });
+  public Command spinUp(double speed) {
+    return run(() -> {
+          setSpeed(feedforward.calculate(speed));
+        })
+        .finallyDo(() -> setSpeed(0.0));
   }
 
-    public Command spinUp(double speed){
-    return run(
-      ()->{
-        setSpeed(feedforward.calculate(speed));
-      })
-      .finallyDo(()->setSpeed(0.0));
-  }
-
-   /**
+  /**
    * Returns a command that will execute a quasistatic test in the given direction.
    *
    * @param direction The direction (forward or reverse) to run the test in
@@ -153,9 +153,10 @@ public class Shooter extends SubsystemBase {
   public Command sysIdDynamic(SysIdRoutine.Direction direction) {
     return m_sysIdRoutine.dynamic(direction);
   }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    
+
   }
 }

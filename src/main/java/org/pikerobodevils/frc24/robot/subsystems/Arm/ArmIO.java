@@ -1,13 +1,8 @@
-
 package org.pikerobodevils.frc24.robot.subsystems.Arm;
 
 import org.littletonrobotics.junction.AutoLog;
 import org.pikerobodevils.frc24.robot.Constants;
 import org.pikerobodevils.frc24.robot.Constants.Mode;
-import org.pikerobodevils.frc24.robot.subsystems.drive.REALDriveIO;
-import org.pikerobodevils.frc24.robot.subsystems.drive.SIMDriveIO;
-
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
 public interface ArmIO {
 
@@ -17,35 +12,30 @@ public interface ArmIO {
     public double Position;
     public double Angle;
     public boolean Goal;
-
   }
 
-  /** default Methods here then overide in real*/
+  /** default Methods here then overide in real */
   public default void updateInputs(ArmIOInputs inputs) {}
 
-public default void reset(){}
+  public default void reset() {}
 
-public default void updatePositionController(){
+  public default void updatePositionController() {}
 
-}
-public default void updatePositionController(double asDouble){}
+  public default void updatePositionController(double asDouble) {}
 
-public default void setGoal(double valueRadians) {}
+  public default void setGoal(double valueRadians) {}
 
-public default void setSpeed(double speed) {}
+  public default void setSpeed(double speed) {}
 
-public default void setVoltage(double volts) {}
+  public default void setVoltage(double volts) {}
 
+  public default void holdPositionCommand() {}
 
-public default void holdPositionCommand(){}
-
-public static ArmIO isReal() {
+  public static ArmIO isReal() {
     if (Constants.currentMode == Mode.REAL) {
       return new REALArm();
-    } else {return new SIMArm();}
-}
-
-
-
-
+    } else {
+      return new SIMArm();
+    }
+  }
 }

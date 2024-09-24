@@ -1,8 +1,6 @@
 package org.pikerobodevils.frc24.robot;
 
-/**
- * Automatically generated file containing build version information.
- */
+/** Automatically generated file containing build version information. */
 public final class BUILD {
   public static final String MAVEN_GROUP = "";
   public static final String MAVEN_NAME = "FRC-1018-2024";
@@ -15,5 +13,5 @@ public final class BUILD {
   public static final long BUILD_UNIX_TIME = 1726948053923L;
   public static final int DIRTY = 1;
 
-  private BUILD(){}
+  private BUILD() {}
 }

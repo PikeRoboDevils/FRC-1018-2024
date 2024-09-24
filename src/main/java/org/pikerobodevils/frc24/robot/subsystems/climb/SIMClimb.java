@@ -13,25 +13,8 @@
 
 package org.pikerobodevils.frc24.robot.subsystems.climb;
 
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
-import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
-
 public class SIMClimb implements ClimbIO {
 
-
-@Override
-public void updateInputs(ClimbIOInputs inputs){
-
-
-    }
-
-
-    
-  }
+  @Override
+  public void updateInputs(ClimbIOInputs inputs) {}
+}

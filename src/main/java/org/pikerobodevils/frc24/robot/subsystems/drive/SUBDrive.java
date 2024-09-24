@@ -3,12 +3,9 @@ package org.pikerobodevils.frc24.robot.subsystems.drive;
 import static edu.wpi.first.units.Units.*;
 import static org.pikerobodevils.frc24.robot.Constants.DrivetrainConstants.*;
 
-import java.util.function.DoubleSupplier;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -21,6 +18,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import java.util.function.DoubleSupplier;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -30,23 +28,20 @@ public class SUBDrive extends SubsystemBase {
   private final DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
   private final DifferentialDriveOdometry odometry;
   private final Pose2d pose;
-  private final DifferentialDriveKinematics kinematics =
-      kDriveKinematics;
+  private final DifferentialDriveKinematics kinematics = kDriveKinematics;
   private final SysIdRoutine sysId;
 
-  public static final double MotorKV = 4.73;//??????
+  public static final double MotorKV = 4.73; // ??????
 
   /** Creates a new Drive. */
   public SUBDrive(DriveIO io) {
     this.io = io;
-    
-     pose = new Pose2d(0, 0, new Rotation2d());
 
+    pose = new Pose2d(0, 0, new Rotation2d());
 
-    odometry = new DifferentialDriveOdometry(inputs.gryoAngle,
-  getLeftPositionMeters(),
-  getRightPositionMeters(),
-    pose);
+    odometry =
+        new DifferentialDriveOdometry(
+            inputs.gryoAngle, getLeftPositionMeters(), getRightPositionMeters(), pose);
 
     // // Configure AutoBuilder for PathPlanner
     // AutoBuilder.configureLTV(
@@ -69,14 +64,19 @@ public class SUBDrive extends SubsystemBase {
     //             && DriverStation.getAlliance().get() == Alliance.Red,
     //     this);
 
-    AutoBuilder.configureLTV(this::getPose,
-     this::setPose,
-      () -> kinematics.toChassisSpeeds(new DifferentialDriveWheelSpeeds(inputs.leftVelocity, inputs.rightVelocity)),
-      this::runVelocity,
-      0.02,
-      new ReplanningConfig(),
-      () -> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red,
-      this);
+    AutoBuilder.configureLTV(
+        this::getPose,
+        this::setPose,
+        () ->
+            kinematics.toChassisSpeeds(
+                new DifferentialDriveWheelSpeeds(inputs.leftVelocity, inputs.rightVelocity)),
+        this::runVelocity,
+        0.02,
+        new ReplanningConfig(),
+        () ->
+            DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Red,
+        this);
 
     PathPlannerLogging.setLogActivePathCallback(
         (activePath) -> {
@@ -114,15 +114,16 @@ public class SUBDrive extends SubsystemBase {
     io.setVoltage(leftVolts, rightVolts);
   }
 
-
   public void runVelocity(ChassisSpeeds speeds) {
     DifferentialDriveWheelSpeeds wheelSpeeds = kinematics.toWheelSpeeds(speeds);
     // 5600 * 0.0762 = M
-    //5600 = 473 * 12
-    //(473 * 12) * 0.0762 = M
-    //12 = M / (473 * 0.0762)
-    //manually divide by the max set speed to achieve percentage.
-    io.setVoltage(wheelSpeeds.leftMetersPerSecond* GEAR_RATIO/(MotorKV * WHEEL_RADIUS*2), wheelSpeeds.rightMetersPerSecond * GEAR_RATIO/(MotorKV * WHEEL_RADIUS*2));
+    // 5600 = 473 * 12
+    // (473 * 12) * 0.0762 = M
+    // 12 = M / (473 * 0.0762)
+    // manually divide by the max set speed to achieve percentage.
+    io.setVoltage(
+        wheelSpeeds.leftMetersPerSecond * GEAR_RATIO / (MotorKV * WHEEL_RADIUS * 2),
+        wheelSpeeds.rightMetersPerSecond * GEAR_RATIO / (MotorKV * WHEEL_RADIUS * 2));
   }
 
   /** Stops the drive. */
@@ -148,7 +149,8 @@ public class SUBDrive extends SubsystemBase {
 
   /** SETS the current odometry pose. */
   public void setPose(Pose2d pose) {
-    odometry.resetPosition(inputs.gryoAngle, getLeftPositionMeters(), getRightPositionMeters(), pose);
+    odometry.resetPosition(
+        inputs.gryoAngle, getLeftPositionMeters(), getRightPositionMeters(), pose);
   }
 
   /** Returns the position of the left wheels in meters. */
@@ -190,13 +192,11 @@ public class SUBDrive extends SubsystemBase {
   public void arcadeDrive(double speed, double rotation) {
     var speeds = DifferentialDrive.arcadeDriveIK(speed, rotation, true);
     io.setVoltage(speeds.left * 12.0, speeds.right * 12.0);
-   
   }
 
-  public Command tankDriveCommand(DoubleSupplier speedL, DoubleSupplier speedR){
-    return run(()-> tankDrive(speedL.getAsDouble(), speedR.getAsDouble()));
+  public Command tankDriveCommand(DoubleSupplier speedL, DoubleSupplier speedR) {
+    return run(() -> tankDrive(speedL.getAsDouble(), speedR.getAsDouble()));
   }
-  
 
   public void tankDrive(double left, double right) {
     var speeds = DifferentialDrive.tankDriveIK(left, right, true);
@@ -206,13 +206,11 @@ public class SUBDrive extends SubsystemBase {
   public Command carDriveCommand(DoubleSupplier speed, DoubleSupplier rotation) {
     return run(() -> carDrive(speed.getAsDouble(), rotation.getAsDouble()));
   }
-  
+
   /* Pretty much same as arcade drive
-  */
+   */
   public void carDrive(double speed, double rotation) {
     var speeds = DifferentialDrive.curvatureDriveIK(speed, rotation, true);
     io.setVoltage(speeds.left * 12.0, speeds.right * 12.0);
   }
-
-  
 }

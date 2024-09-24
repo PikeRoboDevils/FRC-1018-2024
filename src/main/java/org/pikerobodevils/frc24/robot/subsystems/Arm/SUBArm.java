@@ -3,22 +3,17 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package org.pikerobodevils.frc24.robot.subsystems.Arm;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import static org.pikerobodevils.frc24.robot.Constants.ArmConstants.*;
+
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-
-import static org.pikerobodevils.frc24.robot.Constants.ArmConstants.*;
-
-// import io.github.oblarg.oblog.Loggable;
-// import io.github.oblarg.oblog.annotations.Log;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.function.DoubleSupplier;
-
-
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
@@ -33,6 +28,7 @@ public class SUBArm extends SubsystemBase {
     HPODIUM(47),
     FPODIUM(50),
     SAFE(56);
+
     ArmPosition(double angleDegrees) {
       this.valueRadians = Units.degreesToRadians(angleDegrees);
     }
@@ -41,16 +37,15 @@ public class SUBArm extends SubsystemBase {
   }
 
   private final MechanismLigament2d m_arm;
-  
-      //sim mechanisms
-    // the main mechanism object
-    @AutoLogOutput
-    private final Mechanism2d mech = new Mechanism2d(1,1);
-    
-    // the mechanism root node
-    private final MechanismRoot2d root = mech.getRoot("Arm", 0.3, 0.254);
 
-    // AdvantageKit inputs
+  // sim mechanisms
+  // the main mechanism object
+  @AutoLogOutput private final Mechanism2d mech = new Mechanism2d(1, 1);
+
+  // the mechanism root node
+  private final MechanismRoot2d root = mech.getRoot("Arm", 0.3, 0.254);
+
+  // AdvantageKit inputs
   private final ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
@@ -63,8 +58,6 @@ public class SUBArm extends SubsystemBase {
     io.reset();
 
     m_arm = root.append(new MechanismLigament2d("arm", 0.889, 0));
-
-
   }
 
   /**
@@ -72,9 +65,6 @@ public class SUBArm extends SubsystemBase {
    *
    * @param volts voltage to apply.
    */
-
-
-
 
   /**
    * Return whether the arm is at the desired goal.
@@ -85,16 +75,12 @@ public class SUBArm extends SubsystemBase {
     return inputs.Goal;
   }
 
-
-
-
-  public Command armOverride(DoubleSupplier speed){
-    return run(()->io.setSpeed(speed.getAsDouble())).finallyDo(()->io.setSpeed(0));
+  public Command armOverride(DoubleSupplier speed) {
+    return run(() -> io.setSpeed(speed.getAsDouble())).finallyDo(() -> io.setSpeed(0));
   }
 
-
   public Command holdPositionCommand() {
-    return run(()->io.updatePositionController());
+    return run(() -> io.updatePositionController());
   }
 
   public Command setGoalCommand(double goalPosition) {
@@ -103,7 +89,7 @@ public class SUBArm extends SubsystemBase {
               io.setGoal(goalPosition);
             })
         .andThen(holdPositionCommand())
-        .until(()->inputs.Goal);
+        .until(() -> inputs.Goal);
   }
 
   public Command setGoalCommand(ArmPosition goalPosition) {
@@ -114,7 +100,8 @@ public class SUBArm extends SubsystemBase {
         .andThen(holdPositionCommand())
         .until(this::atGoal);
   }
-    public Command setGoalCommand(ArmPosition goalPosition, boolean hold) {
+
+  public Command setGoalCommand(ArmPosition goalPosition, boolean hold) {
     return runOnce(
             () -> {
               io.setGoal(goalPosition.valueRadians);
@@ -143,6 +130,6 @@ public class SUBArm extends SubsystemBase {
   }
 
   public double getPositionDeg() {
-   return inputs.Angle;
+    return inputs.Angle;
   }
 }

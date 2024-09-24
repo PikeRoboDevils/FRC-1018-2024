@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.Timer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-
 import org.pikerobodevils.frc24.lib.HealthMonitor;
 
 public class SparkMax extends CANSparkMax {
@@ -88,7 +87,7 @@ public class SparkMax extends CANSparkMax {
     m_mutatorChain = new ArrayList<>();
     HealthMonitor.monitor(() -> sparkmaxMonitorFunction(this), () -> reinitFunction());
     m_sparkMaxes.add(this);
-   // Logger.tag("SparkMax").debug("Initializing SparkMax with ID {}", canId);
+    // Logger.tag("SparkMax").debug("Initializing SparkMax with ID {}", canId);
     if (m_burnFlashCnt > 0) {
       // Logger.tag("SparkMax")
       //     .warn(
@@ -133,14 +132,14 @@ public class SparkMax extends CANSparkMax {
       setAttemptNumber++;
 
       if (setAttemptNumber >= kParameterSetAttemptCount) {
-        //Logger.tag("Spark Max").error("Spark Max ID {}: Failed to initialize!!", getDeviceId());
+        // Logger.tag("Spark Max").error("Spark Max ID {}: Failed to initialize!!", getDeviceId());
         successful = false;
         allConfigsSuccessful = false;
         break;
       }
     }
     if (successful) {
-      //Logger.tag("Spark Max").debug("Spark Max ID {}: Configuration successful!", getDeviceId());
+      // Logger.tag("Spark Max").debug("Spark Max ID {}: Configuration successful!", getDeviceId());
       if (setAttemptNumber > 0) {
         // Logger.tag("Spark Max")
         //     .debug(
@@ -288,16 +287,16 @@ public class SparkMax extends CANSparkMax {
    * safety.
    */
   public static void burnFlashInSync() {
-    //Logger.tag("SparkMax").debug("Burning Flash Count: {}", ++m_burnFlashCnt);
+    // Logger.tag("SparkMax").debug("Burning Flash Count: {}", ++m_burnFlashCnt);
     Timer.delay(0.25);
     for (SparkMax max : m_sparkMaxes) {
-      //Logger.tag("SparkMax").trace("Burning flash for Can ID {}", max.getDeviceId());
+      // Logger.tag("SparkMax").trace("Burning flash for Can ID {}", max.getDeviceId());
       max.burnFlash();
       // Enough time to not spam the bus too bad
       Timer.delay(0.005);
     }
     Timer.delay(0.25);
-    //Logger.tag("SparkMax").debug("Burn Flash Complete.");
+    // Logger.tag("SparkMax").debug("Burn Flash Complete.");
   }
 
   public static boolean configSuccessful() {

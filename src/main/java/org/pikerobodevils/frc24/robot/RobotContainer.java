@@ -6,29 +6,25 @@ package org.pikerobodevils.frc24.robot;
 
 import static org.pikerobodevils.frc24.robot.Constants.*;
 
-import org.json.simple.JSONObject;
-import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
-import org.pikerobodevils.frc24.robot.subsystems.Intake;
-import org.pikerobodevils.frc24.robot.subsystems.Shooter;
-import org.pikerobodevils.frc24.robot.subsystems.Vision;
-import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmIO;
-import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
-import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm.ArmPosition;
-import org.pikerobodevils.frc24.robot.subsystems.climb.BotGoClimb;
-import org.pikerobodevils.frc24.robot.subsystems.climb.ClimbIO;
-import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
-import org.pikerobodevils.frc24.robot.subsystems.drive.SUBDrive;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
-
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.ArmIO;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
+import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm.ArmPosition;
+import org.pikerobodevils.frc24.robot.subsystems.Intake;
+import org.pikerobodevils.frc24.robot.subsystems.Shooter;
+import org.pikerobodevils.frc24.robot.subsystems.Vision;
+import org.pikerobodevils.frc24.robot.subsystems.climb.BotGoClimb;
+import org.pikerobodevils.frc24.robot.subsystems.climb.ClimbIO;
+import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
+import org.pikerobodevils.frc24.robot.subsystems.drive.SUBDrive;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -36,42 +32,39 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
  * subsystems, commands, and trigger mappings) should be declared here.
  */
-  // The robot's subsystems and commands are defined here...
+// The robot's subsystems and commands are defined here...
 public class RobotContainer {
 
   private final SUBDrive drivetrain = new SUBDrive(DriveIO.isReal());
   private final ControlBoard controlboard = new ControlBoard();
   private final Intake intakeSubsystem = new Intake(controlboard);
   private final Shooter shooterSubsystem = new Shooter();
-  private final BotGoClimb climber = new BotGoClimb(ClimbIO.isReal()); 
+  private final BotGoClimb climber = new BotGoClimb(ClimbIO.isReal());
   private final SUBArm arm = new SUBArm(ArmIO.isReal());
   private final Vision vision = new Vision();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
 
-  //private final SendableChooser<Command> autoChooser = new SendableChooser<>();
+  // private final SendableChooser<Command> autoChooser = new SendableChooser<>();
   private final SendableChooser<Command> autoChooser = AutoBuilder.buildAutoChooser("JustDrive");
-
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
-  new CommandXboxController(OperatorConstants.kDriverControllerPort);
+      new CommandXboxController(OperatorConstants.kDriverControllerPort);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    //CONTROLLER INPUT HERE
+    // CONTROLLER INPUT HERE
     drivetrain.setDefaultCommand(
         //  drivetrain
         //      .tankDriveCommand(controlboard::getSpeed, controlboard::getSpeedRIGHT));
-        
+
         drivetrain
-              .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
-              .withName("Default Drive Command"));
+            .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
+            .withName("Default Drive Command"));
 
-      // drivetrain
-      //        .carDriveCommand(controlboard::getSpeed, controlboard::getTurn)
-      //         .withName("Default Drive Command"));
-
-
+    // drivetrain
+    //        .carDriveCommand(controlboard::getSpeed, controlboard::getTurn)
+    //         .withName("Default Drive Command"));
 
     NamedCommands.registerCommand("INTAKE", intakeSubsystem.runIntakeLIMIT());
     NamedCommands.registerCommand("SPIN", shooterSubsystem.spinUp(ShooterConstants.SHOOT_SPEED));
@@ -83,20 +76,19 @@ public class RobotContainer {
     NamedCommands.registerCommand("ArmFARPODIUM", arm.setGoalCommand(ArmPosition.FPODIUM));
     NamedCommands.registerCommand("ArmAMP", arm.setGoalCommand(ArmPosition.AMP));
 
-
-    shuffleboard.addBoolean("Has Note",()->intakeSubsystem.hasNote());
+    shuffleboard.addBoolean("Has Note", () -> intakeSubsystem.hasNote());
     // shuffleboard.addDouble("right velocity", ()->drivetrain.getRightVelocity());
     // shuffleboard.addDouble("left velocity", ()->drivetrain.getLeftVelocity());
     // shuffleboard.addDouble("left distance", ()->drivetrain.getLeftDistance() );
     // shuffleboard.addDouble("right distance", ()->drivetrain.getRightDistance());
-    shuffleboard.addDouble("Arm Deg", ()->arm.getPositionDeg());
-    shuffleboard.addBoolean("At Arm Goal", ()->arm.atGoal());
-    shuffleboard.addDouble("Climb Position", ()->climber.getPosition());
-    shuffleboard.addDouble("Shooter Velocity", ()->shooterSubsystem.getVelocity());
+    shuffleboard.addDouble("Arm Deg", () -> arm.getPositionDeg());
+    shuffleboard.addBoolean("At Arm Goal", () -> arm.atGoal());
+    shuffleboard.addDouble("Climb Position", () -> climber.getPosition());
+    shuffleboard.addDouble("Shooter Velocity", () -> shooterSubsystem.getVelocity());
     // shuffleboard.addDouble("Rotation", ()->drivetrain.getYaw());
-    shuffleboard.addDouble("PoseX", ()->drivetrain.getPose().getX());
-   shuffleboard.addDouble("PoseY", ()->drivetrain.getPose().getY());
-shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getDegrees());
+    shuffleboard.addDouble("PoseX", () -> drivetrain.getPose().getX());
+    shuffleboard.addDouble("PoseY", () -> drivetrain.getPose().getY());
+    shuffleboard.addDouble("rotation2d", () -> drivetrain.getPose().getRotation().getDegrees());
 
     shuffleboard.add("Auto Chooser", autoChooser);
     // Configure the trigger bindings
@@ -114,27 +106,31 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
    */
   private void configureBindings() {
 
-   // Sys ID buttons:
+    // Sys ID buttons:
     // controlboard.driver.a().whileTrue((shooterSubsystem.sysIdQuasistatic(Direction.kForward)).finallyDo(()->shooterSubsystem.setSpeed(0)));
     // controlboard.driver.b().whileTrue((shooterSubsystem.sysIdQuasistatic(Direction.kReverse)).finallyDo(()->shooterSubsystem.setSpeed(0)));
     // controlboard.driver.x().whileTrue((shooterSubsystem.sysIdDynamic(Direction.kForward)).finallyDo(()->shooterSubsystem.setSpeed(0)));
     // controlboard.driver.y().whileTrue((shooterSubsystem.sysIdDynamic(Direction.kReverse)).finallyDo(()->shooterSubsystem.setSpeed(0)));
 
-    controlboard.driver.leftBumper().whileTrue(shooterSubsystem.spinUp(ShooterConstants.SHOOT_SPEED));
+    controlboard
+        .driver
+        .leftBumper()
+        .whileTrue(shooterSubsystem.spinUp(ShooterConstants.SHOOT_SPEED));
     controlboard.driver.rightBumper().whileTrue(arm.setGoalCommand(ArmPosition.SAFE));
-    controlboard.driver.a().onTrue(shooterSubsystem.spinUpAmp(()->!intakeSubsystem.hasNote()));
+    controlboard.driver.a().onTrue(shooterSubsystem.spinUpAmp(() -> !intakeSubsystem.hasNote()));
     controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
     controlboard.driver.leftTrigger().whileTrue(intakeSubsystem.runOuttake());
     controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntakeLIMIT());
-    
 
     controlboard.operator.rightBumper().whileTrue(arm.armOverride(controlboard.operator::getLeftY));
-    controlboard.operator.leftBumper().whileTrue(climber.climbOverride(()->controlboard.operator.getRawAxis(1)));
+    controlboard
+        .operator
+        .leftBumper()
+        .whileTrue(climber.climbOverride(() -> controlboard.operator.getRawAxis(1)));
 
-    controlboard.operator.leftTrigger(.75).whileTrue(arm.setGoalCommand( ArmPosition.FPODIUM));
+    controlboard.operator.leftTrigger(.75).whileTrue(arm.setGoalCommand(ArmPosition.FPODIUM));
     controlboard.operator.rightTrigger(.75).whileTrue((arm.setGoalCommand(ArmPosition.HPODIUM)));
     controlboard.operator.y().whileTrue(arm.setGoalCommand(ArmPosition.PODIUM));
-    
 
     controlboard.operator.a().whileTrue(arm.setGoalCommand(ArmPosition.INTAKE));
     controlboard.operator.b().whileTrue(arm.setGoalCommand(ArmPosition.AMP));
@@ -146,7 +142,6 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
     // controlboard.operator.start().onTrue(Commands.runOnce(()->climber.resetEncoders()));
   }
 
-
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
@@ -154,24 +149,22 @@ shuffleboard.addDouble("rotation2d", ()->drivetrain.getPose().getRotation().getD
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    //return Autos.ShootSubwooferAuto(s);
+    // return Autos.ShootSubwooferAuto(s);
 
-      return autoChooser.getSelected();
-     
-      // .andThen(shooterSubsystem.spinUp())
-      // .alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))
-      // .alongWith(intakeSubsystem.shoot())
-      // .onlyWhile(()->shooterSubsystem.shootReady());
+    return autoChooser.getSelected();
+
+    // .andThen(shooterSubsystem.spinUp())
+    // .alongWith(arm.setGoalCommand(ArmPosition.SUBWOOFER))
+    // .alongWith(intakeSubsystem.shoot())
+    // .onlyWhile(()->shooterSubsystem.shootReady());
   }
-
 
   public void robotPeriodic() {
     // update the dashboard mechanism's state
-   //m_arm.setAngle(arm.getPositionDeg());
+    // m_arm.setAngle(arm.getPositionDeg());
   }
 
-
-public void safety() {
-  drivetrain.Brake();
-} 
+  public void safety() {
+    drivetrain.Brake();
+  }
 }

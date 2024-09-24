@@ -6,18 +6,15 @@
 
 package org.pikerobodevils.frc24.robot;
 
-import org.littletonrobotics.junction.LogFileUtil;
-import org.littletonrobotics.junction.LoggedRobot;
-import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import org.pikerobodevils.frc24.robot.Constants.Mode;
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.pikerobodevils.frc24.robot.Constants.Mode;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -26,7 +23,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 // LoggedRobot is the same as TimedRobot but used to pass through to AdvantageKit
-public class Robot extends LoggedRobot  {
+public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -37,26 +34,27 @@ public class Robot extends LoggedRobot  {
    */
   @Override
   public void robotInit() {
-    //Log must start before intization
+    // Log must start before intization
     Logger.recordMetadata("ProjectName", "MyProject"); // Set a metadata value
 
-    //Always log to network tables
+    // Always log to network tables
     Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
 
-    //log if real robot
-    if (Constants.currentMode == Mode.REAL){
-    Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
-    new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-  }
-      
+    // log if real robot
+    if (Constants.currentMode == Mode.REAL) {
+      Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
+      new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+    }
 
-      // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
-      Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
-   
+    // Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the
+    // "Understanding Data Flow" page
+    Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
+    // be added.
+
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    //FollowPathCommand.warmupCommand().schedule();
+    // FollowPathCommand.warmupCommand().schedule();
   }
 
   /**
@@ -81,7 +79,7 @@ public class Robot extends LoggedRobot  {
 
   @Override
   public void disabledPeriodic() {
-      m_robotContainer.safety();
+    m_robotContainer.safety();
   }
 
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */

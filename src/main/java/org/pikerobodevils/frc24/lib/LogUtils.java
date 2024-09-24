@@ -11,7 +11,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.util.datalog.StringLogEntry;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.util.WPILibVersion;
-//import org.tinylog.Logger;
+// import org.tinylog.Logger;
 
 public class LogUtils {
   private static StringLogEntry m_messageLog;
@@ -27,7 +27,7 @@ public class LogUtils {
     var entry = new StringLogEntry(DataLogManager.getLog(), METADATA_PATH + key);
     entry.append(value.toString());
     entry.finish();
-    //Logger.tag("Metadata").info(String.format("%-25s%s", key + ":", value));
+    // Logger.tag("Metadata").info(String.format("%-25s%s", key + ":", value));
   }
 
   public static void logManifestMetadata(Object object) {

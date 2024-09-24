@@ -7,8 +7,8 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 
 public class SIMDriveIO implements DriveIO {
-  private static final double KP = 1400; //actually too high
-  private static final double KD = 100;//JACKED CUZ SIM
+  private static final double KP = 1400; // actually too high
+  private static final double KD = 100; // JACKED CUZ SIM
   private DifferentialDrivetrainSim sim =
       DifferentialDrivetrainSim.createKitbotSim(
           KitbotMotor.kDoubleNEOPerSide, KitbotGearing.k10p71, KitbotWheelSize.kSixInch, null);
@@ -21,7 +21,7 @@ public class SIMDriveIO implements DriveIO {
 
     sim.update(0.02);
     inputs.leftPosition = sim.getLeftPositionMeters();
-    inputs.leftVelocity = sim.getLeftVelocityMetersPerSecond() ;
+    inputs.leftVelocity = sim.getLeftVelocityMetersPerSecond();
     inputs.leftAppliedVolts = leftAppliedVolts;
     inputs.leftCurrentAmps = new double[] {sim.getLeftCurrentDrawAmps()};
 
@@ -41,10 +41,9 @@ public class SIMDriveIO implements DriveIO {
     rightAppliedVolts = MathUtil.clamp(rightVolts, -12.0, 12.0);
     sim.setInputs(leftAppliedVolts, rightAppliedVolts);
   }
-  
-  @Override 
-  public void Brake(){
-    setVoltage(0,0);
-  }
 
+  @Override
+  public void Brake() {
+    setVoltage(0, 0);
+  }
 }

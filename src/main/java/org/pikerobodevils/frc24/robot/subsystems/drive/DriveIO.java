@@ -14,15 +14,9 @@
 package org.pikerobodevils.frc24.robot.subsystems.drive;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-
-import java.net.Authenticator.RequestorType;
-
 import org.littletonrobotics.junction.AutoLog;
 import org.pikerobodevils.frc24.robot.Constants;
-import org.pikerobodevils.frc24.robot.Robot;
 import org.pikerobodevils.frc24.robot.Constants.Mode;
-
-import com.fasterxml.jackson.databind.ser.std.StdKeySerializers.Default;
 
 public interface DriveIO {
   @AutoLog
@@ -46,7 +40,6 @@ public interface DriveIO {
     public double angle;
     public double rate;
     public Rotation2d gryoAngle = new Rotation2d();
-
   }
 
   /** Updates the set of loggable inputs. */
@@ -61,11 +54,14 @@ public interface DriveIO {
 
   /** ADDED FOR EASY DRIVETRAIN REPLACEMENT */
   public default void set(double left, double right) {}
+
   public default void Brake() {}
 
-public static DriveIO isReal() {
+  public static DriveIO isReal() {
     if (Constants.currentMode == Mode.REAL) {
       return new REALDriveIO();
-    } else {return new SIMDriveIO();}
-}
+    } else {
+      return new SIMDriveIO();
+    }
+  }
 }

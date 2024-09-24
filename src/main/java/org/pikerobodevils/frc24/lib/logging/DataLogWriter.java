@@ -11,12 +11,12 @@ import java.util.Map;
 // import org.tinylog.core.LogEntry;
 // import org.tinylog.writers.AbstractFormatPatternWriter;
 
-public class DataLogWriter{ //extends AbstractFormatPatternWriter {
+public class DataLogWriter { // extends AbstractFormatPatternWriter {
 
   StringLogEntry m_log;
 
   public DataLogWriter(Map<String, String> properties) {
-    //super(properties);
+    // super(properties);
     String entryKey = properties.get("entryKey");
     if (entryKey == null || entryKey.isBlank()) {
       entryKey = "tinylog";

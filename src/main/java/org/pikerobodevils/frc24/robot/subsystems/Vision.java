@@ -12,21 +12,21 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class Vision extends SubsystemBase {
   /** Creates a new Vision. */
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+
   NetworkTableEntry tx = table.getEntry("tx");
   NetworkTableEntry ty = table.getEntry("ty");
   NetworkTableEntry ta = table.getEntry("ta");
 
-  public Vision() {
+  public Vision() {}
 
-  }
-
-  public double getTx(){
+  public double getTx() {
     return tx.getDouble(0.0);
   }
 
-  public double getTy(){
+  public double getTy() {
     return ty.getDouble(0.0);
   }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

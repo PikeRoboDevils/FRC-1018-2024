@@ -12,7 +12,7 @@ package org.pikerobodevils.frc24.lib.vendor;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.HashMap;
-//import org.tinylog.Logger;
+// import org.tinylog.Logger;
 
 /** This is a basic monitor class separate from the HealthMonitor setup. */
 public class SparkMaxMonitor extends SubsystemBase {
