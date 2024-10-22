@@ -9,7 +9,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class Vision extends SubsystemBase {
+public class Camera extends SubsystemBase {
   /** Creates a new Vision. */
   NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
 
@@ -17,7 +17,7 @@ public class Vision extends SubsystemBase {
   NetworkTableEntry ty = table.getEntry("ty");
   NetworkTableEntry ta = table.getEntry("ta");
 
-  public Vision() {}
+  public Camera() {}
 
   public double getTx() {
     return tx.getDouble(0.0);

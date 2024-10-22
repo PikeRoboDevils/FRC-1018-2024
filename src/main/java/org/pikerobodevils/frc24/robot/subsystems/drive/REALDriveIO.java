@@ -47,15 +47,16 @@ public class REALDriveIO implements DriveIO {
     leftFollower.setCANTimeout(250);
     rightFollower.setCANTimeout(250);
 
-    leftLeader.setInverted(false);
-    rightLeader.setInverted(true);
+    leftLeader.setInverted(true);
+    rightLeader.setInverted(false);
     leftFollower.follow(leftLeader, false);
     rightFollower.follow(rightLeader, false);
 
     // leftLeader.enableVoltageCompensation(12.0); //bad for flapjack :(
     // rightLeader.enableVoltageCompensation(12.0); //bad for flapjack :(
-    leftLeader.setSmartCurrentLimit(DrivetrainConstants.CURRENT_LIMIT);
-    rightLeader.setSmartCurrentLimit(DrivetrainConstants.CURRENT_LIMIT);
+    leftLeader.setSmartCurrentLimit(40,DrivetrainConstants.CURRENT_LIMIT);
+    rightLeader.setSmartCurrentLimit(40,DrivetrainConstants.CURRENT_LIMIT);
+
 
     leftLeader.burnFlash();
     rightLeader.burnFlash();

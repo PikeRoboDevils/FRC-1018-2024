@@ -20,7 +20,7 @@ import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm.ArmPosition;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
 import org.pikerobodevils.frc24.robot.subsystems.Shooter;
-import org.pikerobodevils.frc24.robot.subsystems.Vision;
+import org.pikerobodevils.frc24.robot.subsystems.Camera;
 import org.pikerobodevils.frc24.robot.subsystems.climb.BotGoClimb;
 import org.pikerobodevils.frc24.robot.subsystems.climb.ClimbIO;
 import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
@@ -41,7 +41,7 @@ public class RobotContainer {
   private final Shooter shooterSubsystem = new Shooter();
   private final BotGoClimb climber = new BotGoClimb(ClimbIO.isReal());
   private final SUBArm arm = new SUBArm(ArmIO.isReal());
-  private final Vision vision = new Vision();
+  private final Camera vision = new Camera();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
 
   // private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -120,7 +120,7 @@ public class RobotContainer {
     controlboard.driver.a().onTrue(shooterSubsystem.spinUpAmp(() -> !intakeSubsystem.hasNote()));
     controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
     controlboard.driver.leftTrigger().whileTrue(intakeSubsystem.runOuttake());
-    controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntakeLIMIT());
+    controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntake(.75));
 
     controlboard.operator.rightBumper().whileTrue(arm.armOverride(controlboard.operator::getLeftY));
     controlboard
