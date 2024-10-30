@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import org.pikerobodevils.frc24.robot.Constants.OperatorConstants;
@@ -122,6 +124,10 @@ public class RobotContainer {
     controlboard.driver.leftTrigger().whileTrue(intakeSubsystem.runOuttake());
     controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntake(.75));
 
+controlboard.driver.rightBumper().whileTrue(arm.setGoalCommand(ArmPosition.SUBWOOFER));
+controlboard.driver.rightBumper().whileFalse(arm.setGoalCommand(ArmPosition.INTAKE).withTimeout(3));
+
+
     controlboard.operator.rightBumper().whileTrue(arm.armOverride(controlboard.operator::getLeftY));
     controlboard
         .operator
@@ -141,6 +147,7 @@ public class RobotContainer {
     controlboard.operator.povRight().onTrue(arm.setGoalCommand(ArmPosition.STOW));
     // controlboard.operator.start().onTrue(Commands.runOnce(()->climber.resetEncoders()));
   }
+
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
