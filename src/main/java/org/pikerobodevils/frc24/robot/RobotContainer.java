@@ -123,9 +123,10 @@ public class RobotContainer {
     controlboard.driver.x().whileTrue(intakeSubsystem.shoot());
     controlboard.driver.leftTrigger().whileTrue(intakeSubsystem.runOuttake());
     controlboard.driver.rightTrigger().whileTrue(intakeSubsystem.runIntake(.75));
+       controlboard.driver.povUp().onTrue(arm.setGoalCommand(ArmPosition.SAFE));
 
-controlboard.driver.rightBumper().whileTrue(arm.setGoalCommand(ArmPosition.SUBWOOFER));
-controlboard.driver.rightBumper().whileFalse(arm.setGoalCommand(ArmPosition.INTAKE).withTimeout(3));
+controlboard.driver.rightBumper().whileTrue(arm.setGoalCommand(ArmPosition.SUBWOOFER).withTimeout(3));
+controlboard.driver.rightBumper().whileFalse(arm.setGoalCommand(ArmPosition.INTAKE));
 
 
     controlboard.operator.rightBumper().whileTrue(arm.armOverride(controlboard.operator::getLeftY));
