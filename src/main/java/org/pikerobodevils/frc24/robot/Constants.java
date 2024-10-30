@@ -147,7 +147,7 @@ public final class Constants {
     public static final DifferentialDriveKinematics kDriveKinematics =
         new DifferentialDriveKinematics(kTrackwidthMeters);
     public static final double VOLTRAMP = 0.34;
-    public static final double SlewRateLimiter = 10; // FLAPJACK NEED THIS VERY MUCH
+    public static final double SlewRateLimiter = 3; // FLAPJACK NEED THIS VERY MUCH
   }
 
   public static class ClimbConstants {
