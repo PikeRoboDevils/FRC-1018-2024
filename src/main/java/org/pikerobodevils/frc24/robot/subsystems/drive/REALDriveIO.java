@@ -54,8 +54,8 @@ public class REALDriveIO implements DriveIO {
 
     // leftLeader.enableVoltageCompensation(12.0); //bad for flapjack :(
     // rightLeader.enableVoltageCompensation(12.0); //bad for flapjack :(
-    leftLeader.setSmartCurrentLimit(40,DrivetrainConstants.CURRENT_LIMIT);
-    rightLeader.setSmartCurrentLimit(40,DrivetrainConstants.CURRENT_LIMIT);
+    leftLeader.setSmartCurrentLimit(DrivetrainConstants.CURRENT_LIMIT);
+    rightLeader.setSmartCurrentLimit(DrivetrainConstants.CURRENT_LIMIT);
 
 
     leftLeader.burnFlash();

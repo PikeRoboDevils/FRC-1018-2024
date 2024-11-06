@@ -20,7 +20,6 @@ import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm;
 import org.pikerobodevils.frc24.robot.subsystems.Arm.SUBArm.ArmPosition;
 import org.pikerobodevils.frc24.robot.subsystems.Intake;
 import org.pikerobodevils.frc24.robot.subsystems.Shooter;
-import org.pikerobodevils.frc24.robot.subsystems.Camera;
 import org.pikerobodevils.frc24.robot.subsystems.climb.BotGoClimb;
 import org.pikerobodevils.frc24.robot.subsystems.climb.ClimbIO;
 import org.pikerobodevils.frc24.robot.subsystems.drive.DriveIO;
@@ -41,7 +40,6 @@ public class RobotContainer {
   private final Shooter shooterSubsystem = new Shooter();
   private final BotGoClimb climber = new BotGoClimb(ClimbIO.isReal());
   private final SUBArm arm = new SUBArm(ArmIO.isReal());
-  private final Camera vision = new Camera();
   private final ShuffleboardTab shuffleboard = Shuffleboard.getTab("Driver Dashboard");
 
   // private final SendableChooser<Command> autoChooser = new SendableChooser<>();
@@ -58,13 +56,13 @@ public class RobotContainer {
         //  drivetrain
         //      .tankDriveCommand(controlboard::getSpeed, controlboard::getSpeedRIGHT));
 
-        drivetrain
-            .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
-            .withName("Default Drive Command"));
+        // drivetrain
+        //     .arcadeDriveCommand(controlboard::getSpeed, controlboard::getTurn)
+        //     .withName("Default Drive Command"));
 
-    // drivetrain
-    //        .carDriveCommand(controlboard::getSpeed, controlboard::getTurn)
-    //         .withName("Default Drive Command"));
+    drivetrain
+           .carDriveCommand(controlboard::getSpeed, controlboard::getTurn)
+            .withName("Default Drive Command"));
 
     NamedCommands.registerCommand("INTAKE", intakeSubsystem.runIntakeLIMIT());
     NamedCommands.registerCommand("SPIN", shooterSubsystem.spinUp(ShooterConstants.SHOOT_SPEED));
